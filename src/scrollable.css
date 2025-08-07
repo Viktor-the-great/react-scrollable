@@ -1,0 +1,14 @@
+.scrollable {
+  overflow: hidden;
+
+  &__wrapper {
+    display: grid;
+    grid-template-columns: auto 6px;
+    grid-template-rows: auto 6px;
+    gap: 2px;
+  }
+
+  &__content {
+    display: inline-block;
+  }
+}

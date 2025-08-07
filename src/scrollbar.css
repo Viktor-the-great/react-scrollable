@@ -1,0 +1,20 @@
+.track {
+  overflow: hidden;
+  user-select: none;
+
+  &__thumb {
+    border-radius: 3px;
+    background: #cccccc;
+    cursor: pointer;
+
+    &_vertical {
+      height: 0;
+      width: 6px;
+    }
+
+    &_horizontal {
+      height: 6px;
+      width: 0;
+    }
+  }
+}

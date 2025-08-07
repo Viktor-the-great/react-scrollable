@@ -9,11 +9,11 @@ import cx from './utils/classnames';
 import composeRefs from './utils/composeRef';
 import makePx from './utils/makePx';
 import useEvent from './hooks/useEvent';
-import styles from './scrollbar.module.css';
+import './scrollbar.css';
 
 type ScrollbarPropsType = {
   /**
-   * slider length
+   * thumb length
    */
   length?: number;
   /**
@@ -22,7 +22,7 @@ type ScrollbarPropsType = {
   isVertical?: boolean;
   /**
    * onChange function called on mouse position change
-   * @param offset - slider offset
+   * @param offset - thumb offset
    */
   onScroll?: (offset: number) => void;
 }
@@ -32,14 +32,14 @@ function Scrollbar({
   isVertical = false,
   onScroll: onScrollProp,
 }: ScrollbarPropsType, ref: Ref<HTMLDivElement>): ReactElement {
-  const scrollbarRef = useRef<HTMLDivElement>(null);
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
   const onScroll = useEvent(
     (offset: number) => onScrollProp?.(offset),
   );
   useLayoutEffect(() => {
-    const sliderElement = sliderRef.current;
+    const thumbElement = thumbRef.current;
+    const trackElement = thumbElement?.parentElement;
     let isMoving = false;
     let clientX = 0;
     let clientY = 0;
@@ -52,20 +52,20 @@ function Scrollbar({
       }
     };
     const onMouseMove = (event: MouseEvent) => {
-      if (isMoving && sliderElement && scrollbarRef.current) {
+      if (isMoving && thumbElement && trackElement) {
         if (isVertical) {
           const offset = offsetRef.current + event.clientY - clientY;
-          if (offset >= 0 && offset <= scrollbarRef.current.clientHeight - sliderElement.clientHeight) {
+          if (offset >= 0 && offset <= trackElement.clientHeight - thumbElement.clientHeight) {
             offsetRef.current = offset;
-            sliderElement.style.marginTop = makePx(offset);
+            thumbElement.style.marginTop = makePx(offset);
             clientY = event.clientY;
             onScroll(offset);
           }
         } else {
           const offset = offsetRef.current + event.clientX - clientX;
-          if (offset >= 0 && offset <= scrollbarRef.current.clientWidth - sliderElement.clientWidth) {
+          if (offset >= 0 && offset <= trackElement.clientWidth - thumbElement.clientWidth) {
             offsetRef.current = offset;
-            sliderElement.style.marginLeft = makePx(offset);
+            thumbElement.style.marginLeft = makePx(offset);
             clientX = event.clientX;
             onScroll(offset);
           }
@@ -77,11 +77,11 @@ function Scrollbar({
         isMoving = false;
       }
     };
-    sliderElement?.addEventListener('mousedown', onMouseDown);
+    thumbElement?.addEventListener('mousedown', onMouseDown);
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
     return () => {
-      sliderElement?.removeEventListener('mousedown', onMouseDown);
+      thumbElement?.removeEventListener('mousedown', onMouseDown);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -93,15 +93,14 @@ function Scrollbar({
   const style = isVertical
     ? { height: length ?? 0 }
     : { width: length ?? 0 };
+
   return (
-    <div
-      ref={scrollbarRef}
-      className={styles.scrollbar}
-    >
+    <div className="track">
       <div
-        ref={composeRefs(ref, sliderRef)}
-        className={cx(styles.slider, {
-          [styles.verticalSlider]: isVertical,
+        ref={composeRefs(ref, thumbRef)}
+        className={cx('track__thumb', {
+          track__thumb_vertical: isVertical,
+          track__thumb_horizontal: !isVertical,
         })}
         style={style}
       />

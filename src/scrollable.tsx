@@ -10,7 +10,7 @@ import useEvent from './hooks/useEvent';
 import cx from './utils/classnames';
 import makePx from './utils/makePx';
 import Scrollbar from './scrollbar';
-import styles from './scrollable.module.css';
+import './scrollable.css';
 
 type ScrollablePropsType = {
   /**
@@ -117,16 +117,16 @@ function Scrollable({
   });
   return (
     <div
-      className={cx(styles.grid, className)}
+      className={cx('scrollable__wrapper', className)}
       style={style}
     >
       <div
         ref={scrollableRef}
-        className={styles.scrollable}
+        className="scrollable"
         onWheel={onWheel}
       >
-        <div ref={contentRef} className={styles.content}>
-          <div ref={cResizeObserverRef} className={styles.cResizeObserver}>
+        <div ref={contentRef} className="scrollable__content">
+          <div ref={cResizeObserverRef} className="scrollable__content">
             {children}
           </div>
         </div>
