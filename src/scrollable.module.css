@@ -1,0 +1,16 @@
+.grid {
+  display: grid;
+  grid-template-columns: auto 6px;
+  grid-template-rows: auto 6px;
+  gap: 2px;
+}
+
+.scrollable,
+.scrollbarWrapper {
+  overflow: hidden;
+}
+
+.cResizeObserver,
+.content {
+  display: inline-block;
+}

@@ -1,0 +1,16 @@
+.scrollbar {
+  overflow: hidden;
+  user-select: none;
+}
+
+.slider {
+  height: 6px;
+  width: 0;
+  border-radius: 3px;
+  background: #cccccc;
+  cursor: pointer;
+}
+.verticalSlider {
+  width: 6px;
+  height: 0;
+}
