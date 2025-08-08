@@ -18,8 +18,22 @@ import type {
 import './content.css';
 
 type ContentPropsType = {
+  /**
+   * onChange function called on scrollable area resized
+   * @param {Object} size - calculated vertical/horizontal thumb sizes
+   * @param {number} size.hThumbSize - horizontal thumb size
+   * @param {number} size.vThumbSize - vertical thumb size
+   */
   onChange: (size: ScrollbarsSizeType) => void;
+  /**
+   * onScrollByX function called when the content is scrolled on the X axis
+   * @param {number} offsetByX - scrolled distance on the X axis
+   */
   onScrollByX: (offsetByX: number) => void;
+    /**
+   * onScrollByX function called when the content is scrolled on the Y axis
+   * @param {number} offsetByY - scrolled distance on the Y axis
+   */
   onScrollByY: (offsetByY: number) => void;
   /**
    * content of scrollable area
@@ -39,15 +53,15 @@ function Content({
   const [contentRef, contentSize] = useResizeObserver<HTMLDivElement>({
     onChange: (size) => {
       const scrollableElement = getScrollableElement();
-      const hScrollbarSize = scrollableElement && size.width > scrollableElement.offsetWidth
+      const hThumbSize = scrollableElement && size.width > scrollableElement.offsetWidth
         ? scrollableElement.offsetWidth / (size.width / scrollableElement.offsetWidth)
         : 0;
-      const vScrollbarSize = scrollableElement && size.height > scrollableElement.offsetHeight
+      const vThumbSize = scrollableElement && size.height > scrollableElement.offsetHeight
         ? scrollableElement.offsetHeight / (size.height / scrollableElement.offsetHeight)
         : 0;
       onChange({
-        hScrollbarSize,
-        vScrollbarSize,
+        hThumbSize,
+        vThumbSize,
       });
     },
   });

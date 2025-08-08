@@ -15,9 +15,9 @@ import './scrollbar.css';
 
 type ScrollbarPropsType = {
   /**
-   * thumb length
+   * thumb size
    */
-  length?: number;
+  thumbSize?: number;
   /**
    * is vertical or horizontal scrollbar?
    */
@@ -30,7 +30,7 @@ type ScrollbarPropsType = {
 }
 
 function Scrollbar({
-  length,
+  thumbSize = 0,
   isVertical = false,
   onScroll: onScrollProp,
 }: ScrollbarPropsType, ref: Ref<ScrollbarApiType>): ReactElement {
@@ -142,8 +142,8 @@ function Scrollbar({
   ]);
 
   const style = isVertical
-    ? { height: length ?? 0 }
-    : { width: length ?? 0 };
+    ? { height: thumbSize ?? 0 }
+    : { width: thumbSize ?? 0 };
 
   return (
     <div className="scrollable__track">

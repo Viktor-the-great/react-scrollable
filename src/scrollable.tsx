@@ -36,16 +36,16 @@ function Scrollable({
   className = undefined,
   style = undefined,
 }: ScrollablePropsType): ReactElement {
-  const [vScrollbarSize, setVScrollbarSize] = useState<number>(0);
-  const [hScrollbarSize, setHScrollbarSize] = useState<number>(0);
+  const [vThumbSize, setVThumbSize] = useState<number>(0);
+  const [hThumbSize, setHThumbSize] = useState<number>(0);
 
   const vScrollbarRef = useRef<ScrollbarApiType>(null);
   const hScrollbarRef = useRef<ScrollbarApiType>(null);
   const contentRef = useRef<ContentApiType>(null);
 
   const onContentChange = useEvent((size: ScrollbarsSizeType) => {
-    setVScrollbarSize(size.vScrollbarSize);
-    setHScrollbarSize(size.hScrollbarSize);
+    setVThumbSize(size.vThumbSize);
+    setHThumbSize(size.hThumbSize);
   });
   const onContentScrollByX = useEvent((offset: number) => {
     if (hScrollbarRef.current) {
@@ -82,13 +82,13 @@ function Scrollable({
       </Content>
       <Scrollbar
         ref={vScrollbarRef}
-        length={vScrollbarSize}
+        thumbSize={vThumbSize}
         isVertical
         onScroll={onScrollByY}
       />
       <Scrollbar
         ref={hScrollbarRef}
-        length={hScrollbarSize}
+        thumbSize={hThumbSize}
         onScroll={onScrollByX}
       />
       <div />
