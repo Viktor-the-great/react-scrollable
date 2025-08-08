@@ -4,11 +4,13 @@ import {
   forwardRef,
   useLayoutEffect,
   useRef,
+  useImperativeHandle,
 } from 'react';
 import cx from './utils/classnames';
 import composeRefs from './utils/composeRef';
 import makePx from './utils/makePx';
 import useEvent from './hooks/useEvent';
+import type { ScrollbarApiType } from './types';
 import './scrollbar.css';
 
 type ScrollbarPropsType = {
@@ -31,12 +33,63 @@ function Scrollbar({
   length,
   isVertical = false,
   onScroll: onScrollProp,
-}: ScrollbarPropsType, ref: Ref<HTMLDivElement>): ReactElement {
+}: ScrollbarPropsType, ref: Ref<ScrollbarApiType>): ReactElement {
+  const apiRef = useRef<ScrollbarApiType>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
   const onScroll = useEvent(
     (offset: number) => onScrollProp?.(offset),
   );
+
+  useImperativeHandle(composeRefs(apiRef, ref), () => ({
+    get scrollTop() {
+      if (!isVertical) {
+        throw new Error('method not allowed');
+      }
+      return offsetRef.current;
+    },
+    set scrollTop(value) {
+      if (!isVertical) {
+        throw new Error('method not allowed');
+      }
+
+      if (thumbRef.current) {
+        thumbRef.current.style.marginTop = makePx(value);
+        offsetRef.current = value;
+      }
+    },
+    get scrollLeft() {
+      if (isVertical) {
+        throw new Error('method not allowed');
+      }
+      return offsetRef.current;
+    },
+    set scrollLeft(value) {
+      if (isVertical) {
+        throw new Error('method not allowed');
+      }
+      if (thumbRef.current) {
+        thumbRef.current.style.marginLeft = makePx(value);
+        offsetRef.current = value;
+      }
+    },
+    getScrollSize(value: number) {
+      const thumbElement = thumbRef.current;
+      const trackElement = thumbElement?.parentElement;
+      if (!thumbElement) {
+        throw new Error('thumb element not found');
+      }
+      if (!trackElement) {
+        throw new Error('track element not found');
+      }
+      return isVertical
+        ? thumbElement.clientHeight / trackElement.clientHeight * value
+        : thumbElement.clientWidth / trackElement.clientWidth * value;
+    },
+  }), [
+    isVertical,
+  ]);
+
   useLayoutEffect(() => {
     const thumbElement = thumbRef.current;
     const trackElement = thumbElement?.parentElement;
@@ -52,20 +105,18 @@ function Scrollbar({
       }
     };
     const onMouseMove = (event: MouseEvent) => {
-      if (isMoving && thumbElement && trackElement) {
+      if (isMoving && thumbElement && trackElement && apiRef.current) {
         if (isVertical) {
           const offset = offsetRef.current + event.clientY - clientY;
           if (offset >= 0 && offset <= trackElement.clientHeight - thumbElement.clientHeight) {
-            offsetRef.current = offset;
-            thumbElement.style.marginTop = makePx(offset);
+            apiRef.current.scrollTop = offset;
             clientY = event.clientY;
             onScroll(offset);
           }
         } else {
           const offset = offsetRef.current + event.clientX - clientX;
           if (offset >= 0 && offset <= trackElement.clientWidth - thumbElement.clientWidth) {
-            offsetRef.current = offset;
-            thumbElement.style.marginLeft = makePx(offset);
+            apiRef.current.scrollLeft = offset;
             clientX = event.clientX;
             onScroll(offset);
           }
@@ -97,7 +148,7 @@ function Scrollbar({
   return (
     <div className="track">
       <div
-        ref={composeRefs(ref, thumbRef)}
+        ref={thumbRef}
         className={cx('track__thumb', {
           track__thumb_vertical: isVertical,
           track__thumb_horizontal: !isVertical,
@@ -108,4 +159,7 @@ function Scrollbar({
   );
 }
 
-export default forwardRef<HTMLDivElement, ScrollbarPropsType>(Scrollbar);
+export default forwardRef<
+  ScrollbarApiType,
+  ScrollbarPropsType
+>(Scrollbar);

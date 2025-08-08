@@ -2,14 +2,18 @@ import {
   type CSSProperties,
   type ReactElement,
   type ReactNode,
-  type WheelEvent,
-  useMemo, useRef,
+  useRef,
+  useState,
 } from 'react';
-import useResizeObserver from './hooks/useResizeObserver';
 import useEvent from './hooks/useEvent';
 import cx from './utils/classnames';
-import makePx from './utils/makePx';
+import Content from './content';
 import Scrollbar from './scrollbar';
+import type {
+  ScrollbarsSizeType,
+  ContentApiType,
+  ScrollbarApiType,
+} from './types';
 import './scrollable.css';
 
 type ScrollablePropsType = {
@@ -32,87 +36,35 @@ function Scrollable({
   className = undefined,
   style = undefined,
 }: ScrollablePropsType): ReactElement {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const vScrollbarRef = useRef<HTMLDivElement>(null);
-  const hScrollbarRef = useRef<HTMLDivElement>(null);
-  const [cResizeObserverRef, contentSize] = useResizeObserver<HTMLDivElement>();
-  const [scrollableRef, scrollableSize] = useResizeObserver<HTMLDivElement>();
-  const height = useMemo(() => {
-    if (contentSize && scrollableSize && contentSize.height > scrollableSize.height) {
-      return scrollableSize.height / (contentSize.height / scrollableSize.height);
-    }
-    return undefined;
-  }, [
-    contentSize,
-    scrollableSize,
-  ]);
-  const width = useMemo(() => {
-    if (contentSize && scrollableSize && contentSize.width > scrollableSize.width) {
-      return scrollableSize.width / (contentSize.width / scrollableSize.width);
-    }
-    return undefined;
-  }, [
-    contentSize,
-    scrollableSize,
-  ]);
-  const scrollTopRef = useRef(0);
-  const scrollLeftRef = useRef(0);
-  const onWheel = useEvent((event: WheelEvent<HTMLDivElement>) => {
-    if (!contentSize) {
-      return;
-    }
-    if (!scrollableSize) {
-      return;
-    }
+  const [vScrollbarSize, setVScrollbarSize] = useState<number>(0);
+  const [hScrollbarSize, setHScrollbarSize] = useState<number>(0);
 
-    if (
-      event.shiftKey
-      && scrollLeftRef.current >= 0
-      && scrollLeftRef.current <= contentSize.width - scrollableSize.width
-    ) {
-      scrollLeftRef.current += event.deltaY > 0
-        ? Math.min(event.deltaY, contentSize.width - scrollableSize.width - scrollLeftRef.current)
-        : Math.max(event.deltaY, -scrollLeftRef.current);
-      if (contentRef.current) {
-        contentRef.current.style.marginLeft = makePx(-scrollLeftRef.current);
-      }
-      if (hScrollbarRef.current) {
-        hScrollbarRef.current.style.marginLeft = makePx(
-          scrollLeftRef.current / (contentSize.width / scrollableSize.width),
-        );
-      }
-    }
+  const vScrollbarRef = useRef<ScrollbarApiType>(null);
+  const hScrollbarRef = useRef<ScrollbarApiType>(null);
+  const contentRef = useRef<ContentApiType>(null);
 
-    if (
-      !event.shiftKey
-      && scrollTopRef.current >= 0
-      && scrollTopRef.current <= contentSize.height - scrollableSize.height
-    ) {
-      scrollTopRef.current += event.deltaY > 0
-        ? Math.min(event.deltaY, contentSize.height - scrollableSize.height - scrollTopRef.current)
-        : Math.max(event.deltaY, -scrollTopRef.current);
-      if (contentRef.current) {
-        contentRef.current.style.marginTop = makePx(-scrollTopRef.current);
-      }
-      if (vScrollbarRef.current) {
-        vScrollbarRef.current.style.marginTop = makePx(
-          scrollTopRef.current / (contentSize.height / scrollableSize.height),
-        );
-      }
+  const onContentChange = useEvent((size: ScrollbarsSizeType) => {
+    setVScrollbarSize(size.vScrollbarSize);
+    setHScrollbarSize(size.hScrollbarSize);
+  });
+  const onContentScrollByX = useEvent((offset: number) => {
+    if (hScrollbarRef.current) {
+      hScrollbarRef.current.scrollLeft = hScrollbarRef.current.getScrollSize(offset);
+    }
+  });
+  const onContentScrollByY = useEvent((offset: number) => {
+    if (vScrollbarRef.current) {
+      vScrollbarRef.current.scrollTop = vScrollbarRef.current.getScrollSize(offset);
     }
   });
   const onScrollByX = useEvent((offset: number) => {
-    if (contentRef.current && scrollableRef.current) {
-      contentRef.current.style.marginLeft = makePx(
-        -offset * contentRef.current.clientWidth / scrollableRef.current.clientWidth,
-      );
+    if (contentRef.current) {
+      contentRef.current.scrollLeft = contentRef.current.getLeftScrollSize(offset);
     }
   });
   const onScrollByY = useEvent((offset: number) => {
-    if (contentRef.current && scrollableRef.current) {
-      contentRef.current.style.marginTop = makePx(
-        -offset * contentRef.current.clientHeight / scrollableRef.current.clientHeight,
-      );
+    if (contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.getTopScrollSize(offset);
     }
   });
   return (
@@ -120,26 +72,23 @@ function Scrollable({
       className={cx('scrollable__wrapper', className)}
       style={style}
     >
-      <div
-        ref={scrollableRef}
-        className="scrollable"
-        onWheel={onWheel}
+      <Content
+        ref={contentRef}
+        onChange={onContentChange}
+        onScrollByX={onContentScrollByX}
+        onScrollByY={onContentScrollByY}
       >
-        <div ref={contentRef} className="scrollable__content">
-          <div ref={cResizeObserverRef} className="scrollable__content">
-            {children}
-          </div>
-        </div>
-      </div>
+        {children}
+      </Content>
       <Scrollbar
         ref={vScrollbarRef}
-        length={height}
+        length={vScrollbarSize}
         isVertical
         onScroll={onScrollByY}
       />
       <Scrollbar
         ref={hScrollbarRef}
-        length={width}
+        length={hScrollbarSize}
         onScroll={onScrollByX}
       />
       <div />
