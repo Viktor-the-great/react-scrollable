@@ -1,0 +1,8 @@
+.scrollable {
+  &__content {
+    overflow: hidden;
+  }
+  &__inline-block {
+    display: inline-block;
+  }
+}

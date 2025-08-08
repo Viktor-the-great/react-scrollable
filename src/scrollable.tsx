@@ -69,7 +69,7 @@ function Scrollable({
   });
   return (
     <div
-      className={cx('scrollable__wrapper', className)}
+      className={cx('scrollable', className)}
       style={style}
     >
       <Content

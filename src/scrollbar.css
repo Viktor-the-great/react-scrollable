@@ -1,6 +1,8 @@
-.track {
-  overflow: hidden;
-  user-select: none;
+.scrollable {
+  &__track {
+    overflow: hidden;
+    user-select: none;
+  }
 
   &__thumb {
     border-radius: 3px;

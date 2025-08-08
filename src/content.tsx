@@ -15,7 +15,7 @@ import type {
   ScrollbarsSizeType,
   ContentApiType,
 } from './types';
-import './index.css';
+import './content.css';
 
 type ContentPropsType = {
   onChange: (size: ScrollbarsSizeType) => void;
@@ -143,11 +143,11 @@ function Content({
 
   return (
     <div
-      className="scrollable"
+      className="scrollable__content"
       onWheel={onWheel}
     >
-      <div className="scrollable__content">
-        <div ref={contentRef} className="scrollable__content">
+      <div className="scrollable__inline-block">
+        <div ref={contentRef} className="scrollable__inline-block">
           {children}
         </div>
       </div>

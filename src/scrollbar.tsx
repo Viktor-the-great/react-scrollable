@@ -146,12 +146,12 @@ function Scrollbar({
     : { width: length ?? 0 };
 
   return (
-    <div className="track">
+    <div className="scrollable__track">
       <div
         ref={thumbRef}
-        className={cx('track__thumb', {
-          track__thumb_vertical: isVertical,
-          track__thumb_horizontal: !isVertical,
+        className={cx('scrollable__thumb', {
+          scrollable__thumb_vertical: isVertical,
+          scrollable__thumb_horizontal: !isVertical,
         })}
         style={style}
       />
