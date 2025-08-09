@@ -1,6 +1,14 @@
 .scrollable {
   display: grid;
-  grid-template-columns: auto 6px;
-  grid-template-rows: auto 6px;
+  grid-template-columns: auto 0;
+  grid-template-rows: auto 0;
   gap: 2px;
+
+  &_by_x {
+    grid-template-rows: auto 6px;
+  }
+
+  &_by_y {
+    grid-template-columns: auto 6px;
+  }
 }

@@ -69,7 +69,10 @@ function Scrollable({
   });
   return (
     <div
-      className={cx('scrollable', className)}
+      className={cx('scrollable', {
+        'scrollable_by_x': hThumbSize !== 0,
+        'scrollable_by_y': vThumbSize !== 0,
+      }, className)}
       style={style}
     >
       <Content
