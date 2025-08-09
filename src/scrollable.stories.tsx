@@ -10,7 +10,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const SimpleScrollable: Story = {
+export const ScrollableByXY: Story = {
   args: {
     children: (
       <div style={{ width: 800 }}>
@@ -93,6 +93,88 @@ export const SimpleScrollable: Story = {
         style={{
           width: 300,
           height: 300,
+        }}
+      />
+    );
+  },
+};
+
+export const ScrollableByX: Story = {
+  ...ScrollableByXY,
+  args: {
+    children: (
+      <div style={{ width: 800 }}>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. A at commodi distinctio dolorum earum eius fugiat id
+        ipsum natus quasi reiciendis, repellendus reprehenderit tempora? Ab adipisci, aspernatur consectetur fuga
+        impedit incidunt libero maxime reiciendis soluta tempora! Architecto consequatur enim totam ut. Ducimus eveniet
+        perferendis quibusdam sequi voluptatem! Adipisci aut deleniti deserunt dolores ducimus earum eius eligendi ipsam
+        minus nobis, non, perspiciatis quia, ratione sit tempora unde voluptas. Accusamus aliquam impedit ipsum
+        molestias sit. Et illo iste, itaque laudantium molestiae necessitatibus, quisquam quos, reprehenderit saepe
+        soluta temporibus tenetur? Ad adipisci alias aliquam architecto atque corporis cum cumque debitis dolorem
+        dolores eius, eligendi facere impedit in ipsum minus mollitia nulla obcaecati officia perspiciatis quo quos
+        reiciendis repellendus suscipit temporibus vel veniam, vero. Ad aperiam architecto inventore minus molestiae
+        suscipit voluptas voluptates. Alias aliquam atque aut beatae doloremque eius fuga fugiat, in ipsa magnam
+        molestias mollitia nesciunt obcaecati officia pariatur perspiciatis quaerat quam qui, ut veritatis? Accusamus
+        accusantium architecto aspernatur at, beatae blanditiis consectetur cumque delectus dicta dolorem dolores
+        ducimus eius exercitationem illo impedit itaque libero minima minus modi molestiae mollitia nemo nisi quasi quia
+        quibusdam quidem quisquam rem repudiandae sapiente sed sint sit temporibus unde vel velit, veniam voluptas!
+        Consequatur, esse, quibusdam!
+      </div>
+    ),
+  },
+};
+
+export const ScrollableByY: Story = {
+  ...ScrollableByXY,
+  args: {
+    children: (
+      <div>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium asperiores consectetur, consequatur
+        deleniti doloremque doloribus ea eaque earum eum eveniet fugit harum hic id illum inventore itaque iusto
+        molestiae mollitia nam nemo neque numquam, officia provident quibusdam quis quisquam reiciendis rem sed totam
+        vel. At blanditiis debitis delectus ducimus laudantium, minus modi quaerat similique. Animi debitis delectus
+        esse labore libero optio praesentium. Amet cum delectus dicta dolor dolorem enim esse illum itaque natus numquam
+        quam recusandae, repellat ut. Consectetur ipsa magni natus quaerat. Animi dolorem ex, fuga iure, laudantium
+        necessitatibus perferendis quae quas quasi quidem repellendus sequi ullam unde. Accusantium aliquid deserunt
+        esse molestias quibusdam. Accusantium adipisci alias aliquid consequatur consequuntur culpa doloremque ducimus
+        ex exercitationem facilis labore libero magnam maiores natus, nisi obcaecati possimus quas quod rem tenetur! A
+        aliquid aperiam architecto assumenda culpa delectus deserunt dolor dolorum ducimus eos explicabo fugit harum
+        maiores maxime nihil nostrum quam quas quidem quis, quod recusandae repudiandae sed similique sit soluta
+        temporibus, tenetur ut veniam voluptates, voluptatibus. A ad adipisci, aspernatur assumenda at blanditiis,
+        consequuntur corporis deserunt dicta dolorem ducimus eaque eius eligendi, enim eveniet ex expedita laboriosam
+        nam non nulla optio pariatur porro recusandae reprehenderit sapiente sequi suscipit vel vero vitae.
+      </div>
+    ),
+  },
+};
+
+export const NotScrollable: Story = {
+  args: {
+    children: (
+      <div>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium asperiores consectetur, consequatur
+        deleniti doloremque doloribus ea eaque earum eum eveniet fugit harum hic id illum inventore itaque iusto
+        molestiae mollitia nam nemo neque numquam, officia provident quibusdam quis quisquam reiciendis rem sed totam
+        vel. At blanditiis debitis delectus ducimus laudantium, minus modi quaerat similique. Animi debitis delectus
+        esse labore libero optio praesentium. Amet cum delectus dicta dolor dolorem enim esse illum itaque natus numquam
+        quam recusandae, repellat ut. Consectetur ipsa magni natus quaerat. Animi dolorem ex, fuga iure, laudantium
+        necessitatibus perferendis quae quas quasi quidem repellendus sequi ullam unde. Accusantium aliquid deserunt
+        esse molestias quibusdam. Accusantium adipisci alias aliquid consequatur consequuntur culpa doloremque ducimus
+        ex exercitationem facilis labore libero magnam maiores natus, nisi obcaecati possimus quas quod rem tenetur! A
+        aliquid aperiam architecto assumenda culpa delectus deserunt dolor dolorum ducimus eos explicabo fugit harum
+        maiores maxime nihil nostrum quam quas quidem quis, quod recusandae repudiandae sed similique sit soluta
+        temporibus, tenetur ut veniam voluptates, voluptatibus. A ad adipisci, aspernatur assumenda at blanditiis,
+        consequuntur corporis deserunt dicta dolorem ducimus eaque eius eligendi, enim eveniet ex expedita laboriosam
+        nam non nulla optio pariatur porro recusandae reprehenderit sapiente sequi suscipit vel vero vitae.
+      </div>
+    ),
+  },
+  render(args) {
+    return (
+      <Scrollable
+        {...args}
+        style={{
+          width: 500,
         }}
       />
     );
