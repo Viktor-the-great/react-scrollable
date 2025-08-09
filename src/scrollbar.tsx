@@ -93,19 +93,20 @@ function Scrollbar({
   useLayoutEffect(() => {
     const thumbElement = thumbRef.current;
     const trackElement = thumbElement?.parentElement;
-    let isMoving = false;
     let clientX = 0;
     let clientY = 0;
-    const onMouseDown = (event: MouseEvent) => {
-      isMoving = true;
+    const onPointerDown = (event: PointerEvent) => {
+      thumbElement?.setPointerCapture(event.pointerId);
+      thumbElement?.addEventListener('pointermove', onPointerMove);
+      thumbElement?.addEventListener('pointerup', onPointerUp);
       if (isVertical) {
         clientY = event.clientY;
       } else {
         clientX = event.clientX;
       }
     };
-    const onMouseMove = (event: MouseEvent) => {
-      if (isMoving && thumbElement && trackElement && apiRef.current) {
+    const onPointerMove = (event: PointerEvent) => {
+      if (thumbElement && trackElement && apiRef.current) {
         if (isVertical) {
           const offset = offsetRef.current + event.clientY - clientY;
           if (offset >= 0 && offset <= trackElement.clientHeight - thumbElement.clientHeight) {
@@ -123,18 +124,14 @@ function Scrollbar({
         }
       }
     };
-    const onMouseUp = () => {
-      if (isMoving) {
-        isMoving = false;
-      }
+    const onPointerUp = () => {
+      thumbElement?.removeEventListener('pointermove', onPointerMove);
+      thumbElement?.removeEventListener('pointerup', onPointerUp);
     };
-    thumbElement?.addEventListener('mousedown', onMouseDown);
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+
+    thumbElement?.addEventListener('pointerdown', onPointerDown);
     return () => {
-      thumbElement?.removeEventListener('mousedown', onMouseDown);
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      thumbElement?.removeEventListener('pointerdown', onPointerDown);
     };
   }, [
     isVertical,

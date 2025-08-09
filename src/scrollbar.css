@@ -8,6 +8,7 @@
     border-radius: 3px;
     background: #cccccc;
     cursor: pointer;
+    touch-action: none;
 
     &_vertical {
       height: 0;
