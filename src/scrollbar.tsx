@@ -1,8 +1,8 @@
 import {
   type ReactElement,
   type Ref,
+  type PointerEvent,
   forwardRef,
-  useLayoutEffect,
   useRef,
   useImperativeHandle,
 } from 'react';
@@ -90,67 +90,62 @@ function Scrollbar({
     isVertical,
   ]);
 
-  useLayoutEffect(() => {
+  const pointerRef = useRef<number | null>(null);
+  const clientXRef = useRef(0);
+  const clientYRef = useRef(0);
+  const onPointerDown = useEvent((event: PointerEvent<HTMLDivElement>) => {
+    pointerRef.current = event.pointerId;
+    thumbRef.current?.setPointerCapture(event.pointerId);
+    if (isVertical) {
+      clientYRef.current = event.clientY;
+    } else {
+      clientXRef.current = event.clientX;
+    }
+  });
+  const onPointerMove = useEvent((event: PointerEvent<HTMLDivElement>) => {
+    if (pointerRef.current !== event.pointerId) {
+      return;
+    }
     const thumbElement = thumbRef.current;
     const trackElement = thumbElement?.parentElement;
-    let clientX = 0;
-    let clientY = 0;
-    const onPointerDown = (event: PointerEvent) => {
-      thumbElement?.setPointerCapture(event.pointerId);
-      thumbElement?.addEventListener('pointermove', onPointerMove);
-      thumbElement?.addEventListener('pointerup', onPointerUp);
+
+    if (thumbElement && trackElement && apiRef.current) {
       if (isVertical) {
-        clientY = event.clientY;
+        const offset = Math.min(
+          Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
+          trackElement.clientHeight - thumbElement.clientHeight,
+        );
+        if (
+          offset !== offsetRef.current
+          && offset >= 0
+          && offset <= trackElement.clientHeight - thumbElement.clientHeight
+        ) {
+          apiRef.current.scrollTop = offset;
+          clientYRef.current = event.clientY;
+          onScroll(offset);
+        }
       } else {
-        clientX = event.clientX;
-      }
-    };
-    const onPointerMove = (event: PointerEvent) => {
-      if (thumbElement && trackElement && apiRef.current) {
-        if (isVertical) {
-          const offset = Math.min(
-            Math.max(offsetRef.current + event.clientY - clientY, 0),
-            trackElement.clientHeight - thumbElement.clientHeight,
-          );
-          if (
-            offset !== offsetRef.current
-            && offset >= 0
-            && offset <= trackElement.clientHeight - thumbElement.clientHeight
-          ) {
-            apiRef.current.scrollTop = offset;
-            clientY = event.clientY;
-            onScroll(offset);
-          }
-        } else {
-          const offset = Math.min(
-            Math.max(offsetRef.current + event.clientX - clientX, 0),
-            trackElement.clientWidth - thumbElement.clientWidth,
-          );
-          if (
-            offset !== offsetRef.current
-            && offset >= 0
-            && offset <= trackElement.clientWidth - thumbElement.clientWidth
-          ) {
-            apiRef.current.scrollLeft = offset;
-            clientX = event.clientX;
-            onScroll(offset);
-          }
+        const offset = Math.min(
+          Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
+          trackElement.clientWidth - thumbElement.clientWidth,
+        );
+        if (
+          offset !== offsetRef.current
+          && offset >= 0
+          && offset <= trackElement.clientWidth - thumbElement.clientWidth
+        ) {
+          apiRef.current.scrollLeft = offset;
+          clientXRef.current = event.clientX;
+          onScroll(offset);
         }
       }
-    };
-    const onPointerUp = () => {
-      thumbElement?.removeEventListener('pointermove', onPointerMove);
-      thumbElement?.removeEventListener('pointerup', onPointerUp);
-    };
-
-    thumbElement?.addEventListener('pointerdown', onPointerDown);
-    return () => {
-      thumbElement?.removeEventListener('pointerdown', onPointerDown);
-    };
-  }, [
-    isVertical,
-    onScroll,
-  ]);
+    }
+  });
+  const onPointerUp = useEvent(() => {
+    pointerRef.current = null;
+    clientXRef.current = 0;
+    clientYRef.current = 0;
+  });
 
   const style = isVertical
     ? { height: thumbSize ?? 0 }
@@ -165,6 +160,9 @@ function Scrollbar({
           scrollable__thumb_horizontal: !isVertical,
         })}
         style={style}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
       />
     </div>
   );
