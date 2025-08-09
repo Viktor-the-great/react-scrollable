@@ -108,15 +108,29 @@ function Scrollbar({
     const onPointerMove = (event: PointerEvent) => {
       if (thumbElement && trackElement && apiRef.current) {
         if (isVertical) {
-          const offset = offsetRef.current + event.clientY - clientY;
-          if (offset >= 0 && offset <= trackElement.clientHeight - thumbElement.clientHeight) {
+          const offset = Math.min(
+            Math.max(offsetRef.current + event.clientY - clientY, 0),
+            trackElement.clientHeight - thumbElement.clientHeight,
+          );
+          if (
+            offset !== offsetRef.current
+            && offset >= 0
+            && offset <= trackElement.clientHeight - thumbElement.clientHeight
+          ) {
             apiRef.current.scrollTop = offset;
             clientY = event.clientY;
             onScroll(offset);
           }
         } else {
-          const offset = offsetRef.current + event.clientX - clientX;
-          if (offset >= 0 && offset <= trackElement.clientWidth - thumbElement.clientWidth) {
+          const offset = Math.min(
+            Math.max(offsetRef.current + event.clientX - clientX, 0),
+            trackElement.clientWidth - thumbElement.clientWidth,
+          );
+          if (
+            offset !== offsetRef.current
+            && offset >= 0
+            && offset <= trackElement.clientWidth - thumbElement.clientWidth
+          ) {
             apiRef.current.scrollLeft = offset;
             clientX = event.clientX;
             onScroll(offset);
