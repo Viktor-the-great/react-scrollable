@@ -29,10 +29,15 @@ type ScrollablePropsType = {
    * use styles to customize element styles
    */
   style?: CSSProperties;
+  /**
+   * show thumbs on mouse hover
+   */
+  showThumbOnHover?: boolean;
 }
 
 function Scrollable({
   children,
+  showThumbOnHover = false,
   className = undefined,
   style = undefined,
 }: ScrollablePropsType): ReactElement {
@@ -70,8 +75,9 @@ function Scrollable({
   return (
     <div
       className={cx('scrollable', {
-        'scrollable_by_x': hThumbSize !== 0,
-        'scrollable_by_y': vThumbSize !== 0,
+        'scrollable_by-x': hThumbSize !== 0,
+        'scrollable_by-y': vThumbSize !== 0,
+        'scrollable_show-mouse-on-hover': showThumbOnHover,
       }, className)}
       style={style}
     >

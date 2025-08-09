@@ -152,7 +152,7 @@ function Scrollbar({
     : { width: thumbSize ?? 0 };
 
   return (
-    <div className="scrollable__track">
+    <div className="scrollable__slider">
       <div
         ref={thumbRef}
         className={cx('scrollable__thumb', {

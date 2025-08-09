@@ -4,6 +4,21 @@ import Scrollable from './scrollable';
 const meta = {
   title: 'Scrollable',
   component: Scrollable,
+  argTypes: {
+    showThumbOnHover: {
+      options: [false, true],
+      control: { type: 'radio' },
+    },
+  },
+  parameters: {
+    controls: {
+      exclude: [
+        'children',
+        'className',
+        'style',
+      ],
+    },
+  },
 } satisfies Meta<typeof Scrollable>;
 
 export default meta;
@@ -85,6 +100,7 @@ export const ScrollableByXY: Story = {
         aliquid assumenda beatae earum eos error, eveniet illum laborum maxime nam neque optio placeat quasi quis
         ratione recusandae tempore veritatis.</div>
     ),
+    showThumbOnHover: false,
   },
   render(args) {
     return (
@@ -121,6 +137,7 @@ export const ScrollableByX: Story = {
         Consequatur, esse, quibusdam!
       </div>
     ),
+    showThumbOnHover: false,
   },
 };
 
@@ -145,6 +162,7 @@ export const ScrollableByY: Story = {
         nam non nulla optio pariatur porro recusandae reprehenderit sapiente sequi suscipit vel vero vitae.
       </div>
     ),
+    showThumbOnHover: false,
   },
 };
 
@@ -168,6 +186,7 @@ export const NotScrollable: Story = {
         nam non nulla optio pariatur porro recusandae reprehenderit sapiente sequi suscipit vel vero vitae.
       </div>
     ),
+    showThumbOnHover: false,
   },
   render(args) {
     return (

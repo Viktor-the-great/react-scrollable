@@ -4,11 +4,23 @@
   grid-template-rows: auto 0;
   gap: 2px;
 
-  &_by_x {
+  &_by-x {
     grid-template-rows: auto 6px;
   }
 
-  &_by_y {
+  &_by-y {
     grid-template-columns: auto 6px;
+  }
+
+  &_show-mouse-on-hover {
+    .scrollable__slider {
+      visibility: hidden;
+    }
+
+    &:hover {
+      .scrollable__slider {
+        visibility: visible;
+      }
+    }
   }
 }
