@@ -170,7 +170,7 @@ function Content({
       const api = apiRef.current!;
       const offsetByY = Math.min(
         Math.max(offsetTopRef.current - (event.clientY - clientYRef.current), 0),
-        (event.target as Element).clientHeight - scrollableElement.clientHeight,
+        (event.currentTarget as HTMLElement).offsetHeight - scrollableElement.offsetHeight,
       );
       if (offsetTopRef.current !== offsetByY) {
         api.scrollTop = offsetByY;
@@ -178,7 +178,7 @@ function Content({
       }
       const offsetByX = Math.min(
         Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
-        (event.target as Element).clientWidth - scrollableElement.clientWidth,
+        (event.currentTarget as HTMLElement).offsetWidth - scrollableElement.offsetWidth,
       );
       if (offsetLeftRef.current !== offsetByY) {
         api.scrollLeft = offsetByX;
