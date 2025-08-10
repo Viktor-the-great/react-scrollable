@@ -2,14 +2,15 @@
   display: grid;
   grid-template-columns: auto 0;
   grid-template-rows: auto 0;
-  gap: 2px;
 
   &_by-x {
     grid-template-rows: auto 6px;
+    row-gap: 2px;
   }
 
   &_by-y {
     grid-template-columns: auto 6px;
+    column-gap: 2px;
   }
 
   &_show-mouse-on-hover {
