@@ -5,7 +5,7 @@ import {
   type Ref,
   forwardRef,
   useCallback,
-  useImperativeHandle, useRef,
+  useImperativeHandle, useRef, PointerEvent,
 } from 'react';
 import useResizeObserver from './hooks/useResizeObserver';
 import useEvent from './hooks/useEvent';
@@ -30,7 +30,7 @@ type ContentPropsType = {
    * @param {number} offsetByX - scrolled distance on the X axis
    */
   onScrollByX: (offsetByX: number) => void;
-    /**
+  /**
    * onScrollByX function called when the content is scrolled on the Y axis
    * @param {number} offsetByY - scrolled distance on the Y axis
    */
@@ -155,13 +155,50 @@ function Content({
     }
   });
 
+  const clientXRef = useRef(0);
+  const clientYRef = useRef(0);
+  const onPointerDown = useEvent((event: PointerEvent) => {
+    if (event.pointerType === 'touch') {
+      (event.target as Element).setPointerCapture(event.pointerId);
+      clientXRef.current = event.clientX;
+      clientYRef.current = event.clientY;
+    }
+  });
+  const onPointerMove = useEvent((event: PointerEvent) => {
+    if (event.pointerType === 'touch') {
+      const scrollableElement = getScrollableElement()!;
+      const api = apiRef.current!;
+      const offsetByY = Math.min(
+        Math.max(offsetTopRef.current - (event.clientY - clientYRef.current), 0),
+        (event.target as Element).clientHeight - scrollableElement.clientHeight,
+      );
+      if (offsetTopRef.current !== offsetByY) {
+        api.scrollTop = offsetByY;
+        onScrollByY?.(offsetByY);
+      }
+      const offsetByX = Math.min(
+        Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
+        (event.target as Element).clientWidth - scrollableElement.clientWidth,
+      );
+      if (offsetLeftRef.current !== offsetByY) {
+        api.scrollLeft = offsetByX;
+        onScrollByX?.(offsetByX);
+      }
+    }
+  });
+
   return (
     <div
       className="scrollable__content"
       onWheel={onWheel}
     >
       <div className="scrollable__inline-block">
-        <div ref={contentRef} className="scrollable__inline-block">
+        <div
+          ref={contentRef}
+          className="scrollable__inline-block"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+        >
           {children}
         </div>
       </div>
