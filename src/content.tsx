@@ -180,7 +180,7 @@ function Content({
         Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
         (event.currentTarget as HTMLElement).offsetWidth - scrollableElement.offsetWidth,
       );
-      if (offsetLeftRef.current !== offsetByY) {
+      if (offsetLeftRef.current !== offsetByX) {
         api.scrollLeft = offsetByX;
         onScrollByX?.(offsetByX);
       }
