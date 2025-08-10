@@ -83,8 +83,8 @@ function Scrollbar({
         throw new Error('track element not found');
       }
       return isVertical
-        ? thumbElement.clientHeight / trackElement.clientHeight * value
-        : thumbElement.clientWidth / trackElement.clientWidth * value;
+        ? thumbElement.offsetHeight / trackElement.offsetHeight * value
+        : thumbElement.offsetWidth/ trackElement.offsetWidth * value;
     },
   }), [
     isVertical,
@@ -113,12 +113,12 @@ function Scrollbar({
       if (isVertical) {
         const offset = Math.min(
           Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
-          trackElement.clientHeight - thumbElement.clientHeight,
+          trackElement.offsetHeight - thumbElement.offsetHeight,
         );
         if (
           offset !== offsetRef.current
           && offset >= 0
-          && offset <= trackElement.clientHeight - thumbElement.clientHeight
+          && offset <= trackElement.offsetHeight - thumbElement.offsetHeight
         ) {
           apiRef.current.scrollTop = offset;
           clientYRef.current = event.clientY;
@@ -127,12 +127,12 @@ function Scrollbar({
       } else {
         const offset = Math.min(
           Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
-          trackElement.clientWidth - thumbElement.clientWidth,
+          trackElement.offsetWidth - thumbElement.offsetWidth,
         );
         if (
           offset !== offsetRef.current
           && offset >= 0
-          && offset <= trackElement.clientWidth - thumbElement.clientWidth
+          && offset <= trackElement.offsetWidth - thumbElement.offsetWidth
         ) {
           apiRef.current.scrollLeft = offset;
           clientXRef.current = event.clientX;

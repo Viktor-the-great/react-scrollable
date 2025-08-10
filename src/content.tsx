@@ -175,6 +175,7 @@ function Content({
       if (offsetTopRef.current !== offsetByY) {
         api.scrollTop = offsetByY;
         onScrollByY?.(offsetByY);
+        clientYRef.current = event.clientY;
       }
       const offsetByX = Math.min(
         Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
@@ -183,6 +184,7 @@ function Content({
       if (offsetLeftRef.current !== offsetByX) {
         api.scrollLeft = offsetByX;
         onScrollByX?.(offsetByX);
+        clientXRef.current = event.clientX;
       }
     }
   });
