@@ -53,11 +53,11 @@ function Content({
   const [contentRef, contentSize] = useResizeObserver<HTMLDivElement>({
     onChange: (size) => {
       const scrollableElement = getScrollableElement();
-      const hThumbSize = scrollableElement && Math.floor(size.width) > scrollableElement.offsetWidth
-        ? scrollableElement.offsetWidth / (Math.floor(size.width) / scrollableElement.offsetWidth)
+      const hThumbSize = scrollableElement && Math.round(size.width) > scrollableElement.offsetWidth
+        ? scrollableElement.offsetWidth / (Math.round(size.width) / scrollableElement.offsetWidth)
         : 0;
-      const vThumbSize = scrollableElement && Math.floor(size.height) > scrollableElement.offsetHeight
-        ? scrollableElement.offsetHeight / (Math.floor(size.height) / scrollableElement.offsetHeight)
+      const vThumbSize = scrollableElement && Math.round(size.height) > scrollableElement.offsetHeight
+        ? scrollableElement.offsetHeight / (Math.round(size.height) / scrollableElement.offsetHeight)
         : 0;
       onChange({
         hThumbSize,
