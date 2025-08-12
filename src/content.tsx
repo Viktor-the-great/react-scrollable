@@ -53,11 +53,11 @@ function Content({
   const [contentRef, contentSize] = useResizeObserver<HTMLDivElement>({
     onChange: (size) => {
       const scrollableElement = getScrollableElement();
-      const hThumbSize = scrollableElement && size.width > scrollableElement.offsetWidth
-        ? scrollableElement.offsetWidth / (size.width / scrollableElement.offsetWidth)
+      const hThumbSize = scrollableElement && Math.floor(size.width) > scrollableElement.offsetWidth
+        ? scrollableElement.offsetWidth / (Math.floor(size.width) / scrollableElement.offsetWidth)
         : 0;
-      const vThumbSize = scrollableElement && size.height > scrollableElement.offsetHeight
-        ? scrollableElement.offsetHeight / (size.height / scrollableElement.offsetHeight)
+      const vThumbSize = scrollableElement && Math.floor(size.height) > scrollableElement.offsetHeight
+        ? scrollableElement.offsetHeight / (Math.floor(size.height) / scrollableElement.offsetHeight)
         : 0;
       onChange({
         hThumbSize,
@@ -96,7 +96,7 @@ function Content({
       if (!scrollableElement) {
         throw new Error('scrollable element not defined');
       }
-      return value * contentElement.offsetWidth / scrollableElement.clientWidth;
+      return value * contentElement.offsetWidth / scrollableElement.offsetWidth;
     },
     getTopScrollSize(value: number) {
       const scrollableElement = getScrollableElement();
