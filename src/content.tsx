@@ -3,14 +3,17 @@ import {
   type ReactNode,
   type WheelEvent,
   type Ref,
+  type PointerEvent,
   forwardRef,
   useCallback,
-  useImperativeHandle, useRef, PointerEvent,
+  useImperativeHandle,
+  useRef,
 } from 'react';
 import useResizeObserver from './hooks/useResizeObserver';
 import useEvent from './hooks/useEvent';
 import composeRefs from './utils/composeRef';
 import makePx from './utils/makePx';
+import toFixed from './utils/toFixed';
 import type {
   ScrollbarsSizeType,
   ContentApiType,
@@ -53,16 +56,20 @@ function Content({
   const [contentRef, contentSize] = useResizeObserver<HTMLDivElement>({
     onChange: (size) => {
       const scrollableElement = getScrollableElement();
-      const hThumbSize = scrollableElement && Math.round(size.width) > scrollableElement.offsetWidth
-        ? scrollableElement.offsetWidth / (Math.round(size.width) / scrollableElement.offsetWidth)
-        : 0;
-      const vThumbSize = scrollableElement && Math.round(size.height) > scrollableElement.offsetHeight
-        ? scrollableElement.offsetHeight / (Math.round(size.height) / scrollableElement.offsetHeight)
-        : 0;
-      onChange({
-        hThumbSize,
-        vThumbSize,
-      });
+      if (scrollableElement) {
+        const scrollableRect = scrollableElement.getBoundingClientRect();
+        const hThumbSize = size.width > scrollableRect.width
+          ? scrollableRect.width / (size.width / scrollableRect.width)
+          : 0;
+        const vThumbSize = size.height > scrollableRect.height
+          ? scrollableRect.height / (size.height / scrollableRect.height)
+          : 0;
+
+        onChange({
+          hThumbSize: toFixed(hThumbSize, 1),
+          vThumbSize: toFixed(vThumbSize, 1),
+        });
+      }
     },
   });
 
@@ -96,7 +103,9 @@ function Content({
       if (!scrollableElement) {
         throw new Error('scrollable element not defined');
       }
-      return value * contentElement.offsetWidth / scrollableElement.offsetWidth;
+      const contentRect = contentElement.getBoundingClientRect();
+      const scrollableRect = scrollableElement.getBoundingClientRect();
+      return toFixed(value * contentRect.width / scrollableRect.width, 1);
     },
     getTopScrollSize(value: number) {
       const scrollableElement = getScrollableElement();
@@ -107,7 +116,9 @@ function Content({
       if (!scrollableElement) {
         throw new Error('scrollable element not defined');
       }
-      return value * contentElement.offsetHeight / scrollableElement.offsetHeight;
+      const contentRect = contentElement.getBoundingClientRect();
+      const scrollableRect = scrollableElement.getBoundingClientRect();
+      return toFixed(value * contentRect.height / scrollableRect.height, 1);
     },
   }));
 
@@ -130,13 +141,15 @@ function Content({
       throw new Error('content api is not defined');
     }
 
+    const scrollableRect = scrollableElement.getBoundingClientRect();
+
     if (
       event.shiftKey
       && offsetLeftRef.current >= 0
-      && offsetLeftRef.current <= contentSize.width - scrollableElement.offsetWidth
+      && offsetLeftRef.current <= contentSize.width - scrollableRect.width
     ) {
       offsetLeftRef.current += event.deltaY > 0
-        ? Math.min(event.deltaY, contentSize.width - scrollableElement.offsetWidth - offsetLeftRef.current)
+        ? Math.min(event.deltaY, contentSize.width - scrollableRect.width - offsetLeftRef.current)
         : Math.max(event.deltaY, -offsetLeftRef.current);
       apiRef.current.scrollLeft = offsetLeftRef.current;
       onScrollByX?.(offsetLeftRef.current);
@@ -145,10 +158,10 @@ function Content({
     if (
       !event.shiftKey
       && offsetTopRef.current >= 0
-      && offsetTopRef.current <= contentSize.height - scrollableElement.offsetHeight
+      && offsetTopRef.current <= contentSize.height - scrollableRect.height
     ) {
       offsetTopRef.current += event.deltaY > 0
-        ? Math.min(event.deltaY, contentSize.height - scrollableElement.offsetHeight - offsetTopRef.current)
+        ? Math.min(event.deltaY, contentSize.height - scrollableRect.height - offsetTopRef.current)
         : Math.max(event.deltaY, -offsetTopRef.current);
       apiRef.current.scrollTop = offsetTopRef.current;
       onScrollByY?.(offsetTopRef.current);
@@ -168,9 +181,11 @@ function Content({
     if (event.pointerType === 'touch') {
       const scrollableElement = getScrollableElement()!;
       const api = apiRef.current!;
+      const targetRect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      const scrollableRect = scrollableElement.getBoundingClientRect();
       const offsetByY = Math.min(
         Math.max(offsetTopRef.current - (event.clientY - clientYRef.current), 0),
-        (event.currentTarget as HTMLElement).offsetHeight - scrollableElement.offsetHeight,
+        targetRect.height - scrollableRect.height,
       );
       if (offsetTopRef.current !== offsetByY) {
         api.scrollTop = offsetByY;
@@ -179,7 +194,7 @@ function Content({
       }
       const offsetByX = Math.min(
         Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
-        (event.currentTarget as HTMLElement).offsetWidth - scrollableElement.offsetWidth,
+        targetRect.width - scrollableRect.width,
       );
       if (offsetLeftRef.current !== offsetByX) {
         api.scrollLeft = offsetByX;

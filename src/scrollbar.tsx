@@ -9,6 +9,7 @@ import {
 import cx from './utils/classnames';
 import composeRefs from './utils/composeRef';
 import makePx from './utils/makePx';
+import toFixed from './utils/toFixed';
 import useEvent from './hooks/useEvent';
 import type { ScrollbarApiType } from './types';
 import './scrollbar.css';
@@ -82,9 +83,11 @@ function Scrollbar({
       if (!trackElement) {
         throw new Error('track element not found');
       }
+      const thumbRect = thumbElement.getBoundingClientRect();
+      const trackRect = trackElement.getBoundingClientRect();
       return isVertical
-        ? thumbElement.offsetHeight / trackElement.offsetHeight * value
-        : thumbElement.offsetWidth/ trackElement.offsetWidth * value;
+        ? toFixed(thumbRect.height / trackRect.height * value, 1)
+        : toFixed(thumbRect.width / trackRect.width * value, 1);
     },
   }), [
     isVertical,
@@ -110,15 +113,17 @@ function Scrollbar({
     const trackElement = thumbElement?.parentElement;
 
     if (thumbElement && trackElement && apiRef.current) {
+      const thumbRect = thumbElement.getBoundingClientRect();
+      const tractRect = trackElement.getBoundingClientRect();
       if (isVertical) {
         const offset = Math.min(
           Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
-          trackElement.offsetHeight - thumbElement.offsetHeight,
+          tractRect.height - thumbRect.height,
         );
         if (
           offset !== offsetRef.current
           && offset >= 0
-          && offset <= trackElement.offsetHeight - thumbElement.offsetHeight
+          && offset <= tractRect.height - thumbRect.height
         ) {
           apiRef.current.scrollTop = offset;
           clientYRef.current = event.clientY;
@@ -127,12 +132,12 @@ function Scrollbar({
       } else {
         const offset = Math.min(
           Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
-          trackElement.offsetWidth - thumbElement.offsetWidth,
+          tractRect.width - thumbRect.width,
         );
         if (
           offset !== offsetRef.current
           && offset >= 0
-          && offset <= trackElement.offsetWidth - thumbElement.offsetWidth
+          && offset <= tractRect.width - thumbRect.width
         ) {
           apiRef.current.scrollLeft = offset;
           clientXRef.current = event.clientX;
