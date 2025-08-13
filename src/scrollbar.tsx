@@ -120,11 +120,7 @@ function Scrollbar({
           Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
           tractRect.height - thumbRect.height,
         );
-        if (
-          offset !== offsetRef.current
-          && offset >= 0
-          && offset <= tractRect.height - thumbRect.height
-        ) {
+        if (offset !== offsetRef.current) {
           apiRef.current.scrollTop = offset;
           clientYRef.current = event.clientY;
           onScroll(offset);
@@ -134,11 +130,7 @@ function Scrollbar({
           Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
           tractRect.width - thumbRect.width,
         );
-        if (
-          offset !== offsetRef.current
-          && offset >= 0
-          && offset <= tractRect.width - thumbRect.width
-        ) {
+        if (offset !== offsetRef.current) {
           apiRef.current.scrollLeft = offset;
           clientXRef.current = event.clientX;
           onScroll(offset);
