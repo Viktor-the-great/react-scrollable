@@ -5,7 +5,6 @@ import {
   type Ref,
   type PointerEvent,
   forwardRef,
-  useCallback,
   useImperativeHandle,
   useRef,
 } from 'react';
@@ -55,7 +54,7 @@ function Content({
   const offsetTopRef = useRef(0);
   const [contentRef, contentSize] = useResizeObserver<HTMLDivElement>({
     onChange: (size) => {
-      const scrollableElement = getScrollableElement();
+      const scrollableElement = scrollableRef.current;
       if (scrollableElement) {
         const scrollableRect = scrollableElement.getBoundingClientRect();
         const hThumbSize = size.width > scrollableRect.width
@@ -63,6 +62,24 @@ function Content({
           : 0;
         const vThumbSize = size.height > scrollableRect.height
           ? scrollableRect.height / (size.height / scrollableRect.height)
+          : 0;
+
+        onChange({
+          hThumbSize: toFixed(hThumbSize, 1),
+          vThumbSize: toFixed(vThumbSize, 1),
+        });
+      }
+    },
+  });
+  const [scrollableRef] = useResizeObserver<HTMLDivElement>({
+    onChange: (scrollableSize) => {
+      if (contentRef.current) {
+        const contentRect = contentRef.current.getBoundingClientRect();
+        const hThumbSize = contentRect.width > scrollableSize.width
+          ? scrollableSize.width / (contentRect.width / scrollableSize.width)
+          : 0;
+        const vThumbSize = contentRect.height > scrollableSize.height
+          ? scrollableSize.height / (contentRect.height / scrollableSize.height)
           : 0;
 
         onChange({
@@ -95,7 +112,7 @@ function Content({
       offsetLeftRef.current = value;
     },
     getLeftScrollSize(value: number) {
-      const scrollableElement = getScrollableElement();
+      const scrollableElement = scrollableRef.current;
       const contentElement = contentRef.current;
       if (!contentElement) {
         throw new Error('content element not defined');
@@ -108,7 +125,7 @@ function Content({
       return toFixed(value * contentRect.width / scrollableRect.width, 1);
     },
     getTopScrollSize(value: number) {
-      const scrollableElement = getScrollableElement();
+      const scrollableElement = scrollableRef.current;
       const contentElement = contentRef.current;
       if (!contentElement) {
         throw new Error('content element not defined');
@@ -122,17 +139,12 @@ function Content({
     },
   }));
 
-  const getScrollableElement = useCallback(
-    () => contentRef?.current?.parentElement?.parentElement,
-    [
-      contentRef,
-    ]);
   const onWheel = useEvent((event: WheelEvent<HTMLDivElement>) => {
     if (!contentSize) {
       return;
     }
 
-    const scrollableElement = getScrollableElement();
+    const scrollableElement = scrollableRef.current;
     if (!scrollableElement) {
       return;
     }
@@ -179,7 +191,7 @@ function Content({
   });
   const onPointerMove = useEvent((event: PointerEvent) => {
     if (event.pointerType === 'touch') {
-      const scrollableElement = getScrollableElement()!;
+      const scrollableElement = scrollableRef.current!;
       const api = apiRef.current!;
       const targetRect = (event.currentTarget as HTMLElement).getBoundingClientRect();
       const scrollableRect = scrollableElement.getBoundingClientRect();
@@ -208,6 +220,7 @@ function Content({
     <div
       className="scrollable__content"
       onWheel={onWheel}
+      ref={scrollableRef}
     >
       <div className="scrollable__inline-block">
         <div

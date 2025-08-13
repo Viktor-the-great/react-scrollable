@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import toFixed from './toFixed';
 
 test('toFixed function rounds a number to precision', () => {
