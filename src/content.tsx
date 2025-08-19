@@ -155,28 +155,30 @@ function Content({
 
     const scrollableRect = scrollableElement.getBoundingClientRect();
 
-    if (
-      event.shiftKey
-      && offsetLeftRef.current >= 0
-      && offsetLeftRef.current <= contentSize.width - scrollableRect.width
-    ) {
-      offsetLeftRef.current += event.deltaY > 0
-        ? Math.min(event.deltaY, contentSize.width - scrollableRect.width - offsetLeftRef.current)
-        : Math.max(event.deltaY, -offsetLeftRef.current);
-      apiRef.current.scrollLeft = offsetLeftRef.current;
-      onScrollByX?.(offsetLeftRef.current);
+    if (event.shiftKey) {
+      const offsetByX = Math.min(
+        Math.max(offsetLeftRef.current + event.deltaY, 0),
+        contentSize.width - scrollableRect.width,
+      );
+
+      if (offsetByX !== offsetLeftRef.current) {
+        offsetLeftRef.current = offsetByX
+        apiRef.current.scrollLeft = offsetByX;
+        onScrollByX?.(offsetByX);
+      }
     }
 
-    if (
-      !event.shiftKey
-      && offsetTopRef.current >= 0
-      && offsetTopRef.current <= contentSize.height - scrollableRect.height
-    ) {
-      offsetTopRef.current += event.deltaY > 0
-        ? Math.min(event.deltaY, contentSize.height - scrollableRect.height - offsetTopRef.current)
-        : Math.max(event.deltaY, -offsetTopRef.current);
-      apiRef.current.scrollTop = offsetTopRef.current;
-      onScrollByY?.(offsetTopRef.current);
+    if (!event.shiftKey) {
+      const offsetByY = Math.min(
+        Math.max(offsetTopRef.current + event.deltaY, 0),
+        contentSize.height - scrollableRect.height,
+      );
+
+      if (offsetByY !== offsetTopRef.current) {
+        offsetTopRef.current = offsetByY;
+        apiRef.current.scrollTop = offsetByY;
+        onScrollByY?.(offsetByY);
+      }
     }
   });
 
