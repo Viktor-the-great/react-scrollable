@@ -218,14 +218,14 @@ function Content({
 
   return (
     <div
-      className="scrollable__content"
+      className="scrollable__scrollable"
       onWheel={onWheel}
       ref={scrollableRef}
     >
-      <div className="scrollable__inline-block">
+      <div className="scrollable__content">
         <div
           ref={contentRef}
-          className="scrollable__inline-block"
+          className="scrollable__content"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
         >
