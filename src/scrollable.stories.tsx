@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, waitFor } from 'storybook/test';
 import Scrollable from './scrollable';
 
 const meta = {
@@ -113,6 +114,14 @@ export const ScrollableByXY: Story = {
       />
     );
   },
+  async play({
+    canvas,
+  }) {
+    await waitFor(() => {
+      expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).toBeInTheDocument();
+      expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).toBeInTheDocument();
+    });
+  },
 };
 
 export const ScrollableByX: Story = {
@@ -139,6 +148,14 @@ export const ScrollableByX: Story = {
     ),
     showThumbOnHover: false,
   },
+  async play({
+    canvas,
+  }) {
+    await waitFor(() => {
+      expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).not.toBeInTheDocument();
+      expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).toBeInTheDocument();
+    });
+  },
 };
 
 export const ScrollableByY: Story = {
@@ -163,6 +180,14 @@ export const ScrollableByY: Story = {
       </div>
     ),
     showThumbOnHover: false,
+  },
+  async play({
+    canvas,
+  }) {
+    await waitFor(() => {
+      expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).toBeInTheDocument();
+      expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).not.toBeInTheDocument();
+    });
   },
 };
 
@@ -197,5 +222,13 @@ export const NotScrollable: Story = {
         }}
       />
     );
+  },
+  async play({
+    canvas,
+  }) {
+    await waitFor(() => {
+      expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).not.toBeInTheDocument();
+      expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).not.toBeInTheDocument();
+    });
   },
 };

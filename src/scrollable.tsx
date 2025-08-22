@@ -1,7 +1,7 @@
 import {
   type CSSProperties,
   type ReactElement,
-  type ReactNode,
+  type ReactNode, useMemo,
   useRef,
   useState,
 } from 'react';
@@ -9,6 +9,7 @@ import useEvent from './hooks/useEvent';
 import cx from './utils/classnames';
 import Content from './content';
 import Scrollbar from './scrollbar';
+import generateUniqId from './generateUniqId';
 import type {
   ScrollbarsSizeType,
   ContentApiType,
@@ -72,6 +73,8 @@ function Scrollable({
       contentRef.current.scrollTop = contentRef.current.getTopScrollSize(offset);
     }
   });
+  const contentId = useMemo(() => generateUniqId(), []);
+
   return (
     <div
       className={cx('scrollable', {
@@ -86,6 +89,7 @@ function Scrollable({
         onChange={onContentChange}
         onScrollByX={onContentScrollByX}
         onScrollByY={onContentScrollByY}
+        contentId={contentId}
       >
         {children}
       </Content>
@@ -94,13 +98,15 @@ function Scrollable({
         thumbSize={vThumbSize}
         isVertical
         onScroll={onScrollByY}
+        contentId={contentId}
       />
       <Scrollbar
         ref={hScrollbarRef}
         thumbSize={hThumbSize}
         onScroll={onScrollByX}
+        contentId={contentId}
       />
-      <div />
+      <div data-testid="extreme-point" />
     </div>
   );
 }

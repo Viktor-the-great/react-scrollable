@@ -28,12 +28,17 @@ type ScrollbarPropsType = {
    * @param offset - thumb offset
    */
   onScroll?: (offset: number) => void;
+  /**
+   * scrollable element id to create aria-controls attribute
+   */
+  contentId: string;
 }
 
 function Scrollbar({
   thumbSize = 0,
   isVertical = false,
   onScroll: onScrollProp,
+  contentId,
 }: ScrollbarPropsType, ref: Ref<ScrollbarApiType>): ReactElement {
   const apiRef = useRef<ScrollbarApiType>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
@@ -56,6 +61,7 @@ function Scrollbar({
 
       if (thumbRef.current) {
         thumbRef.current.style.marginTop = makePx(value);
+        thumbRef.current.setAttribute('aria-valuenow', value.toString());
         offsetRef.current = value;
       }
     },
@@ -71,6 +77,7 @@ function Scrollbar({
       }
       if (thumbRef.current) {
         thumbRef.current.style.marginLeft = makePx(value);
+        thumbRef.current.setAttribute('aria-valuenow', value.toString());
         offsetRef.current = value;
       }
     },
@@ -147,6 +154,7 @@ function Scrollbar({
   const style = isVertical
     ? { height: thumbSize ?? 0 }
     : { width: thumbSize ?? 0 };
+  const isHidden = thumbSize === 0;
 
   return (
     <div className="scrollable__slider">
@@ -160,6 +168,12 @@ function Scrollbar({
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        role="scrollbar"
+        aria-orientation={isVertical ? 'vertical' : 'horizontal'}
+        aria-label={isVertical ? 'vertical scrollbar' : 'horizontal scrollbar'}
+        aria-controls={contentId}
+        aria-valuenow={0}
+        aria-hidden={isHidden}
       />
     </div>
   );

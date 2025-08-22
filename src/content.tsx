@@ -41,6 +41,10 @@ type ContentPropsType = {
    * content of scrollable area
    */
   children: ReactNode;
+  /**
+   * scrollable element id to create aria-controls attribute
+   */
+  contentId: string;
 }
 
 function Content({
@@ -48,6 +52,7 @@ function Content({
   onChange,
   onScrollByX,
   onScrollByY,
+  contentId,
 }: ContentPropsType, ref: Ref<ContentApiType>): ReactElement {
   const apiRef = useRef<ContentApiType>(null);
   const offsetLeftRef = useRef(0);
@@ -162,7 +167,7 @@ function Content({
       );
 
       if (offsetByX !== offsetLeftRef.current) {
-        offsetLeftRef.current = offsetByX
+        offsetLeftRef.current = offsetByX;
         apiRef.current.scrollLeft = offsetByX;
         onScrollByX?.(offsetByX);
       }
@@ -226,6 +231,7 @@ function Content({
     >
       <div className="scrollable__content">
         <div
+          id={contentId}
           ref={contentRef}
           className="scrollable__content"
           onPointerDown={onPointerDown}
