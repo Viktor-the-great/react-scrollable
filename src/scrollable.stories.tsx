@@ -121,8 +121,22 @@ export const ScrollableByXY: Story = {
     });
 
     await step('scroll content vertically using thumb', async () => {
+      const calcScrollableMarginTop = (
+        scrollable: HTMLElement,
+        scrollbar: HTMLElement,
+      ) => {
+        const scrollableComputedStyle = getComputedStyle(scrollable);
+        const scrollbarComputedStyle = getComputedStyle(scrollbar);
+        const sliderComputedStyle = getComputedStyle(scrollbar.parentElement!);
+        return -toFixed((parseFloat(scrollableComputedStyle.height) * parseFloat(scrollbarComputedStyle.marginTop))
+          / parseFloat(sliderComputedStyle.height), 1);
+      };
+
+      const scrollable = canvas.getByTestId('scrollable-content');
       const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
       const scrollbarByX = canvas.getByRole('scrollbar', { name: 'horizontal scrollbar' })!;
+
+      await expect(scrollable).toBeInTheDocument();
 
       await userEvent.pointer([
         {
@@ -144,7 +158,10 @@ export const ScrollableByXY: Story = {
         },
       ]);
       expect(parseFloat(getComputedStyle(scrollbarByY).marginTop)).toBe(100);
+      expect(parseFloat(getComputedStyle(scrollable).marginTop))
+        .toBe(calcScrollableMarginTop(scrollable, scrollbarByY));
       expect(parseFloat(getComputedStyle(scrollbarByX).marginLeft)).toBe(0);
+      expect(parseFloat(getComputedStyle(scrollable).marginLeft)).toBe(0);
 
       await userEvent.pointer([
         {
@@ -165,13 +182,29 @@ export const ScrollableByXY: Story = {
           keys: '[/MouseLeft]',
         },
       ]);
-      expect(getComputedStyle(scrollbarByY).marginTop).toBe('0px');
-      expect(getComputedStyle(scrollbarByX).marginLeft).toBe('0px');
+      expect(parseFloat(getComputedStyle(scrollbarByY).marginTop)).toBe(0);
+      expect(parseFloat(getComputedStyle(scrollable).marginTop)).toBe(0);
+      expect(parseFloat(getComputedStyle(scrollbarByX).marginLeft)).toBe(0);
+      expect(parseFloat(getComputedStyle(scrollable).marginLeft)).toBe(0);
     });
 
     await step('scroll content horizontally using thumb', async () => {
+      const calcScrollableMarginLeft = (
+        scrollable: HTMLElement,
+        scrollbar: HTMLElement,
+      ) => {
+        const scrollableComputedStyle = getComputedStyle(scrollable);
+        const scrollbarComputedStyle = getComputedStyle(scrollbar);
+        const sliderComputedStyle = getComputedStyle(scrollbar.parentElement!);
+        return -toFixed((parseFloat(scrollableComputedStyle.width) * parseFloat(scrollbarComputedStyle.marginLeft))
+          / parseFloat(sliderComputedStyle.width), 1);
+      };
+
+      const scrollable = canvas.getByTestId('scrollable-content');
       const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
       const scrollbarByX = canvas.getByRole('scrollbar', { name: 'horizontal scrollbar' })!;
+
+      await expect(scrollable).toBeInTheDocument();
 
       await userEvent.pointer([
         {
@@ -193,7 +226,10 @@ export const ScrollableByXY: Story = {
         },
       ]);
       expect(parseFloat(getComputedStyle(scrollbarByY).marginTop)).toBe(0);
+      expect(parseFloat(getComputedStyle(scrollable).marginTop)).toBe(0);
       expect(parseFloat(getComputedStyle(scrollbarByX).marginLeft)).toBe(100);
+      expect(parseFloat(getComputedStyle(scrollable).marginLeft))
+        .toBe(calcScrollableMarginLeft(scrollable, scrollbarByX));
 
       await userEvent.pointer([
         {
@@ -215,7 +251,9 @@ export const ScrollableByXY: Story = {
         },
       ]);
       expect(parseFloat(getComputedStyle(scrollbarByY).marginTop)).toBe(0);
+      expect(parseFloat(getComputedStyle(scrollable).marginTop)).toBe(0);
       expect(parseFloat(getComputedStyle(scrollbarByX).marginLeft)).toBe(0);
+      expect(parseFloat(getComputedStyle(scrollable).marginLeft)).toBe(0);
     });
 
     await step('scroll content using mouse wheel', async () => {
