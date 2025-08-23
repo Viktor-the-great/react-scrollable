@@ -101,25 +101,117 @@ export const ScrollableByXY: Story = {
         aliquid assumenda beatae earum eos error, eveniet illum laborum maxime nam neque optio placeat quasi quis
         ratione recusandae tempore veritatis.</div>
     ),
+    style: {
+      width: 300,
+      height: 300,
+    },
     showThumbOnHover: false,
-  },
-  render(args) {
-    return (
-      <Scrollable
-        {...args}
-        style={{
-          width: 300,
-          height: 300,
-        }}
-      />
-    );
   },
   async play({
     canvas,
+    userEvent,
+    step,
   }) {
-    await waitFor(() => {
-      expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).toBeInTheDocument();
-      expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).toBeInTheDocument();
+    await step('have two scrollbars', async () => {
+      await waitFor(() => {
+        expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).toBeInTheDocument();
+        expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).toBeInTheDocument();
+      });
+    });
+
+    const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
+    const scrollbarByX = canvas.getByRole('scrollbar', { name: 'horizontal scrollbar' })!;
+
+    await step('scroll content vertically using thumb', async () => {
+      await userEvent.pointer([
+        {
+          keys: '[MouseLeft>]',
+          target: scrollbarByY,
+          coords: {
+            clientX: 0,
+            clientY: 0,
+          },
+        },
+        {
+          coords: {
+            clientX: 0,
+            clientY: 100,
+          },
+        },
+        {
+          keys: '[/MouseLeft]',
+        },
+      ]);
+      expect(getComputedStyle(scrollbarByY).marginTop).toBe('100px');
+      expect(getComputedStyle(scrollbarByX).marginLeft).toBe('0px');
+
+      await userEvent.pointer([
+        {
+          keys: '[MouseLeft>]',
+          target: scrollbarByY,
+          coords: {
+            clientX: 0,
+            clientY: 0,
+          },
+        },
+        {
+          coords: {
+            clientX: 0,
+            clientY: -100,
+          },
+        },
+        {
+          keys: '[/MouseLeft]',
+        },
+      ]);
+      expect(getComputedStyle(scrollbarByY).marginTop).toBe('0px');
+      expect(getComputedStyle(scrollbarByX).marginLeft).toBe('0px');
+    });
+
+    await step('scroll content horizontally using thumb', async () => {
+      await userEvent.pointer([
+        {
+          keys: '[MouseLeft>]',
+          target: scrollbarByX,
+          coords: {
+            clientX: 0,
+            clientY: 0,
+          },
+        },
+        {
+          coords: {
+            clientX: 100,
+            clientY: 0,
+          },
+        },
+        {
+          keys: '[/MouseLeft]',
+        },
+      ]);
+      expect(getComputedStyle(scrollbarByY).marginTop).toBe('0px');
+      expect(getComputedStyle(scrollbarByX).marginLeft).toBe('100px');
+
+      await userEvent.pointer([
+        {
+          keys: '[MouseLeft>]',
+          target: scrollbarByX,
+          coords: {
+            clientX: 0,
+            clientY: 0,
+          },
+        },
+        {
+          coords: {
+            clientX: -100,
+            clientY: 0,
+          },
+        },
+        {
+          keys: '[/MouseLeft]',
+        },
+      ]);
+      expect(getComputedStyle(scrollbarByY).marginTop).toBe('0px');
+      expect(getComputedStyle(scrollbarByX).marginLeft).toBe('0px');
     });
   },
 };
@@ -127,6 +219,7 @@ export const ScrollableByXY: Story = {
 export const ScrollableByX: Story = {
   ...ScrollableByXY,
   args: {
+    ...ScrollableByXY.args,
     children: (
       <div style={{ width: 800 }}>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. A at commodi distinctio dolorum earum eius fugiat id
@@ -146,7 +239,6 @@ export const ScrollableByX: Story = {
         Consequatur, esse, quibusdam!
       </div>
     ),
-    showThumbOnHover: false,
   },
   async play({
     canvas,
@@ -161,6 +253,7 @@ export const ScrollableByX: Story = {
 export const ScrollableByY: Story = {
   ...ScrollableByXY,
   args: {
+    ...ScrollableByXY.args,
     children: (
       <div>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium asperiores consectetur, consequatur
@@ -179,7 +272,6 @@ export const ScrollableByY: Story = {
         nam non nulla optio pariatur porro recusandae reprehenderit sapiente sequi suscipit vel vero vitae.
       </div>
     ),
-    showThumbOnHover: false,
   },
   async play({
     canvas,
@@ -193,6 +285,7 @@ export const ScrollableByY: Story = {
 
 export const NotScrollable: Story = {
   args: {
+    ...ScrollableByXY.args,
     children: (
       <div>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium asperiores consectetur, consequatur
@@ -211,7 +304,6 @@ export const NotScrollable: Story = {
         nam non nulla optio pariatur porro recusandae reprehenderit sapiente sequi suscipit vel vero vitae.
       </div>
     ),
-    showThumbOnHover: false,
   },
   render(args) {
     return (
