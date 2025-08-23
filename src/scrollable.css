@@ -14,13 +14,15 @@
   }
 
   &_show-mouse-on-hover {
-    .scrollable__slider {
-      visibility: hidden;
-    }
-
-    &:hover {
+    @media (hover: hover) {
       .scrollable__slider {
-        visibility: visible;
+        visibility: hidden;
+      }
+
+      &:hover {
+        .scrollable__slider {
+          visibility: visible;
+        }
       }
     }
   }

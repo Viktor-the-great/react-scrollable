@@ -31,7 +31,7 @@ type ScrollablePropsType = {
    */
   style?: CSSProperties;
   /**
-   * show thumbs on mouse hover
+   * show thumbs on mouse hover, effects only for pointing devices like a mouse
    */
   showThumbOnHover?: boolean;
 }
