@@ -190,17 +190,17 @@ function Content({
   const clientXRef = useRef(0);
   const clientYRef = useRef(0);
   const onPointerDown = useEvent((event: PointerEvent) => {
-    if (event.pointerType === 'touch') {
-      (event.target as Element).setPointerCapture(event.pointerId);
+    if (event.pointerType === 'touch' && event.isPrimary) {
+      event.currentTarget.setPointerCapture(event.pointerId);
       clientXRef.current = event.clientX;
       clientYRef.current = event.clientY;
     }
   });
   const onPointerMove = useEvent((event: PointerEvent) => {
-    if (event.pointerType === 'touch') {
+    if (event.pointerType === 'touch' && event.isPrimary) {
       const scrollableElement = scrollableRef.current!;
       const api = apiRef.current!;
-      const targetRect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      const targetRect = event.currentTarget.getBoundingClientRect();
       const scrollableRect = scrollableElement.getBoundingClientRect();
       const offsetByY = Math.min(
         Math.max(offsetTopRef.current - (event.clientY - clientYRef.current), 0),
@@ -228,6 +228,7 @@ function Content({
       className="scrollable__scrollable"
       onWheel={onWheel}
       ref={scrollableRef}
+      data-testid="scrollable-scrollable"
     >
       <div className="scrollable__content">
         <div
@@ -236,6 +237,7 @@ function Content({
           className="scrollable__content"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
+          data-testid="scrollable-content"
         >
           {children}
         </div>

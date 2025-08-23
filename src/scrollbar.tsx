@@ -100,53 +100,54 @@ function Scrollbar({
     isVertical,
   ]);
 
-  const pointerRef = useRef<number | null>(null);
+  const isPointerDown = useRef<boolean>(false);
   const clientXRef = useRef(0);
   const clientYRef = useRef(0);
   const onPointerDown = useEvent((event: PointerEvent<HTMLDivElement>) => {
-    pointerRef.current = event.pointerId;
-    thumbRef.current?.setPointerCapture(event.pointerId);
-    if (isVertical) {
-      clientYRef.current = event.clientY;
-    } else {
-      clientXRef.current = event.clientX;
+    if ((event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
+      isPointerDown.current = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      if (isVertical) {
+        clientYRef.current = event.clientY;
+      } else {
+        clientXRef.current = event.clientX;
+      }
     }
   });
   const onPointerMove = useEvent((event: PointerEvent<HTMLDivElement>) => {
-    if (pointerRef.current !== event.pointerId) {
-      return;
-    }
-    const thumbElement = thumbRef.current;
-    const trackElement = thumbElement?.parentElement;
+    if (isPointerDown.current && (event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
+      const thumbElement = event.currentTarget;
+      const trackElement = thumbElement.parentElement;
 
-    if (thumbElement && trackElement && apiRef.current) {
-      const thumbRect = thumbElement.getBoundingClientRect();
-      const tractRect = trackElement.getBoundingClientRect();
-      if (isVertical) {
-        const offset = Math.min(
-          Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
-          tractRect.height - thumbRect.height,
-        );
-        if (offset !== offsetRef.current) {
-          apiRef.current.scrollTop = offset;
-          clientYRef.current = event.clientY;
-          onScroll(offset);
-        }
-      } else {
-        const offset = Math.min(
-          Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
-          tractRect.width - thumbRect.width,
-        );
-        if (offset !== offsetRef.current) {
-          apiRef.current.scrollLeft = offset;
-          clientXRef.current = event.clientX;
-          onScroll(offset);
+      if (trackElement && apiRef.current) {
+        const thumbRect = thumbElement.getBoundingClientRect();
+        const tractRect = trackElement.getBoundingClientRect();
+        if (isVertical) {
+          const offset = Math.min(
+            Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
+            tractRect.height - thumbRect.height,
+          );
+          if (offset !== offsetRef.current) {
+            apiRef.current.scrollTop = offset;
+            clientYRef.current = event.clientY;
+            onScroll(offset);
+          }
+        } else {
+          const offset = Math.min(
+            Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
+            tractRect.width - thumbRect.width,
+          );
+          if (offset !== offsetRef.current) {
+            apiRef.current.scrollLeft = offset;
+            clientXRef.current = event.clientX;
+            onScroll(offset);
+          }
         }
       }
     }
   });
   const onPointerUp = useEvent(() => {
-    pointerRef.current = null;
+    isPointerDown.current = false;
     clientXRef.current = 0;
     clientYRef.current = 0;
   });
