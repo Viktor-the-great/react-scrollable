@@ -163,7 +163,7 @@ function Content({
 
     const scrollableRect = scrollableElement.getBoundingClientRect();
 
-    if (event.shiftKey) {
+    if (event.shiftKey && contentSize.width > scrollableRect.width) {
       const offsetByX = Math.min(
         Math.max(offsetLeftRef.current + event.deltaY, 0),
         contentSize.width - scrollableRect.width,
@@ -176,7 +176,7 @@ function Content({
       }
     }
 
-    if (!event.shiftKey) {
+    if (!event.shiftKey && contentSize.height > scrollableRect.height) {
       const offsetByY = Math.min(
         Math.max(offsetTopRef.current + event.deltaY, 0),
         contentSize.height - scrollableRect.height,
