@@ -6,6 +6,7 @@ Scrollable is a custom component made to handle scrolling with a custom scrollba
 * render custom vertical/horizontal thumb
 * support mouse pointer
 * support touch pointer
+* support accessibility
 * can show thumbs on mouse hover and hide on mouse leave
 
 ## Installation
