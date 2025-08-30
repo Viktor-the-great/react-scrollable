@@ -1,12 +1,12 @@
 import {
   type ReactElement,
   type ReactNode,
-  type WheelEvent,
   type Ref,
   type PointerEvent,
   forwardRef,
   useImperativeHandle,
   useRef,
+  useEffect,
 } from 'react';
 import useResizeObserver from './hooks/useResizeObserver';
 import useEvent from './hooks/useEvent';
@@ -144,7 +144,10 @@ function Content({
     },
   }));
 
-  const onWheel = useEvent((event: WheelEvent<HTMLDivElement>) => {
+  const onWheel = useEvent((event: WheelEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (!contentSize) {
       return;
     }
@@ -187,6 +190,21 @@ function Content({
     }
   });
 
+  useEffect(() => {
+    const scrollableElement = scrollableRef.current;
+    if (scrollableElement) {
+      scrollableElement.addEventListener('wheel', onWheel, { passive: false });
+    }
+    return () => {
+      if (scrollableElement) {
+        scrollableElement.removeEventListener('wheel', onWheel);
+      }
+    }
+  }, [
+    scrollableRef,
+    onWheel
+  ])
+
   const clientXRef = useRef(0);
   const clientYRef = useRef(0);
   const onPointerDown = useEvent((event: PointerEvent) => {
@@ -226,7 +244,6 @@ function Content({
   return (
     <div
       className="scrollable__scrollable"
-      onWheel={onWheel}
       ref={scrollableRef}
       data-testid="scrollable-scrollable"
     >
