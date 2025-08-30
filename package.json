@@ -1,7 +1,7 @@
 {
   "name": "react-scrollable",
-  "private": true,
-  "version": "0.0.0",
+  "author": "Viktor Voloshin <viktor_the_great@mail.ru>",
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/react-scrollable.js",
   "types": "dist/react-scrollable.d.ts",
