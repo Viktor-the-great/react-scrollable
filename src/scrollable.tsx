@@ -17,7 +17,7 @@ import type {
 } from './types';
 import './scrollable.css';
 
-type ScrollablePropsType = {
+export type ScrollablePropsType = {
   /**
    * content of scrollable area
    */
