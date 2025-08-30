@@ -1,69 +1,35 @@
-# React + TypeScript + Vite
+# Scrollable component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Scrollable is a custom component made to handle scrolling with a custom scrollbar. 
 
-Currently, two official plugins are available:
+## Features:
+* render custom vertical/horizontal thumb
+* support mouse pointer
+* support touch pointer
+* can show thumbs on mouse hover and hide on mouse leave
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation
+`npm install @v.voloshin/react-scrollable`
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
+## Usage
 ```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+import Scrollable from '@v.voloshin/react-scrollable'
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+function ScrollableText({
+  children,
+}) {
+    return (
+      <Scrollable>
+        {children}
+      </Scrollable>
+    )
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Scrollbar props
+| Prop              | Description                                                                 |
+|-------------------|-----------------------------------------------------------------------------|
+| children          | content of scrollable area                                                  |
+| showThumbOnHover  | show thumbs on mouse hover, effects only for pointing devices like a mouse  |
+| children          | content of scrollable area                                                  |
+| style             | use styles to customize element styles                                      |
