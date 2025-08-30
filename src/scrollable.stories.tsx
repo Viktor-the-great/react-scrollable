@@ -6,6 +6,7 @@ import Scrollable from './scrollable';
 const meta = {
   title: 'Scrollable',
   component: Scrollable,
+  tags: ['autodocs'],
   argTypes: {
     showThumbOnHover: {
       options: [false, true],
