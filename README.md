@@ -28,9 +28,10 @@ function ScrollableText({
 ```
 
 ## Scrollbar props
-| Prop              | Description                                                                 |
-|-------------------|-----------------------------------------------------------------------------|
-| children          | content of scrollable area                                                  |
-| showThumbOnHover  | show thumbs on mouse hover, effects only for pointing devices like a mouse  |
-| children          | content of scrollable area                                                  |
-| style             | use styles to customize element styles                                      |
+| Prop             | Description                                                                |
+|------------------|----------------------------------------------------------------------------|
+| children         | content of scrollable area                                                 |
+| showThumbOnHover | show thumbs on mouse hover, effects only for pointing devices like a mouse |
+| children         | content of scrollable area                                                 |
+| style            | use styles to customize element styles                                     |
+| onScroll         | function called when scrolling using wheel, mouse pointer, touch pointer   |

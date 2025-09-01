@@ -15,7 +15,7 @@ import makePx from './utils/makePx';
 import toFixed from './utils/toFixed';
 import type {
   ScrollbarsSizeType,
-  ContentApiType,
+  ContentApiType, ScrollEvent,
 } from './types';
 import './content.css';
 
@@ -28,15 +28,17 @@ type ContentPropsType = {
    */
   onChange: (size: ScrollbarsSizeType) => void;
   /**
-   * onScrollByX function called when the content is scrolled on the X axis
-   * @param {number} offsetByX - scrolled distance on the X axis
+   * function called when scrolling using wheel, mouse pointer, touch pointer
+   * @param {object} event - custom scroll event
+   * @param {boolean} event.is_vertical - is vertical scrolling?
+   * @param {number | null} event.scroll_top - number of pixels by which an element's content is scrolled from its top edge, applies to vertical scrolling
+   * @param {number | null} event.scroll_left - number of pixels by which an element's content is scrolled from its left edge, applies to horizontal scrolling
+   * @param {boolean | null} event.is_top_edge_reached - flag indicating that the top edge of the element's content has been reached, applies to vertical scrolling
+   * @param {boolean | null} event.is_bottom_edge_reached - flag indicating that the bottom edge of the element's content has been reached, applies to vertical scrolling
+   * @param {boolean | null} event.is_left_edge_reached - flag indicating that the left edge of the element's content has been reached, applies to horizontal scrolling
+   * @param {boolean | null} event.is_right_edge_reached - flag indicating that the right edge of the element's content has been reached, applies to horizontal scrolling
    */
-  onScrollByX: (offsetByX: number) => void;
-  /**
-   * onScrollByX function called when the content is scrolled on the Y axis
-   * @param {number} offsetByY - scrolled distance on the Y axis
-   */
-  onScrollByY: (offsetByY: number) => void;
+  onScroll?: (event: ScrollEvent) => void;
   /**
    * content of scrollable area
    */
@@ -50,9 +52,8 @@ type ContentPropsType = {
 function Content({
   children,
   onChange,
-  onScrollByX,
-  onScrollByY,
   contentId,
+  onScroll = undefined,
 }: ContentPropsType, ref: Ref<ContentApiType>): ReactElement {
   const apiRef = useRef<ContentApiType>(null);
   const offsetLeftRef = useRef(0);
@@ -172,7 +173,12 @@ function Content({
       if (offsetByX !== offsetLeftRef.current) {
         offsetLeftRef.current = offsetByX;
         apiRef.current.scrollLeft = offsetByX;
-        onScrollByX?.(offsetByX);
+        onScroll?.({
+          is_vertical: false,
+          scroll_left: offsetByX,
+          is_left_edge_reached: offsetByX === 0,
+          is_right_edge_reached: offsetByX === contentSize.width - scrollableRect.width,
+        });
       }
     }
 
@@ -185,7 +191,12 @@ function Content({
       if (offsetByY !== offsetTopRef.current) {
         offsetTopRef.current = offsetByY;
         apiRef.current.scrollTop = offsetByY;
-        onScrollByY?.(offsetByY);
+        onScroll?.({
+          is_vertical: true,
+          scroll_top: offsetByY,
+          is_top_edge_reached: offsetByY === 0,
+          is_bottom_edge_reached: offsetByY === contentSize.height - scrollableRect.height,
+        });
       }
     }
   });
@@ -220,23 +231,39 @@ function Content({
       const api = apiRef.current!;
       const targetRect = event.currentTarget.getBoundingClientRect();
       const scrollableRect = scrollableElement.getBoundingClientRect();
-      const offsetByY = Math.min(
-        Math.max(offsetTopRef.current - (event.clientY - clientYRef.current), 0),
-        targetRect.height - scrollableRect.height,
-      );
-      if (offsetTopRef.current !== offsetByY) {
-        api.scrollTop = offsetByY;
-        onScrollByY?.(offsetByY);
-        clientYRef.current = event.clientY;
+
+      if (targetRect.height > scrollableRect.height) {
+        const offsetByY = Math.min(
+          Math.max(offsetTopRef.current - (event.clientY - clientYRef.current), 0),
+          targetRect.height - scrollableRect.height,
+        );
+        if (offsetTopRef.current !== offsetByY) {
+          api.scrollTop = offsetByY;
+          clientYRef.current = event.clientY;
+          onScroll?.({
+            is_vertical: true,
+            scroll_top: offsetByY,
+            is_top_edge_reached: offsetByY === 0,
+            is_bottom_edge_reached: offsetByY === targetRect.height - scrollableRect.height,
+          });
+        }
       }
-      const offsetByX = Math.min(
-        Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
-        targetRect.width - scrollableRect.width,
-      );
-      if (offsetLeftRef.current !== offsetByX) {
-        api.scrollLeft = offsetByX;
-        onScrollByX?.(offsetByX);
-        clientXRef.current = event.clientX;
+
+      if (targetRect.width > scrollableRect.width) {
+        const offsetByX = Math.min(
+          Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
+          targetRect.width - scrollableRect.width,
+        );
+        if (offsetLeftRef.current !== offsetByX) {
+          api.scrollLeft = offsetByX;
+          clientXRef.current = event.clientX;
+          onScroll?.({
+            is_vertical: false,
+            scroll_left: offsetByX,
+            is_left_edge_reached: offsetByX === 0,
+            is_right_edge_reached: offsetByX === targetRect.width - scrollableRect.width,
+          });
+        }
       }
     }
   });
