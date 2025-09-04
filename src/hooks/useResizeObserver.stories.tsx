@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn, expect, waitFor } from 'storybook/test';
 import useResizeObserver from './useResizeObserver';
 
-type ButtonPropsType = {
+type ResizeObserverHookPropsType = {
   style: CSSProperties;
   onClick?: () => void;
 }
@@ -34,12 +34,12 @@ const meta = {
     );
   },
   tags: ['!dev'],
-} satisfies Meta<ButtonPropsType>;
+} satisfies Meta<ResizeObserverHookPropsType>;
 export default meta;
 
 const onChange = fn();
-type ButtonStory = StoryObj<typeof meta>;
-export const Button: ButtonStory = {
+type UseResizeObserverStory = StoryObj<typeof meta>;
+export const ResizeObserverHook: UseResizeObserverStory = {
   args: {
     style: {
       width: 10,
@@ -66,4 +66,4 @@ export const Button: ButtonStory = {
       });
     }, { timeout: 1000 });
   },
-} satisfies ButtonStory;
+} satisfies UseResizeObserverStory;
