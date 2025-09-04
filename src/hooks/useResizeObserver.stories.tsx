@@ -1,34 +1,38 @@
-import { forwardRef, useState } from 'react';
+import { type CSSProperties, useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { fn, expect, waitFor } from 'storybook/test';
 import useResizeObserver from './useResizeObserver';
 
 type ButtonPropsType = {
-  width: number;
-  height: number;
+  style: CSSProperties;
   onClick?: () => void;
 }
 
-const ButtonComponent = forwardRef<HTMLButtonElement, ButtonPropsType>(function ButtonComponent({
-  width,
-  height,
-  onClick,
-}: ButtonPropsType, ref) {
-  return (
-    <button
-      ref={ref}
-      style={{
-        width,
-        height,
-        padding: 0,
-      }}
-      onClick={onClick}
-    />
-  );
-});
-
 const meta = {
-  component: ButtonComponent,
+  component: function Component(props) {
+    const elementRef = useRef<HTMLDivElement>(null);
+    const [style, setStyle] = useState<CSSProperties>(props.style);
+    useResizeObserver({
+      elementRef,
+      onChange,
+    });
+
+    const onClick = () => {
+      setStyle({
+        width: style.width ? parseInt(style.width.toString()) * 2 : 0,
+        height: style.height ? parseInt(style.height.toString()) * 2 : 0,
+      })
+    };
+
+    return (
+      <div
+        role="button"
+        ref={elementRef}
+        onClick={onClick}
+        style={style}
+      />
+    );
+  },
   tags: ['!dev'],
 } satisfies Meta<ButtonPropsType>;
 export default meta;
@@ -37,29 +41,10 @@ const onChange = fn();
 type ButtonStory = StoryObj<typeof meta>;
 export const Button: ButtonStory = {
   args: {
-    width: 10,
-    height: 10,
-  },
-  render: function Render(args) {
-    const [width, setWidth] = useState(args.width);
-    const [height, setHeight] = useState(args.height);
-    const [containerRef] = useResizeObserver<HTMLButtonElement>({
-      onChange,
-    });
-
-    const onClick = () => {
-      setWidth(width * 2);
-      setHeight(width * 2);
-    };
-
-    return (
-      <ButtonComponent
-        ref={containerRef}
-        onClick={onClick}
-        width={width}
-        height={height}
-      />
-    );
+    style: {
+      width: 10,
+      height: 10,
+    }
   },
   async play({
     userEvent,

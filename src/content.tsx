@@ -58,7 +58,11 @@ function Content({
   const apiRef = useRef<ContentApiType>(null);
   const offsetLeftRef = useRef(0);
   const offsetTopRef = useRef(0);
-  const [contentRef, contentSize] = useResizeObserver<HTMLDivElement>({
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scrollableRef = useRef<HTMLDivElement>(null);
+
+  const contentSize = useResizeObserver({
+    elementRef: contentRef,
     onChange: (size) => {
       const scrollableElement = scrollableRef.current;
       if (scrollableElement) {
@@ -77,7 +81,8 @@ function Content({
       }
     },
   });
-  const [scrollableRef] = useResizeObserver<HTMLDivElement>({
+  useResizeObserver<HTMLDivElement>({
+    elementRef: scrollableRef,
     onChange: (scrollableSize) => {
       if (contentRef.current) {
         const contentRect = contentRef.current.getBoundingClientRect();

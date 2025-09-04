@@ -1,8 +1,8 @@
 import {
-  useRef,
   useLayoutEffect,
   useMemo,
   useState,
+  type RefObject,
 } from 'react';
 import useEvent from './useEvent';
 
@@ -11,34 +11,34 @@ export type ElementSize = {
   height: number;
 }
 
-export type UseResizeObserverPropsType = {
+export type UseResizeObserverPropsType<Element> = {
+  elementRef: RefObject<Element | null>;
   onChange?: (size: ElementSize) => void;
 }
 
-function useResizeObserver<ElementType extends HTMLElement>(props?: UseResizeObserverPropsType) {
+function useResizeObserver<ElementType extends Element>({
+  elementRef,
+  onChange,
+}: UseResizeObserverPropsType<ElementType>) {
   const [size, setSize] = useState<ElementSize | null>(null);
-  const ref = useRef<ElementType>(null);
-  const onChange = useEvent((size: ElementSize) => {
-    props?.onChange?.(size);
-  });
+  const onChangeEvent = useEvent((size: ElementSize) => onChange?.(size));
 
   const resizeObserver = useMemo(() => new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      const width = entry.borderBoxSize[0].inlineSize;
-      const height = entry.borderBoxSize[0].blockSize;
-      const size = {
-        width,
-        height,
-      }
-      setSize(size)
-      onChange(size);
+    const entry = entries[0];
+    const width = entry.borderBoxSize[0].inlineSize;
+    const height = entry.borderBoxSize[0].blockSize;
+    const size = {
+      width,
+      height,
     }
+    setSize(size)
+    onChangeEvent?.(size);
   }), [
-    onChange,
+    onChangeEvent,
   ]);
 
   useLayoutEffect(() => {
-    const htmlElement = ref.current;
+    const htmlElement = elementRef.current;
     if (htmlElement) {
       resizeObserver.observe(htmlElement);
     }
@@ -49,10 +49,10 @@ function useResizeObserver<ElementType extends HTMLElement>(props?: UseResizeObs
     };
   }, [
     resizeObserver,
-    ref,
+    elementRef,
   ]);
 
-  return [ref, size] as const;
+  return size;
 }
 
 export default useResizeObserver;
