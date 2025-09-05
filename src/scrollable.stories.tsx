@@ -406,32 +406,11 @@ export const NotScrollable: Story = {
     ...ScrollableByXY.args,
     children: (
       <div>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium asperiores consectetur, consequatur
-        deleniti doloremque doloribus ea eaque earum eum eveniet fugit harum hic id illum inventore itaque iusto
-        molestiae mollitia nam nemo neque numquam, officia provident quibusdam quis quisquam reiciendis rem sed totam
-        vel. At blanditiis debitis delectus ducimus laudantium, minus modi quaerat similique. Animi debitis delectus
-        esse labore libero optio praesentium. Amet cum delectus dicta dolor dolorem enim esse illum itaque natus numquam
-        quam recusandae, repellat ut. Consectetur ipsa magni natus quaerat. Animi dolorem ex, fuga iure, laudantium
-        necessitatibus perferendis quae quas quasi quidem repellendus sequi ullam unde. Accusantium aliquid deserunt
-        esse molestias quibusdam. Accusantium adipisci alias aliquid consequatur consequuntur culpa doloremque ducimus
-        ex exercitationem facilis labore libero magnam maiores natus, nisi obcaecati possimus quas quod rem tenetur! A
-        aliquid aperiam architecto assumenda culpa delectus deserunt dolor dolorum ducimus eos explicabo fugit harum
-        maiores maxime nihil nostrum quam quas quidem quis, quod recusandae repudiandae sed similique sit soluta
-        temporibus, tenetur ut veniam voluptates, voluptatibus. A ad adipisci, aspernatur assumenda at blanditiis,
-        consequuntur corporis deserunt dicta dolorem ducimus eaque eius eligendi, enim eveniet ex expedita laboriosam
-        nam non nulla optio pariatur porro recusandae reprehenderit sapiente sequi suscipit vel vero vitae.
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus, corporis dolore ea esse, eveniet expedita
+        ipsam iusto magni minima, modi molestiae natus nobis nulla perspiciatis ratione reprehenderit repudiandae sit
+        veniam.
       </div>
     ),
-  },
-  render(args) {
-    return (
-      <Scrollable
-        {...args}
-        style={{
-          width: 500,
-        }}
-      />
-    );
   },
   async play({
     canvas,
