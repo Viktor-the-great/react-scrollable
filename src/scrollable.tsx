@@ -46,7 +46,7 @@ export type ScrollablePropsType = {
    * @param {boolean | null} event.is_left_edge_reached - flag indicating that the left edge of the element's content has been reached, applies to horizontal scrolling
    * @param {boolean | null} event.is_right_edge_reached - flag indicating that the right edge of the element's content has been reached, applies to horizontal scrolling
    */
-  onScroll?: (event: ScrollEvent) => void;
+  onScroll?: (event: ScrollEvent) => void | Promise<void>;
 }
 
 function Scrollable({

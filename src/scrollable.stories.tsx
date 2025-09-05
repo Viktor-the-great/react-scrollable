@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, waitFor, fireEvent } from 'storybook/test';
+import { expect, waitFor, fireEvent, fn } from 'storybook/test';
 import toFixed from './utils/toFixed';
 import Scrollable from './scrollable';
+import { useState } from 'react';
+import './scrollable.stories.css';
 
 const meta = {
   title: 'Scrollable',
@@ -421,3 +423,144 @@ export const NotScrollable: Story = {
     });
   },
 };
+
+export const LazyScrollableByY: Story = {
+  args: {
+    ...ScrollableByXY.args,
+    onScroll: fn()
+  },
+  render: function Render({
+    onScroll,
+    ...args
+  }) {
+    const createRange = (
+      start: number,
+      end: number
+    ) => Array.from({ length: end - start + 1 }).map((_, i) => start + i);
+    const [items, setItems] = useState(() => createRange(1, 10));
+    const [isLoading, setIsLoading] = useState(false)
+    return (
+      <Scrollable
+        {...args}
+        onScroll={async (event) => {
+          await onScroll?.(event);
+          // is loading
+          if (isLoading) {
+            return;
+          }
+          // max loaded items
+          if (items.length >= 50) {
+            return;
+          }
+          if (event.is_vertical && event.is_bottom_edge_reached) {
+            setIsLoading(true);
+            await new Promise((resolve) => {
+              setTimeout(resolve, 3000);
+            })
+            setItems([
+              ...items,
+              ...createRange(items.length + 1, items.length + 10)],
+            );
+            setIsLoading(false);
+          }
+        }}
+      >
+        {
+          items.map((item) => (
+            <div
+              key={item}
+              className="block"
+            >
+              {item}
+            </div>
+          ))
+        }
+        {
+          isLoading && (
+            <div className="block">
+              loading...
+            </div>
+          )
+        }
+      </Scrollable>
+    )
+  },
+  async play({
+    step,
+  }) {
+    await step('have two scrollbars', async ({
+      canvas,
+    }) => {
+      await waitFor(() => {
+        expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).toBeInTheDocument();
+        expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).not.toBeInTheDocument();
+      });
+    });
+
+    await step('scroll content vertically using thumb', async ({
+      canvas,
+      userEvent,
+      args,
+    }) => {
+      const scrollable = canvas.getByTestId('scrollable-content');
+      const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
+
+      await expect(scrollable).toBeInTheDocument();
+      await expect(scrollbarByY).toBeInTheDocument();
+
+      await userEvent.pointer([
+        {
+          keys: '[MouseLeft>]',
+          target: scrollbarByY,
+          coords: {
+            clientX: 0,
+            clientY: 0,
+          },
+        },
+        {
+          coords: {
+            clientX: 0,
+            clientY: 700,
+          },
+        },
+        {
+          keys: '[/MouseLeft]',
+        },
+      ]);
+
+      await expect(args.onScroll).toHaveBeenLastCalledWith({
+        is_vertical: true,
+        scroll_top: 700,
+        is_top_edge_reached: false,
+        is_bottom_edge_reached: true,
+      });
+
+      await userEvent.pointer([
+        {
+          keys: '[MouseLeft>]',
+          target: scrollbarByY,
+          coords: {
+            clientX: 0,
+            clientY: 700,
+          },
+        },
+        {
+          coords: {
+            clientX: 0,
+            clientY: 0,
+          },
+        },
+        {
+          keys: '[/MouseLeft]',
+        },
+      ]);
+
+      await expect(args.onScroll).toHaveBeenLastCalledWith({
+        is_vertical: true,
+        scroll_top: 0,
+        is_top_edge_reached: true,
+        is_bottom_edge_reached: false,
+      });
+    });
+  }
+}
