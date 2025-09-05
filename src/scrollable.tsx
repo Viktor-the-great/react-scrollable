@@ -7,6 +7,7 @@ import {
 } from 'react';
 import useEvent from './hooks/useEvent';
 import cx from './utils/classnames';
+import debounce from './utils/debounce';
 import Content from './content';
 import Scrollbar from './scrollbar';
 import generateUniqId from './generateUniqId';
@@ -63,6 +64,11 @@ function Scrollable({
   const hScrollbarRef = useRef<ScrollbarApiType>(null);
   const contentRef = useRef<ContentApiType>(null);
 
+  const onScrollEvent = useEvent((event: ScrollEvent) => onScroll?.(event));
+  const onDebounceScroll = useMemo(() => debounce(onScrollEvent, 300), [
+    onScrollEvent,
+  ])
+
   const onContentChange = useEvent((size: ScrollbarsSizeType) => {
     setVThumbSize(size.vThumbSize);
     setHThumbSize(size.hThumbSize);
@@ -77,14 +83,14 @@ function Scrollable({
         hScrollbarRef.current.scrollLeft = hScrollbarRef.current.getScrollSize(event.scroll_left);
       }
     }
-    onScroll?.(event);
+    onDebounceScroll(event);
   });
   const onScrollByScrollbar = useEvent((event: ScrollEvent) => {
     if (event.is_vertical) {
       if (contentRef.current) {
         const scrollTop = contentRef.current.getTopScrollSize(event.scroll_top);
         contentRef.current.scrollTop = scrollTop;
-        onScroll?.({
+        onDebounceScroll({
           ...event,
           scroll_top: scrollTop,
         });
@@ -93,7 +99,7 @@ function Scrollable({
       if (contentRef.current) {
         const scrollLeft = contentRef.current.getLeftScrollSize(event.scroll_left);
         contentRef.current.scrollLeft = scrollLeft;
-        onScroll?.({
+        onDebounceScroll({
           ...event,
           scroll_left: scrollLeft,
         });

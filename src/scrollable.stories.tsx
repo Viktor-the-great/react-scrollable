@@ -516,11 +516,13 @@ export const LazyScrollableByX: Story = {
         shiftKey: true,
       });
 
-      await expect(args.onScroll).toHaveBeenLastCalledWith({
-        is_vertical: false,
-        scroll_left: 1090,
-        is_left_edge_reached: false,
-        is_right_edge_reached: true,
+      await waitFor(async () => {
+        await expect(args.onScroll).toHaveBeenLastCalledWith({
+          is_vertical: false,
+          scroll_left: 1090,
+          is_left_edge_reached: false,
+          is_right_edge_reached: true,
+        });
       });
 
       await fireEvent.wheel(scrollable, {
@@ -529,11 +531,13 @@ export const LazyScrollableByX: Story = {
         shiftKey: true,
       });
 
-      await expect(args.onScroll).toHaveBeenLastCalledWith({
-        is_vertical: false,
-        scroll_left: 0,
-        is_left_edge_reached: true,
-        is_right_edge_reached: false,
+      await waitFor(async () => {
+        await expect(args.onScroll).toHaveBeenLastCalledWith({
+          is_vertical: false,
+          scroll_left: 0,
+          is_left_edge_reached: true,
+          is_right_edge_reached: false,
+        });
       });
     });
   }
@@ -627,11 +631,13 @@ export const LazyScrollableByY: Story = {
         deltaY: 700,
       });
 
-      await expect(args.onScroll).toHaveBeenLastCalledWith({
-        is_vertical: true,
-        scroll_top: 700,
-        is_top_edge_reached: false,
-        is_bottom_edge_reached: true,
+      await waitFor(async () => {
+        await expect(args.onScroll).toHaveBeenLastCalledWith({
+          is_vertical: true,
+          scroll_top: 700,
+          is_top_edge_reached: false,
+          is_bottom_edge_reached: true,
+        });
       });
 
       await fireEvent.wheel(scrollable, {
@@ -639,11 +645,13 @@ export const LazyScrollableByY: Story = {
         deltaY: -700,
       });
 
-      await expect(args.onScroll).toHaveBeenLastCalledWith({
-        is_vertical: true,
-        scroll_top: 0,
-        is_top_edge_reached: true,
-        is_bottom_edge_reached: false,
+      await waitFor(async () => {
+        await expect(args.onScroll).toHaveBeenLastCalledWith({
+          is_vertical: true,
+          scroll_top: 0,
+          is_top_edge_reached: true,
+          is_bottom_edge_reached: false,
+        });
       });
     });
   }
