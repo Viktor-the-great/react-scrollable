@@ -151,9 +151,6 @@ function Content({
   }));
 
   const onWheel = useEvent((event: WheelEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-
     if (!contentSize) {
       return;
     }
@@ -176,6 +173,8 @@ function Content({
       );
 
       if (offsetByX !== offsetLeftRef.current) {
+        event.preventDefault();
+        event.stopPropagation();
         offsetLeftRef.current = offsetByX;
         apiRef.current.scrollLeft = offsetByX;
         onScroll?.({
@@ -194,6 +193,8 @@ function Content({
       );
 
       if (offsetByY !== offsetTopRef.current) {
+        event.preventDefault();
+        event.stopPropagation();
         offsetTopRef.current = offsetByY;
         apiRef.current.scrollTop = offsetByY;
         onScroll?.({
