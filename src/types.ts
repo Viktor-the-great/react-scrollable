@@ -24,6 +24,13 @@ export type ScrollbarByYApiType = {
   getScrollSize(value: number): number;
 }
 
+export type ScrollableApiType = {
+  get scrollLeft(): number;
+  set scrollLeft(value: number);
+  get scrollTop(): number;
+  set scrollTop(value: number);
+}
+
 export type ScrollEvent = {
   is_vertical: true;
   scroll_top: number;

@@ -2,10 +2,13 @@ import {
   type CSSProperties,
   type ReactElement,
   type ReactNode,
+  type Ref,
+  forwardRef,
   memo,
   useMemo,
   useRef,
   useState,
+  useImperativeHandle,
 } from 'react';
 import useEvent from './hooks/useEvent';
 import cx from './utils/classnames';
@@ -20,6 +23,7 @@ import type {
   ScrollbarByXApiType,
   ScrollbarByYApiType,
   ScrollEvent,
+  ScrollableApiType,
 } from './types';
 import './scrollable.css';
 
@@ -60,7 +64,7 @@ function Scrollable({
   className = undefined,
   style = undefined,
   onScroll = undefined,
-}: ScrollablePropsType): ReactElement {
+}: ScrollablePropsType, ref: Ref<ScrollableApiType>): ReactElement {
   const [vThumbSize, setVThumbSize] = useState<number>(0);
   const [hThumbSize, setHThumbSize] = useState<number>(0);
 
@@ -111,6 +115,31 @@ function Scrollable({
     }
   });
 
+  useImperativeHandle(ref, () => ({
+    get scrollLeft() {
+      return contentRef.current?.scrollLeft ?? 0;
+    },
+    set scrollLeft(value: number) {
+      if (contentRef.current) {
+        contentRef.current.scrollLeft = value;
+      }
+      if (hScrollbarRef.current) {
+        hScrollbarRef.current.scrollLeft = hScrollbarRef.current.getScrollSize(value);
+      }
+    },
+    get scrollTop() {
+      return contentRef.current?.scrollTop ?? 0;
+    },
+    set scrollTop(value: number) {
+      if (contentRef.current) {
+        contentRef.current.scrollTop = value;
+      }
+      if (vScrollbarRef.current) {
+        vScrollbarRef.current.scrollTop = vScrollbarRef.current.getScrollSize(value);
+      }
+    },
+  }), [])
+
   const contentId = useMemo(() => generateUniqId(), []);
 
   return (
@@ -147,9 +176,13 @@ function Scrollable({
   );
 }
 
-export default memo(Scrollable);
+export default memo(forwardRef<
+  ScrollableApiType,
+  ScrollablePropsType
+>(Scrollable));
 
 export type {
   ScrollablePropsType,
   ScrollEvent,
+  ScrollableApiType,
 }
