@@ -424,6 +424,121 @@ export const NotScrollable: Story = {
   },
 };
 
+export const LazyScrollableByX: Story = {
+  args: {
+    ...ScrollableByXY.args,
+    style: {
+      width: 1000,
+    },
+    onScroll: fn()
+  },
+  render: function Render({
+    onScroll,
+    ...args
+  }) {
+    const createRange = (
+      start: number,
+      end: number
+    ) => Array.from({ length: end - start + 1 }).map((_, i) => start + i);
+    const [items, setItems] = useState(() => createRange(1, 10));
+    const [isLoading, setIsLoading] = useState(false)
+    return (
+      <Scrollable
+        {...args}
+        onScroll={async (event) => {
+          await onScroll?.(event);
+          // is loading
+          if (isLoading) {
+            return;
+          }
+          // max loaded items
+          if (items.length >= 50) {
+            return;
+          }
+          if (!event.is_vertical && event.is_right_edge_reached) {
+            setIsLoading(true);
+            await new Promise((resolve) => {
+              setTimeout(resolve, 3000);
+            })
+            setItems([
+              ...items,
+              ...createRange(items.length + 1, items.length + 10)],
+            );
+            setIsLoading(false);
+          }
+        }}
+      >
+        <div className="lazy-scrollable-by-x">
+          {
+            items.map((item) => (
+              <div
+                key={item}
+                className="lazy-scrollable-by-x_item"
+              >
+                {item}
+              </div>
+            ))
+          }
+          {
+            isLoading && (
+              <div className="lazy-scrollable-by-x_item">
+                loading...
+              </div>
+            )
+          }
+        </div>
+      </Scrollable>
+    )
+  },
+  async play({
+    step,
+  }) {
+    await step('has horizontal scrollbars', async ({
+      canvas,
+    }) => {
+      await waitFor(() => {
+        expect(canvas.queryByRole('scrollbar', { name: 'vertical scrollbar' })).not.toBeInTheDocument();
+        expect(canvas.queryByRole('scrollbar', { name: 'horizontal scrollbar' })).toBeInTheDocument();
+      });
+    });
+
+    await step('scroll content horizontally using mouse wheel', async ({
+      canvas,
+      args,
+    }) => {
+      const scrollable = canvas.getByTestId('scrollable-content');
+
+      await expect(scrollable).toBeInTheDocument();
+
+      await fireEvent.wheel(scrollable, {
+        deltaX: 0,
+        deltaY: 1090,
+        shiftKey: true,
+      });
+
+      await expect(args.onScroll).toHaveBeenLastCalledWith({
+        is_vertical: false,
+        scroll_left: 1090,
+        is_left_edge_reached: false,
+        is_right_edge_reached: true,
+      });
+
+      await fireEvent.wheel(scrollable, {
+        deltaX: 0,
+        deltaY: -1090,
+        shiftKey: true,
+      });
+
+      await expect(args.onScroll).toHaveBeenLastCalledWith({
+        is_vertical: false,
+        scroll_left: 0,
+        is_left_edge_reached: true,
+        is_right_edge_reached: false,
+      });
+    });
+  }
+}
+
 export const LazyScrollableByY: Story = {
   args: {
     ...ScrollableByXY.args,
@@ -469,7 +584,7 @@ export const LazyScrollableByY: Story = {
           items.map((item) => (
             <div
               key={item}
-              className="block"
+              className="lazy-scrollable-by-y_item"
             >
               {item}
             </div>
@@ -477,7 +592,7 @@ export const LazyScrollableByY: Story = {
         }
         {
           isLoading && (
-            <div className="block">
+            <div className="lazy-scrollable-by-y_item">
               loading...
             </div>
           )
@@ -488,7 +603,7 @@ export const LazyScrollableByY: Story = {
   async play({
     step,
   }) {
-    await step('have two scrollbars', async ({
+    await step('has vertical scrollbar', async ({
       canvas,
     }) => {
       await waitFor(() => {
@@ -497,9 +612,8 @@ export const LazyScrollableByY: Story = {
       });
     });
 
-    await step('scroll content vertically using thumb', async ({
+    await step('scrolls content vertically using mouse wheel', async ({
       canvas,
-      userEvent,
       args,
     }) => {
       const scrollable = canvas.getByTestId('scrollable-content');
@@ -508,25 +622,10 @@ export const LazyScrollableByY: Story = {
       await expect(scrollable).toBeInTheDocument();
       await expect(scrollbarByY).toBeInTheDocument();
 
-      await userEvent.pointer([
-        {
-          keys: '[MouseLeft>]',
-          target: scrollbarByY,
-          coords: {
-            clientX: 0,
-            clientY: 0,
-          },
-        },
-        {
-          coords: {
-            clientX: 0,
-            clientY: 700,
-          },
-        },
-        {
-          keys: '[/MouseLeft]',
-        },
-      ]);
+      await fireEvent.wheel(scrollable, {
+        deltaX: 0,
+        deltaY: 700,
+      });
 
       await expect(args.onScroll).toHaveBeenLastCalledWith({
         is_vertical: true,
@@ -535,25 +634,10 @@ export const LazyScrollableByY: Story = {
         is_bottom_edge_reached: true,
       });
 
-      await userEvent.pointer([
-        {
-          keys: '[MouseLeft>]',
-          target: scrollbarByY,
-          coords: {
-            clientX: 0,
-            clientY: 700,
-          },
-        },
-        {
-          coords: {
-            clientX: 0,
-            clientY: 0,
-          },
-        },
-        {
-          keys: '[/MouseLeft]',
-        },
-      ]);
+      await fireEvent.wheel(scrollable, {
+        deltaX: 0,
+        deltaY: -700,
+      });
 
       await expect(args.onScroll).toHaveBeenLastCalledWith({
         is_vertical: true,
