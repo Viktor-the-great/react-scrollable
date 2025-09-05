@@ -3,26 +3,22 @@ import {
   type Ref,
   type PointerEvent,
   forwardRef,
+  memo,
   useRef,
   useImperativeHandle,
 } from 'react';
-import cx from './utils/classnames';
 import composeRefs from './utils/composeRef';
 import makePx from './utils/makePx';
 import toFixed from './utils/toFixed';
 import useEvent from './hooks/useEvent';
-import type { ScrollbarApiType, ScrollEvent } from './types';
-import './scrollbar.css';
+import type { ScrollbarByXApiType, ScrollEvent } from './types';
+import './scrollbarByX.css';
 
-type ScrollbarPropsType = {
+type ScrollbarByXPropsType = {
   /**
    * thumb size
    */
   thumbSize?: number;
-  /**
-   * is vertical or horizontal scrollbar?
-   */
-  isVertical?: boolean;
   /**
    * function called when thumb is moved using mouse pointer or touch pointer
    * @param {object} event - custom scroll event
@@ -41,44 +37,20 @@ type ScrollbarPropsType = {
   contentId: string;
 }
 
-function Scrollbar({
+function ScrollbarByX({
   thumbSize = 0,
-  isVertical = false,
   onScroll,
   contentId,
-}: ScrollbarPropsType, ref: Ref<ScrollbarApiType>): ReactElement {
-  const apiRef = useRef<ScrollbarApiType>(null);
+}: ScrollbarByXPropsType, ref: Ref<ScrollbarByXApiType>): ReactElement {
+  const apiRef = useRef<ScrollbarByXApiType>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
 
   useImperativeHandle(composeRefs(apiRef, ref), () => ({
-    get scrollTop() {
-      if (!isVertical) {
-        throw new Error('method not allowed');
-      }
-      return offsetRef.current;
-    },
-    set scrollTop(value) {
-      if (!isVertical) {
-        throw new Error('method not allowed');
-      }
-
-      if (thumbRef.current) {
-        thumbRef.current.style.marginTop = makePx(value);
-        thumbRef.current.setAttribute('aria-valuenow', value.toString());
-        offsetRef.current = value;
-      }
-    },
     get scrollLeft() {
-      if (isVertical) {
-        throw new Error('method not allowed');
-      }
       return offsetRef.current;
     },
     set scrollLeft(value) {
-      if (isVertical) {
-        throw new Error('method not allowed');
-      }
       if (thumbRef.current) {
         thumbRef.current.style.marginLeft = makePx(value);
         thumbRef.current.setAttribute('aria-valuenow', value.toString());
@@ -96,26 +68,17 @@ function Scrollbar({
       }
       const thumbRect = thumbElement.getBoundingClientRect();
       const trackRect = trackElement.getBoundingClientRect();
-      return isVertical
-        ? toFixed(thumbRect.height / trackRect.height * value, 1)
-        : toFixed(thumbRect.width / trackRect.width * value, 1);
+      return toFixed(thumbRect.width / trackRect.width * value, 1);
     },
-  }), [
-    isVertical,
-  ]);
+  }), []);
 
   const isPointerDown = useRef<boolean>(false);
   const clientXRef = useRef(0);
-  const clientYRef = useRef(0);
   const onPointerDown = useEvent((event: PointerEvent<HTMLDivElement>) => {
     if ((event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
       isPointerDown.current = true;
       event.currentTarget.setPointerCapture(event.pointerId);
-      if (isVertical) {
-        clientYRef.current = event.clientY;
-      } else {
-        clientXRef.current = event.clientX;
-      }
+      clientXRef.current = event.clientX;
     }
   });
   const onPointerMove = useEvent((event: PointerEvent<HTMLDivElement>) => {
@@ -126,22 +89,7 @@ function Scrollbar({
       if (trackElement && apiRef.current) {
         const thumbRect = thumbElement.getBoundingClientRect();
         const tractRect = trackElement.getBoundingClientRect();
-        if (isVertical && tractRect.height > thumbRect.height) {
-          const offset = Math.min(
-            Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
-            tractRect.height - thumbRect.height,
-          );
-          if (offset !== offsetRef.current) {
-            apiRef.current.scrollTop = offset;
-            clientYRef.current = event.clientY;
-            onScroll?.({
-              is_vertical: true,
-              scroll_top: offset,
-              is_top_edge_reached: offset === 0,
-              is_bottom_edge_reached: offset === tractRect.height - thumbRect.height,
-            });
-          }
-        } else if (tractRect.width > thumbRect.width) {
+        if (tractRect.width > thumbRect.width) {
           const offset = Math.min(
             Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
             tractRect.width - thumbRect.width,
@@ -163,29 +111,23 @@ function Scrollbar({
   const onPointerUp = useEvent(() => {
     isPointerDown.current = false;
     clientXRef.current = 0;
-    clientYRef.current = 0;
   });
 
-  const style = isVertical
-    ? { height: thumbSize ?? 0 }
-    : { width: thumbSize ?? 0 };
+  const style = { width: thumbSize ?? 0 }
   const isHidden = thumbSize === 0;
 
   return (
-    <div className="scrollable__slider">
+    <div className="scrollbar_by_x">
       <div
         ref={thumbRef}
-        className={cx('scrollable__thumb', {
-          scrollable__thumb_vertical: isVertical,
-          scrollable__thumb_horizontal: !isVertical,
-        })}
+        className="scrollbar_by_x__thumb"
         style={style}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         role="scrollbar"
-        aria-orientation={isVertical ? 'vertical' : 'horizontal'}
-        aria-label={isVertical ? 'vertical scrollbar' : 'horizontal scrollbar'}
+        aria-orientation="horizontal"
+        aria-label="horizontal scrollbar"
         aria-controls={contentId}
         aria-valuenow={0}
         aria-hidden={isHidden}
@@ -194,7 +136,7 @@ function Scrollbar({
   );
 }
 
-export default forwardRef<
-  ScrollbarApiType,
-  ScrollbarPropsType
->(Scrollbar);
+export default memo(forwardRef<
+  ScrollbarByXApiType,
+  ScrollbarByXPropsType
+>(ScrollbarByX));

@@ -12,11 +12,15 @@ export type ContentApiType = {
   getTopScrollSize(value: number): number;
 }
 
-export type ScrollbarApiType = {
-  get scrollTop(): number;
-  set scrollTop(value: number);
+export type ScrollbarByXApiType = {
   get scrollLeft(): number;
   set scrollLeft(value: number);
+  getScrollSize(value: number): number;
+}
+
+export type ScrollbarByYApiType = {
+  get scrollTop(): number;
+  set scrollTop(value: number);
   getScrollSize(value: number): number;
 }
 

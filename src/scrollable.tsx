@@ -10,11 +10,13 @@ import cx from './utils/classnames';
 import debounce from './utils/debounce';
 import generateUniqId from './utils/generateUniqId';
 import Content from './content';
-import Scrollbar from './scrollbar';
+import ScrollbarByX from './scrollbarByX';
+import ScrollbarByY from './scrollbarByY';
 import type {
   ScrollbarsSizeType,
   ContentApiType,
-  ScrollbarApiType,
+  ScrollbarByXApiType,
+  ScrollbarByYApiType,
   ScrollEvent,
 } from './types';
 import './scrollable.css';
@@ -60,8 +62,8 @@ function Scrollable({
   const [vThumbSize, setVThumbSize] = useState<number>(0);
   const [hThumbSize, setHThumbSize] = useState<number>(0);
 
-  const vScrollbarRef = useRef<ScrollbarApiType>(null);
-  const hScrollbarRef = useRef<ScrollbarApiType>(null);
+  const vScrollbarRef = useRef<ScrollbarByYApiType>(null);
+  const hScrollbarRef = useRef<ScrollbarByXApiType>(null);
   const contentRef = useRef<ContentApiType>(null);
 
   const onScrollEvent = useEvent((event: ScrollEvent) => onScroll?.(event));
@@ -126,14 +128,13 @@ function Scrollable({
       >
         {children}
       </Content>
-      <Scrollbar
+      <ScrollbarByY
         ref={vScrollbarRef}
         thumbSize={vThumbSize}
-        isVertical
         onScroll={onScrollByScrollbar}
         contentId={contentId}
       />
-      <Scrollbar
+      <ScrollbarByX
         ref={hScrollbarRef}
         thumbSize={hThumbSize}
         onScroll={onScrollByScrollbar}
