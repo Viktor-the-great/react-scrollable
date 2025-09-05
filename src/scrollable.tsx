@@ -2,24 +2,38 @@ import {
   type CSSProperties,
   type ReactElement,
   type ReactNode,
+  type Ref,
+  forwardRef,
   memo,
   useMemo,
   useRef,
   useState,
+  useImperativeHandle,
 } from 'react';
 import useEvent from './hooks/useEvent';
 import cx from './utils/classnames';
 import debounce from './utils/debounce';
 import generateUniqId from './utils/generateUniqId';
+import composeRef from './utils/composeRef';
+import {
+  isEqual, isMore,
+  toContentSize,
+  toScrollbarSize,
+} from './utils/math';
 import Content from './content';
-import ScrollbarByX from './scrollbarByX';
-import ScrollbarByY from './scrollbarByY';
+import HScrollbar from './hScrollbar';
+import VScrollbar from './vScrollbar';
+import {
+  NoContentApiError,
+  NoScrollableApiError,
+} from './errors';
 import type {
   ScrollbarsSizeType,
   ContentApiType,
-  ScrollbarByXApiType,
-  ScrollbarByYApiType,
+  HScrollbarApiType,
+  VScrollbarApiType,
   ScrollEvent,
+  ScrollableApiType,
 } from './types';
 import './scrollable.css';
 
@@ -60,96 +74,197 @@ function Scrollable({
   className = undefined,
   style = undefined,
   onScroll = undefined,
-}: ScrollablePropsType): ReactElement {
-  const [vThumbSize, setVThumbSize] = useState<number>(0);
-  const [hThumbSize, setHThumbSize] = useState<number>(0);
+}: ScrollablePropsType, ref: Ref<ScrollableApiType>): ReactElement {
+  const [isScrollbarByX, setScrollbarByX] = useState<boolean>(false);
+  const [isScrollbarByY, setScrollbarByY] = useState<boolean>(false);
 
-  const vScrollbarRef = useRef<ScrollbarByYApiType>(null);
-  const hScrollbarRef = useRef<ScrollbarByXApiType>(null);
-  const contentRef = useRef<ContentApiType>(null);
+  const scrollableApiRef = useRef<ScrollableApiType>(null);
+  const vScrollbarRef = useRef<VScrollbarApiType>(null);
+  const hScrollbarRef = useRef<HScrollbarApiType>(null);
+  const contentApiRef = useRef<ContentApiType>(null);
 
   const onScrollEvent = useEvent((event: ScrollEvent) => onScroll?.(event));
   const onDebounceScroll = useMemo(() => debounce(onScrollEvent, 300), [
     onScrollEvent,
   ])
 
-  const onContentChange = useEvent((size: ScrollbarsSizeType) => {
-    setVThumbSize(size.vThumbSize);
-    setHThumbSize(size.hThumbSize);
+  const onResize = useEvent((size: ScrollbarsSizeType) => {
+    if (vScrollbarRef.current) {
+      const isHidden = size.vThumbSize === 0;
+      vScrollbarRef.current.setSize(size.vThumbSize);
+      vScrollbarRef.current.setAttributes({
+        'aria-hidden': isHidden.toString(),
+      });
+      setScrollbarByY(!isHidden);
+    }
+    if (hScrollbarRef.current) {
+      const isHidden = size.hThumbSize === 0;
+      hScrollbarRef.current.setSize(size.hThumbSize);
+      hScrollbarRef.current.setAttributes({
+        'aria-hidden': isHidden.toString(),
+      });
+      setScrollbarByX(!isHidden);
+    }
   });
-  const onScrollByContent = useEvent((event: ScrollEvent) => {
+  const onContentScroll = useEvent((event: ScrollEvent) => {
+    if (!scrollableApiRef.current) {
+      throw new NoScrollableApiError();
+    }
+
     if (event.is_vertical) {
-      if (vScrollbarRef.current) {
-        vScrollbarRef.current.scrollTop = vScrollbarRef.current.getScrollSize(event.scroll_top);
-      }
+      scrollableApiRef.current.scrollTop = event.scroll_top;
     } else {
-      if (hScrollbarRef.current) {
-        hScrollbarRef.current.scrollLeft = hScrollbarRef.current.getScrollSize(event.scroll_left);
-      }
+      scrollableApiRef.current.scrollLeft = event.scroll_left;
     }
     onDebounceScroll(event);
   });
-  const onScrollByScrollbar = useEvent((event: ScrollEvent) => {
-    if (event.is_vertical) {
-      if (contentRef.current) {
-        const scrollTop = contentRef.current.getTopScrollSize(event.scroll_top);
-        contentRef.current.scrollTop = scrollTop;
-        onDebounceScroll({
-          ...event,
-          scroll_top: scrollTop,
-        });
-      }
-    } else {
-      if (contentRef.current) {
-        const scrollLeft = contentRef.current.getLeftScrollSize(event.scroll_left);
-        contentRef.current.scrollLeft = scrollLeft;
-        onDebounceScroll({
-          ...event,
-          scroll_left: scrollLeft,
-        });
-      }
+  const onByXScroll = useEvent((offset: number) => {
+    if (!contentApiRef.current) {
+      throw new NoContentApiError();
     }
+    if (!scrollableApiRef.current) {
+      throw new NoScrollableApiError();
+    }
+    const contentRect = contentApiRef.current.getContentRect();
+    const scrollableRect = contentApiRef.current.getScrollableRect();
+
+    const scrollLeft = toContentSize(
+      offset,
+      contentRect.width,
+      scrollableRect.width
+    );
+    scrollableApiRef.current.scrollLeft = scrollLeft;
+    onDebounceScroll({
+      is_vertical: false,
+      scroll_left: scrollLeft,
+      is_left_edge_reached: isEqual(scrollLeft, 0),
+      is_right_edge_reached: isEqual(scrollLeft, contentRect.width - scrollableRect.width),
+    });
   });
+  const onByYScroll = useEvent((offset: number) => {
+    if (!contentApiRef.current) {
+      throw new NoContentApiError();
+    }
+    if (!scrollableApiRef.current) {
+      throw new NoScrollableApiError();
+    }
+    const contentRect = contentApiRef.current.getContentRect();
+    const scrollableRect = contentApiRef.current.getScrollableRect();
+
+    const scrollTop = toContentSize(
+      offset,
+      contentRect.height,
+      scrollableRect.height
+    );
+    scrollableApiRef.current.scrollTop = scrollTop;
+    onDebounceScroll({
+      is_vertical: true,
+      scroll_top: scrollTop,
+      is_top_edge_reached: isEqual(scrollTop, 0),
+      is_bottom_edge_reached: isEqual(scrollTop, contentRect.height - scrollableRect.height),
+    });
+  });
+
+  useImperativeHandle(composeRef(ref, scrollableApiRef), () => ({
+    get scrollLeft() {
+      return contentApiRef.current?.scrollLeft ?? 0;
+    },
+    set scrollLeft(value: number) {
+      if (!contentApiRef.current) {
+        throw new NoContentApiError();
+      }
+      contentApiRef.current.scrollLeft = value;
+      contentApiRef.current.setAttributes({
+        'data-scroll-left': `-${value}`,
+      });
+      const contentRect = contentApiRef.current.getContentRect();
+      const scrollableRect = contentApiRef.current.getScrollableRect();
+      if (hScrollbarRef.current) {
+        const scrollLeft = toScrollbarSize(
+          value,
+          contentRect.width,
+          scrollableRect.width,
+        );
+        hScrollbarRef.current.scrollLeft = scrollLeft;
+        const isHidden = !isMore(contentRect.width, scrollableRect.width);
+        hScrollbarRef.current.setAttributes({
+          'aria-valuenow': value.toString(),
+          'aria-hidden': isHidden.toString(),
+          'data-scroll-left': scrollLeft.toString(),
+        });
+      }
+    },
+    get scrollTop() {
+      return contentApiRef.current?.scrollTop ?? 0;
+    },
+    set scrollTop(value: number) {
+      if (!contentApiRef.current) {
+        throw new NoContentApiError();
+      }
+      contentApiRef.current.scrollTop = value;
+      contentApiRef.current.setAttributes({
+        'data-scroll-top': `-${value}`,
+      });
+      const contentRect = contentApiRef.current.getContentRect();
+      const scrollableRect = contentApiRef.current.getScrollableRect();
+      if (vScrollbarRef.current) {
+        const scrollTop = toScrollbarSize(
+          value,
+          contentRect.height,
+          scrollableRect.height,
+        );
+        vScrollbarRef.current.scrollTop = scrollTop;
+        const isHidden = !isMore(contentRect.height, scrollableRect.height);
+        vScrollbarRef.current.setAttributes({
+          'aria-valuenow': value.toString(),
+          'aria-hidden': isHidden.toString(),
+          'data-scroll-top': scrollTop.toString(),
+        });
+      }
+    },
+  }), []);
 
   const contentId = useMemo(() => generateUniqId(), []);
 
   return (
     <div
       className={cx('scrollable', {
-        'scrollable_by-x': hThumbSize !== 0,
-        'scrollable_by-y': vThumbSize !== 0,
+        'scrollable_by-x': isScrollbarByX,
+        'scrollable_by-y': isScrollbarByY,
         'scrollable_show-mouse-on-hover': showThumbOnHover,
       }, className)}
       style={style}
     >
       <Content
-        ref={contentRef}
-        onChange={onContentChange}
+        ref={contentApiRef}
+        onResize={onResize}
         contentId={contentId}
-        onScroll={onScrollByContent}
+        onScroll={onContentScroll}
       >
         {children}
       </Content>
-      <ScrollbarByY
+      <VScrollbar
         ref={vScrollbarRef}
-        thumbSize={vThumbSize}
-        onScroll={onScrollByScrollbar}
-        contentId={contentId}
+        onScroll={onByYScroll}
+        aria-controls={contentId}
       />
-      <ScrollbarByX
+      <HScrollbar
         ref={hScrollbarRef}
-        thumbSize={hThumbSize}
-        onScroll={onScrollByScrollbar}
-        contentId={contentId}
+        onScroll={onByXScroll}
+        aria-controls={contentId}
       />
       <div data-testid="extreme-point" />
     </div>
   );
 }
 
-export default memo(Scrollable);
+export default memo(forwardRef<
+  ScrollableApiType,
+  ScrollablePropsType
+>(Scrollable));
 
 export type {
   ScrollablePropsType,
   ScrollEvent,
+  ScrollableApiType,
 }

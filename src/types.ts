@@ -8,20 +8,31 @@ export type ContentApiType = {
   set scrollTop(value: number);
   get scrollLeft(): number;
   set scrollLeft(value: number);
-  getLeftScrollSize(value: number): number;
-  getTopScrollSize(value: number): number;
+  getContentRect(): DOMRect;
+  getScrollableRect(): DOMRect;
+  setAttributes(attributes: Record<string, string>): void;
 }
 
-export type ScrollbarByXApiType = {
+export type BaseScrollbarApiType = {
+  setSize(value: number): void;
+  setAttributes(attributes: Record<string, string>): void;
+}
+
+export type HScrollbarApiType = BaseScrollbarApiType & {
   get scrollLeft(): number;
   set scrollLeft(value: number);
-  getScrollSize(value: number): number;
 }
 
-export type ScrollbarByYApiType = {
+export type VScrollbarApiType = BaseScrollbarApiType & {
   get scrollTop(): number;
   set scrollTop(value: number);
-  getScrollSize(value: number): number;
+}
+
+export type ScrollableApiType = {
+  get scrollLeft(): number;
+  set scrollLeft(value: number);
+  get scrollTop(): number;
+  set scrollTop(value: number);
 }
 
 export type ScrollEvent = {

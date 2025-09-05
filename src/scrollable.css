@@ -1,26 +1,42 @@
 .scrollable {
   display: grid;
-  grid-template-columns: auto 0;
-  grid-template-rows: auto 0;
+  grid-template-columns: 1fr 0;
+  grid-template-rows: 1fr 0;
+
+  .scrollable__scrollbar_horizontal {
+    visibility: hidden;
+  }
+
+  .scrollable__scrollbar_vertical {
+    visibility: hidden;
+  }
 
   &_by-x {
-    grid-template-rows: auto 6px;
+    grid-template-rows: 1fr auto;
     row-gap: 2px;
+
+    .scrollable__scrollbar_horizontal {
+      visibility: visible;
+    }
   }
 
   &_by-y {
-    grid-template-columns: auto 6px;
+    grid-template-columns: 1fr auto;
     column-gap: 2px;
+
+    .scrollable__scrollbar_vertical {
+      visibility: visible;
+    }
   }
 
   &_show-mouse-on-hover {
     @media (hover: hover) {
-      .scrollable__slider {
+      .scrollable__scrollbar {
         visibility: hidden;
       }
 
       &:hover {
-        .scrollable__slider {
+        .scrollable__scrollbar {
           visibility: visible;
         }
       }
