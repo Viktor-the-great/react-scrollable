@@ -8,9 +8,9 @@ import {
 import useEvent from './hooks/useEvent';
 import cx from './utils/classnames';
 import debounce from './utils/debounce';
+import generateUniqId from './utils/generateUniqId';
 import Content from './content';
 import Scrollbar from './scrollbar';
-import generateUniqId from './generateUniqId';
 import type {
   ScrollbarsSizeType,
   ContentApiType,
