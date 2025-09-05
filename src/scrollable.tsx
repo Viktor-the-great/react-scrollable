@@ -1,7 +1,9 @@
 import {
   type CSSProperties,
   type ReactElement,
-  type ReactNode, useMemo,
+  type ReactNode,
+  memo,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -21,7 +23,7 @@ import type {
 } from './types';
 import './scrollable.css';
 
-export type ScrollablePropsType = {
+type ScrollablePropsType = {
   /**
    * content of scrollable area
    */
@@ -145,4 +147,9 @@ function Scrollable({
   );
 }
 
-export default Scrollable;
+export default memo(Scrollable);
+
+export type {
+  ScrollablePropsType,
+  ScrollEvent,
+}
