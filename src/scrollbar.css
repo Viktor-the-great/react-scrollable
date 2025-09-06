@@ -1,13 +1,21 @@
-.scrollbar_by_y {
+.scrollable__scrollbar {
   overflow: hidden;
   user-select: none;
+
+  &_vertical &__thumb {
+    height: 0;
+    width: 6px;
+  }
+
+  &_horizontal &__thumb {
+    height: 6px;
+    width: 0;
+  }
 
   &__thumb {
     border-radius: 3px;
     background: #cccccc;
     cursor: pointer;
     touch-action: none;
-    height: 0;
-    width: 6px;
   }
 }
