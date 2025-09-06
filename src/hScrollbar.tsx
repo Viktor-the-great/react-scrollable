@@ -37,7 +37,7 @@ function HScrollbar({
     },
     set scrollLeft(value) {
       if (thumbRef.current) {
-        thumbRef.current.style.marginLeft = makePx(value);
+        thumbRef.current.style.transform = `translateX(${makePx(value)})`;
         thumbRef.current.setAttribute('data-scroll-left', value.toString());
         offsetRef.current = value;
       }

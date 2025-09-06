@@ -37,7 +37,7 @@ function VScrollbar({
     },
     set scrollTop(value) {
       if (thumbRef.current) {
-        thumbRef.current.style.marginTop = makePx(value);
+        thumbRef.current.style.transform = `translateY(${makePx(value)})`;
         thumbRef.current.setAttribute('data-scroll-top', value.toString());
         offsetRef.current = value;
       }

@@ -109,7 +109,7 @@ function Content({
       if (!contentRef.current) {
         throw new Error('content element not defined');
       }
-      contentRef.current.style.marginTop = makePx(-value);
+      contentRef.current.style.transform = `translate(${makePx(-offsetLeftRef.current)}, ${makePx(-value)})`;
       contentRef.current.setAttribute('data-scroll-top', `-${value}`)
       offsetTopRef.current = value;
     },
@@ -120,7 +120,7 @@ function Content({
       if (!contentRef.current) {
         throw new Error('content element not defined');
       }
-      contentRef.current.style.marginLeft = makePx(-value);
+      contentRef.current.style.transform = `translate(${makePx(-value)}, ${makePx(-offsetTopRef.current)})`;
       contentRef.current.setAttribute('data-scroll-left', `-${value}`)
       offsetLeftRef.current = value;
     },
