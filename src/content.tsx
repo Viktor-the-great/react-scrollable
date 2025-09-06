@@ -7,14 +7,17 @@ import {
   useImperativeHandle,
   useRef,
   useEffect,
+  useMemo,
 } from 'react';
 import useResizeObserver from './hooks/useResizeObserver';
 import useEvent from './hooks/useEvent';
 import makePx from './utils/makePx';
 import { floor, isEqual, isMore } from './utils/math';
+import debounce from './utils/debounce';
 import type {
   ScrollbarsSizeType,
-  ContentApiType, ScrollEvent,
+  ContentApiType,
+  ScrollEvent,
 } from './types';
 import './content.css';
 
@@ -60,7 +63,13 @@ function Content({
   const scrollableRef = useRef<HTMLDivElement>(null);
 
   const onResizeEvent = useEvent(onResize);
-
+  const onDebounceResize = useMemo(
+    () => debounce(onResizeEvent, {
+      wait: 300,
+      leading: true,
+    }), [
+      onResizeEvent
+    ]);
   const contentSize = useResizeObserver({
     elementRef: contentRef,
     onChange: (size) => {
@@ -82,7 +91,7 @@ function Content({
           size.width - scrollableRect.width,
         );
 
-        onResizeEvent({
+        onDebounceResize({
           hThumbSize: floor(hThumbSize, 2),
           vThumbSize: floor(vThumbSize, 2),
           scrollLeft,
@@ -111,7 +120,7 @@ function Content({
           contentRect.width - scrollableSize.width,
         );
 
-        onResizeEvent({
+        onDebounceResize({
           hThumbSize: floor(hThumbSize, 2),
           vThumbSize: floor(vThumbSize, 2),
           scrollLeft,
