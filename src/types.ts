@@ -1,6 +1,8 @@
 export type ScrollbarsSizeType = {
   hThumbSize: number;
   vThumbSize: number;
+  scrollLeft: number;
+  scrollTop: number;
 }
 
 export type ContentApiType = {

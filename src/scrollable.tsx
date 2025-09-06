@@ -89,6 +89,9 @@ function Scrollable({
   ])
 
   const onResize = useEvent((size: ScrollbarsSizeType) => {
+    if (!scrollableApiRef.current) {
+      throw new NoScrollableApiError();
+    }
     if (vScrollbarRef.current) {
       const isHidden = size.vThumbSize === 0;
       vScrollbarRef.current.setSize(size.vThumbSize);
@@ -105,6 +108,8 @@ function Scrollable({
       });
       setScrollbarByX(!isHidden);
     }
+    scrollableApiRef.current.scrollTop = size.scrollTop;
+    scrollableApiRef.current.scrollLeft = size.scrollLeft;
   });
   const onContentScroll = useEvent((event: ScrollEvent) => {
     if (!scrollableApiRef.current) {

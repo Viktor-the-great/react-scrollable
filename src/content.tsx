@@ -73,10 +73,20 @@ function Content({
         const vThumbSize = isMore(size.height, scrollableRect.height)
           ? scrollableRect.height / (size.height / scrollableRect.height)
           : 0;
+        const scrollTop = Math.min(
+          Math.max(0, offsetTopRef.current),
+          size.height - scrollableRect.height,
+        );
+        const scrollLeft = Math.min(
+          Math.max(0, offsetLeftRef.current),
+          size.width - scrollableRect.width,
+        );
 
         onResizeEvent({
           hThumbSize: floor(hThumbSize, 2),
           vThumbSize: floor(vThumbSize, 2),
+          scrollLeft,
+          scrollTop,
         });
       }
     },
@@ -92,10 +102,20 @@ function Content({
         const vThumbSize = isMore(contentRect.height, scrollableSize.height)
           ? scrollableSize.height / (contentRect.height / scrollableSize.height)
           : 0;
+        const scrollTop = Math.min(
+          Math.max(0, offsetTopRef.current),
+          contentRect.height - scrollableSize.height,
+        );
+        const scrollLeft = Math.min(
+          Math.max(0, offsetLeftRef.current),
+          contentRect.width - scrollableSize.width,
+        );
 
         onResizeEvent({
           hThumbSize: floor(hThumbSize, 2),
           vThumbSize: floor(vThumbSize, 2),
+          scrollLeft,
+          scrollTop,
         });
       }
     },
