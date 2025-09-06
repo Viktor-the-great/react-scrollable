@@ -488,7 +488,7 @@ export const LazyScrollableByX: Story = {
             items.map((item) => (
               <div
                 key={item}
-                className="lazy-scrollable-by-x_item"
+                className="lazy-scrollable-by-x__item"
               >
                 {item}
               </div>
@@ -496,7 +496,7 @@ export const LazyScrollableByX: Story = {
           }
           {
             isLoading && (
-              <div className="lazy-scrollable-by-x_item">
+              <div className="lazy-scrollable-by-x__item">
                 loading...
               </div>
             )
@@ -599,23 +599,25 @@ export const LazyScrollableByY: Story = {
           }
         }}
       >
-        {
-          items.map((item) => (
-            <div
-              key={item}
-              className="lazy-scrollable-by-y_item"
-            >
-              {item}
-            </div>
-          ))
-        }
-        {
-          isLoading && (
-            <div className="lazy-scrollable-by-y_item">
-              loading...
-            </div>
-          )
-        }
+        <div className="lazy-scrollable-by-y">
+          {
+            items.map((item) => (
+              <div
+                key={item}
+                className="lazy-scrollable-by-y__item"
+              >
+                {item}
+              </div>
+            ))
+          }
+          {
+            isLoading && (
+              <div className="lazy-scrollable-by-y__item">
+                loading...
+              </div>
+            )
+          }
+        </div>
       </Scrollable>
     )
   },

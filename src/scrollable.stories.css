@@ -3,21 +3,13 @@
   flex-direction: column;
   gap: 10px;
 
-  &_item {
+  &__item {
     height: 100px;
     line-height: 100px;
+    width: 100%;
     text-align: center;
     box-sizing: border-box;
-    border-style: solid;
-    border-color: #ccc;
-    border-left-width: 1px;
-    border-right-width: 1px;
-    border-top-width: 1px;
-    border-bottom-width: 0;
-
-    &:last-child {
-      border-bottom-width: 1px;
-    }
+    border: 1px solid #cccccc;
   }
 }
 
@@ -25,7 +17,7 @@
   display: flex;
   gap: 10px;
 
-  &_item {
+  &__item {
     height: 100px;
     line-height: 100px;
     width: 200px;
