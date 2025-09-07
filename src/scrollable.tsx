@@ -84,7 +84,7 @@ function Scrollable({
   const contentApiRef = useRef<ContentApiType>(null);
 
   const onScrollEvent = useEvent((event: ScrollEvent) => onScroll?.(event));
-  const onDebounceScroll = useMemo(() => debounce(onScrollEvent, 300), [
+  const onDebounceScroll = useMemo(() => debounce(onScrollEvent, 100), [
     onScrollEvent,
   ])
 
