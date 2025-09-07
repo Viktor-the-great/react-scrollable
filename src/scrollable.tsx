@@ -263,10 +263,14 @@ function Scrollable({
   );
 }
 
-export default memo(forwardRef<
+const MemoScrollable = memo(forwardRef<
   ScrollableApiType,
   ScrollablePropsType
 >(Scrollable));
+
+MemoScrollable.displayName = 'Scrollable';
+
+export default MemoScrollable;
 
 export type {
   ScrollablePropsType,
