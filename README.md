@@ -3,35 +3,9 @@
 Scrollable is a custom component made to handle scrolling with a custom scrollbar. 
 
 ## Features:
-* render custom vertical/horizontal thumb
-* support mouse pointer
-* support touch pointer
+* support mouse, touch pointers
 * support accessibility
-* can show thumbs on mouse hover and hide on mouse leave
+* support for setting thumbs visibility on mouseover
 
-## Installation
-`npm install @v.voloshin/react-scrollable`
-
-## Usage
-```js
-import Scrollable from '@v.voloshin/react-scrollable'
-
-function ScrollableText({
-  children,
-}) {
-    return (
-      <Scrollable>
-        {children}
-      </Scrollable>
-    )
-}
-```
-
-## Scrollbar props
-| Prop             | Description                                                                |
-|------------------|----------------------------------------------------------------------------|
-| children         | content of scrollable area                                                 |
-| showThumbOnHover | show thumbs on mouse hover, effects only for pointing devices like a mouse |
-| children         | content of scrollable area                                                 |
-| style            | use styles to customize element styles                                     |
-| onScroll         | function called when scrolling using wheel, mouse pointer, touch pointer   |
+## Docs
+You can check out docs [here](https://68b616bf6a61d2d117d8f068-cbllhronht.chromatic.com/?path=/docs/scrollable--docs "more info")

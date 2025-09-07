@@ -68,6 +68,9 @@ type ScrollablePropsType = {
   onScroll?: (event: ScrollEvent) => void | Promise<void>;
 }
 
+/**
+ * Scrollable is a custom component made to handle scrolling with a custom scrollbar.
+ */
 function Scrollable({
   children,
   showThumbOnHover = false,
