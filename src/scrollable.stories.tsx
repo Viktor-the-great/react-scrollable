@@ -444,6 +444,7 @@ export const LazyScrollableByX: Story = {
     ...ScrollableByXY.args,
     style: {
       width: 1000,
+      margin: '0 auto',
     },
     onScroll: fn()
   },
@@ -521,28 +522,34 @@ export const LazyScrollableByX: Story = {
       canvas,
       args,
     }) => {
-      const scrollable = canvas.getByTestId('scrollable-content');
+      const scrollable = canvas.getByTestId('scrollable-wrapper');
+      const content = canvas.getByTestId('scrollable-content');
 
+      await expect(content).toBeInTheDocument();
       await expect(scrollable).toBeInTheDocument();
 
-      await fireEvent.wheel(scrollable, {
+      const contentRect = content.getBoundingClientRect();
+      const scrollableRect = scrollable.getBoundingClientRect();
+      const contentScrollLeft = contentRect.width - scrollableRect.width;
+
+      await fireEvent.wheel(content, {
         deltaX: 0,
-        deltaY: 1090,
+        deltaY: contentScrollLeft,
         shiftKey: true,
       });
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
           is_vertical: false,
-          scroll_left: 1090,
+          scroll_left: contentScrollLeft,
           is_left_edge_reached: false,
           is_right_edge_reached: true,
         });
       });
 
-      await fireEvent.wheel(scrollable, {
+      await fireEvent.wheel(content, {
         deltaX: 0,
-        deltaY: -1090,
+        deltaY: -contentScrollLeft,
         shiftKey: true,
       });
 
@@ -637,29 +644,35 @@ export const LazyScrollableByY: Story = {
       canvas,
       args,
     }) => {
-      const scrollable = canvas.getByTestId('scrollable-content');
+      const scrollable = canvas.getByTestId('scrollable-wrapper');
+      const content = canvas.getByTestId('scrollable-content');
       const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
 
       await expect(scrollable).toBeInTheDocument();
+      await expect(content).toBeInTheDocument();
       await expect(scrollbarByY).toBeInTheDocument();
 
-      await fireEvent.wheel(scrollable, {
+      const contentRect = content.getBoundingClientRect();
+      const scrollableRect = scrollable.getBoundingClientRect();
+      const contentScrollTop = contentRect.height - scrollableRect.height;
+
+      await fireEvent.wheel(content, {
         deltaX: 0,
-        deltaY: 700,
+        deltaY: contentScrollTop,
       });
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
           is_vertical: true,
-          scroll_top: 700,
+          scroll_top: contentScrollTop,
           is_top_edge_reached: false,
           is_bottom_edge_reached: true,
         });
       });
 
-      await fireEvent.wheel(scrollable, {
+      await fireEvent.wheel(content, {
         deltaX: 0,
-        deltaY: -700,
+        deltaY: -contentScrollTop,
       });
 
       await waitFor(async () => {
