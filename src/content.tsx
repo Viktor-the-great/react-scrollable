@@ -82,14 +82,14 @@ function Content({
         const vThumbSize = isMore(size.height, scrollableRect.height)
           ? scrollableRect.height / (size.height / scrollableRect.height)
           : 0;
-        const scrollTop = Math.min(
-          Math.max(0, offsetTopRef.current),
-          size.height - scrollableRect.height,
-        );
-        const scrollLeft = Math.min(
-          Math.max(0, offsetLeftRef.current),
-          size.width - scrollableRect.width,
-        );
+        let scrollTop = Math.max(0, offsetTopRef.current);
+        if (isMore(size.height, scrollableRect.height)) {
+          scrollTop = Math.min(scrollTop, size.height - scrollableRect.height)
+        }
+        let scrollLeft = Math.max(0, offsetLeftRef.current);
+        if (isMore(size.width, scrollableRect.width)) {
+          scrollLeft = Math.min(scrollLeft, size.width - scrollableRect.width)
+        }
 
         onDebounceResize({
           hThumbSize: floor(hThumbSize, 2),
@@ -111,14 +111,14 @@ function Content({
         const vThumbSize = isMore(contentRect.height, scrollableSize.height)
           ? scrollableSize.height / (contentRect.height / scrollableSize.height)
           : 0;
-        const scrollTop = Math.min(
-          Math.max(0, offsetTopRef.current),
-          contentRect.height - scrollableSize.height,
-        );
-        const scrollLeft = Math.min(
-          Math.max(0, offsetLeftRef.current),
-          contentRect.width - scrollableSize.width,
-        );
+        let scrollTop = Math.max(0, offsetTopRef.current);
+        if (isMore(contentRect.height, scrollableSize.height)) {
+          scrollTop = Math.min(scrollTop, contentRect.height - scrollableSize.height)
+        }
+        let scrollLeft = Math.max(0, offsetLeftRef.current);
+        if (isMore(contentRect.width, scrollableSize.width)) {
+          scrollLeft = Math.min(scrollLeft, contentRect.width - scrollableSize.width)
+        }
 
         onDebounceResize({
           hThumbSize: floor(hThumbSize, 2),
