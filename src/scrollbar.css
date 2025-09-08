@@ -4,17 +4,29 @@
 
   &_vertical &__thumb {
     height: 0;
-    width: 6px;
+    width: var(--thumb-size, 6px);
   }
 
   &_horizontal &__thumb {
-    height: 6px;
+    height: var(--thumb-size, 6px);
     width: 0;
   }
 
+  &__track {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+
+    background: var(--track-background, none);
+    border: var(--track-border, none);
+    border-radius: var(--track-border-radius, 0);
+  }
+
   &__thumb {
-    border-radius: 3px;
-    background: #cccccc;
+    box-sizing: border-box;
+    border: var(--thumb-border, none);
+    border-radius: var(--thumb-border-radius, 3px);
+    background: var(--thumb-background, #C7CED480);
     cursor: pointer;
     touch-action: none;
   }

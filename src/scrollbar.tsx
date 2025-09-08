@@ -29,16 +29,18 @@ function Scrollbar({
       'scrollable__scrollbar_horizontal': !isVertical,
       'scrollable__scrollbar_vertical': isVertical,
     })}>
-      <div
-        {...props}
-        ref={ref}
-        className="scrollable__scrollbar__thumb"
-        role="scrollbar"
-        aria-orientation={ariaOrientation}
-        aria-label={ariaLabel}
-        aria-valuenow={0}
-        aria-hidden={true}
-      />
+      <div className="scrollable__scrollbar__track">
+        <div
+          {...props}
+          ref={ref}
+          className="scrollable__scrollbar__thumb"
+          role="scrollbar"
+          aria-orientation={ariaOrientation}
+          aria-label={ariaLabel}
+          aria-valuenow={0}
+          aria-hidden={true}
+        />
+      </div>
     </div>
   );
 }
