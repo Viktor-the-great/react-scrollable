@@ -61,7 +61,7 @@ export const LazyScrollableByX: Story = {
           if (items.length >= 50) {
             return;
           }
-          if (!event.is_vertical && event.is_right_edge_reached) {
+          if (!event.isVertical && event.is_right_edge_reached) {
             setIsLoading(true);
             await new Promise((resolve) => {
               setTimeout(resolve, 3000);
@@ -130,8 +130,8 @@ export const LazyScrollableByX: Story = {
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
-          is_vertical: false,
-          scroll_left: contentScrollLeft,
+          isVertical: false,
+          scrollLeft: contentScrollLeft,
           is_left_edge_reached: false,
           is_right_edge_reached: true,
         });
@@ -145,8 +145,8 @@ export const LazyScrollableByX: Story = {
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
-          is_vertical: false,
-          scroll_left: 0,
+          isVertical: false,
+          scrollLeft: 0,
           is_left_edge_reached: true,
           is_right_edge_reached: false,
         });
@@ -187,7 +187,7 @@ export const LazyScrollableByY: Story = {
           if (items.length >= 50) {
             return;
           }
-          if (event.is_vertical && event.is_bottom_edge_reached) {
+          if (event.isVertical && event.isBottomEdgeReached) {
             setIsLoading(true);
             await new Promise((resolve) => {
               setTimeout(resolve, 3000);
@@ -257,10 +257,10 @@ export const LazyScrollableByY: Story = {
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
-          is_vertical: true,
-          scroll_top: contentScrollTop,
-          is_top_edge_reached: false,
-          is_bottom_edge_reached: true,
+          isVertical: true,
+          scrollTop: contentScrollTop,
+          isTopEdgeReached: false,
+          isBottomEdgeReached: true,
         });
       });
 
@@ -271,10 +271,10 @@ export const LazyScrollableByY: Story = {
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
-          is_vertical: true,
-          scroll_top: 0,
-          is_top_edge_reached: true,
-          is_bottom_edge_reached: false,
+          isVertical: true,
+          scrollTop: 0,
+          isTopEdgeReached: true,
+          isBottomEdgeReached: false,
         });
       });
     });

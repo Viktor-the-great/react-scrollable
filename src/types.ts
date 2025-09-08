@@ -38,13 +38,13 @@ export type ScrollableApiType = {
 }
 
 export type ScrollEvent = {
-  is_vertical: true;
-  scroll_top: number;
-  is_top_edge_reached: boolean;
-  is_bottom_edge_reached: boolean;
+  isVertical: true;
+  scrollTop: number;
+  isTopEdgeReached: boolean;
+  isBottomEdgeReached: boolean;
 } | {
-  is_vertical: false;
-  scroll_left: number;
+  isVertical: false;
+  scrollLeft: number;
   is_left_edge_reached: boolean;
   is_right_edge_reached: boolean;
 };

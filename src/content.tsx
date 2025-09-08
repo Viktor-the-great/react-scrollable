@@ -30,11 +30,11 @@ type ContentPropsType = {
   /**
    * function called when scrolling using wheel, mouse pointer, touch pointer
    * @param {object} event - custom scroll event
-   * @param {boolean} event.is_vertical - is vertical scrolling?
-   * @param {number | null} event.scroll_top - number of pixels by which an element's content is scrolled from its top edge, applies to vertical scrolling
-   * @param {number | null} event.scroll_left - number of pixels by which an element's content is scrolled from its left edge, applies to horizontal scrolling
-   * @param {boolean | null} event.is_top_edge_reached - flag indicating that the top edge of the element's content has been reached, applies to vertical scrolling
-   * @param {boolean | null} event.is_bottom_edge_reached - flag indicating that the bottom edge of the element's content has been reached, applies to vertical scrolling
+   * @param {boolean} event.isVertical - is vertical scrolling?
+   * @param {number | null} event.scrollTop - number of pixels by which an element's content is scrolled from its top edge, applies to vertical scrolling
+   * @param {number | null} event.scrollLeft - number of pixels by which an element's content is scrolled from its left edge, applies to horizontal scrolling
+   * @param {boolean | null} event.isTopEdgeReached - flag indicating that the top edge of the element's content has been reached, applies to vertical scrolling
+   * @param {boolean | null} event.isBottomEdgeReached - flag indicating that the bottom edge of the element's content has been reached, applies to vertical scrolling
    * @param {boolean | null} event.is_left_edge_reached - flag indicating that the left edge of the element's content has been reached, applies to horizontal scrolling
    * @param {boolean | null} event.is_right_edge_reached - flag indicating that the right edge of the element's content has been reached, applies to horizontal scrolling
    */
@@ -186,8 +186,8 @@ function Content({
         event.stopPropagation();
         offsetLeftRef.current = offsetByX;
         onScroll?.({
-          is_vertical: false,
-          scroll_left: offsetByX,
+          isVertical: false,
+          scrollLeft: offsetByX,
           is_left_edge_reached: isEqual(offsetByX, 0),
           is_right_edge_reached: isEqual(offsetByX, contentSize.width - scrollableRect.width),
         });
@@ -205,10 +205,10 @@ function Content({
         event.stopPropagation();
         offsetTopRef.current = offsetByY;
         onScroll?.({
-          is_vertical: true,
-          scroll_top: offsetByY,
-          is_top_edge_reached: isEqual(offsetByY, 0),
-          is_bottom_edge_reached: isEqual(offsetByY, contentSize.height - scrollableRect.height),
+          isVertical: true,
+          scrollTop: offsetByY,
+          isTopEdgeReached: isEqual(offsetByY, 0),
+          isBottomEdgeReached: isEqual(offsetByY, contentSize.height - scrollableRect.height),
         });
       }
     }
@@ -252,10 +252,10 @@ function Content({
         if (offsetTopRef.current !== offsetByY) {
           clientYRef.current = event.clientY;
           onScroll?.({
-            is_vertical: true,
-            scroll_top: offsetByY,
-            is_top_edge_reached: offsetByY === 0,
-            is_bottom_edge_reached: offsetByY === targetRect.height - scrollableRect.height,
+            isVertical: true,
+            scrollTop: offsetByY,
+            isTopEdgeReached: offsetByY === 0,
+            isBottomEdgeReached: offsetByY === targetRect.height - scrollableRect.height,
           });
         }
       }
@@ -268,8 +268,8 @@ function Content({
         if (offsetLeftRef.current !== offsetByX) {
           clientXRef.current = event.clientX;
           onScroll?.({
-            is_vertical: false,
-            scroll_left: offsetByX,
+            isVertical: false,
+            scrollLeft: offsetByX,
             is_left_edge_reached: offsetByX === 0,
             is_right_edge_reached: offsetByX === targetRect.width - scrollableRect.width,
           });
