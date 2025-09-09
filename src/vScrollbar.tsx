@@ -29,17 +29,22 @@ function VScrollbar({
 }: VScrollbarPropsType, ref: Ref<VScrollbarApiType>): ReactElement {
   const scrollbarApiRef = useRef<VScrollbarApiType>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
 
   useImperativeHandle(composeRef(ref, scrollbarApiRef), () => ({
     get scrollTop() {
-      return offsetRef.current;
+      if (thumbRef.current) {
+        const thumbElement = thumbRef.current;
+        const trackElement = thumbElement.parentElement!
+        const thumbRect = thumbElement.getBoundingClientRect();
+        const trackRect = trackElement.getBoundingClientRect();
+        return thumbRect.top - trackRect.top;
+      }
+      return 0;
     },
     set scrollTop(value) {
       if (thumbRef.current) {
         thumbRef.current.style.transform = `translateY(${makePx(value)})`;
         thumbRef.current.setAttribute('data-scroll-top', value.toString());
-        offsetRef.current = value;
       }
     },
     setSize(value: number) {
@@ -70,13 +75,14 @@ function VScrollbar({
 
       if (trackElement) {
         const thumbRect = thumbElement.getBoundingClientRect();
-        const tractRect = trackElement.getBoundingClientRect();
-        if (isMore(tractRect.height, thumbRect.height)) {
+        const trackRect = trackElement.getBoundingClientRect();
+        if (isMore(trackRect.height, thumbRect.height)) {
+          const currentOffset = thumbRect.top - trackRect.top;
           const offset = Math.min(
-            Math.max(offsetRef.current + event.clientY - clientYRef.current, 0),
-            tractRect.height - thumbRect.height,
+            Math.max(currentOffset + event.clientY - clientYRef.current, 0),
+            trackRect.height - thumbRect.height,
           );
-          if (offset !== offsetRef.current) {
+          if (offset !== currentOffset) {
             clientYRef.current = event.clientY;
             if (scrollbarApiRef.current) {
               scrollbarApiRef.current.scrollTop = offset;

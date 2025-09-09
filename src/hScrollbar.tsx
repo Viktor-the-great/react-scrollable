@@ -29,17 +29,22 @@ function HScrollbar({
 }: HScrollbarPropsType, ref: Ref<HScrollbarApiType>): ReactElement {
   const scrollbarApiRef = useRef<HScrollbarApiType>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
 
   useImperativeHandle(composeRef(ref, scrollbarApiRef), () => ({
     get scrollLeft() {
-      return offsetRef.current;
+      if (thumbRef.current) {
+        const thumbElement = thumbRef.current;
+        const trackElement = thumbElement.parentElement!
+        const thumbRect = thumbElement.getBoundingClientRect();
+        const trackRect = trackElement.getBoundingClientRect();
+        return thumbRect.left - trackRect.left;
+      }
+      return 0;
     },
     set scrollLeft(value) {
       if (thumbRef.current) {
         thumbRef.current.style.transform = `translateX(${makePx(value)})`;
         thumbRef.current.setAttribute('data-scroll-left', value.toString());
-        offsetRef.current = value;
       }
     },
     setSize(value: number) {
@@ -70,13 +75,14 @@ function HScrollbar({
 
       if (trackElement) {
         const thumbRect = thumbElement.getBoundingClientRect();
-        const tractRect = trackElement.getBoundingClientRect();
-        if (isMore(tractRect.width, thumbRect.width)) {
+        const trackRect = trackElement.getBoundingClientRect();
+        if (isMore(trackRect.width, thumbRect.width)) {
+          const currentOffset = thumbRect.left - trackRect.left;
           const offset = Math.min(
-            Math.max(offsetRef.current + event.clientX - clientXRef.current, 0),
-            tractRect.width - thumbRect.width,
+            Math.max(currentOffset + event.clientX - clientXRef.current, 0),
+            trackRect.width - thumbRect.width,
           );
-          if (offset !== offsetRef.current) {
+          if (offset !== currentOffset) {
             clientXRef.current = event.clientX;
             if (scrollbarApiRef.current) {
               scrollbarApiRef.current.scrollLeft = offset;
