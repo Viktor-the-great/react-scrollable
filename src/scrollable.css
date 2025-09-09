@@ -1,4 +1,18 @@
 .scrollable {
+  overflow: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  &__content {
+    display: inline-block;
+    touch-action: none;
+    min-width: 100%;
+  }
+
   &__wrapper {
     /* thumb variables */
     --thumb-border: none;
