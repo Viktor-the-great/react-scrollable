@@ -42,7 +42,7 @@ type ContentPropsType = Omit<HTMLAttributes<HTMLElement>, 'onScroll'> & {
    */
   onScroll?: (event: ScrollEvent) => void;
   /**
-   * content of scrollable area
+   * scrollable content
    */
   children: ReactNode;
 }

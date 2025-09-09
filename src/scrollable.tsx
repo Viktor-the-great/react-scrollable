@@ -39,7 +39,7 @@ import './scrollable.css';
 
 type ScrollablePropsType = {
   /**
-   * content of scrollable area
+   * scrollable content
    */
   children: ReactNode;
   /**
