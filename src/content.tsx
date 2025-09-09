@@ -4,6 +4,7 @@ import {
   type Ref,
   type UIEvent,
   type PointerEvent,
+  type HTMLAttributes,
   forwardRef,
   useImperativeHandle,
   useRef,
@@ -11,6 +12,7 @@ import {
 import useResizeObserver from './hooks/useResizeObserver';
 import useEvent from './hooks/useEvent';
 import { floor, isEqual, isMore } from './utils/math';
+import cx from './utils/classnames';
 import { NoScrollableApiError } from './errors';
 import type {
   ScrollbarsSizeType,
@@ -19,7 +21,7 @@ import type {
 } from './types';
 import './content.css';
 
-type ContentPropsType = {
+type ContentPropsType = Omit<HTMLAttributes<HTMLElement>, 'onScroll'> & {
   /**
    * onChange function called on scrollable area resized
    * @param {Object} size - calculated vertical/horizontal thumb sizes
@@ -43,17 +45,14 @@ type ContentPropsType = {
    * content of scrollable area
    */
   children: ReactNode;
-  /**
-   * scrollable element id to create aria-controls attribute
-   */
-  contentId: string;
 }
 
 function Content({
   children,
   onResize,
-  contentId,
   onScroll = undefined,
+  className = undefined,
+  ...props
 }: ContentPropsType, ref: Ref<ContentApiType>): ReactElement {
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
@@ -222,8 +221,8 @@ function Content({
 
   return (
     <div
-      id={contentId}
-      className="scrollable__scrollable"
+      {...props}
+      className={cx('scrollable__scrollable', className)}
       ref={scrollableRef}
       data-testid="scrollable"
       onScroll={onScrollEvent}

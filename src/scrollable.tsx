@@ -226,7 +226,7 @@ function Scrollable({
     },
   }), []);
 
-  const contentId = useMemo(() => generateUniqId(), []);
+  const id = useMemo(() => generateUniqId(), []);
 
   return (
     <div
@@ -238,9 +238,9 @@ function Scrollable({
       style={style}
     >
       <Content
+        id={id}
         ref={contentApiRef}
         onResize={onResize}
-        contentId={contentId}
         onScroll={onContentScroll}
       >
         {children}
@@ -248,12 +248,12 @@ function Scrollable({
       <VScrollbar
         ref={vScrollbarRef}
         onScroll={onByYScroll}
-        aria-controls={contentId}
+        aria-controls={id}
       />
       <HScrollbar
         ref={hScrollbarRef}
         onScroll={onByXScroll}
-        aria-controls={contentId}
+        aria-controls={id}
       />
       <div data-testid="extreme-point" />
     </div>
