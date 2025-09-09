@@ -1,4 +1,4 @@
-export const PRECISION = .1;
+export const PRECISION = 1;
 
 export function ceil(value: number, precision: number) {
   return Math.ceil(value * 10 ** precision) / 10 ** precision;
@@ -15,7 +15,7 @@ export function round(value: number, precision: number) {
 export const isEqual = (
   value: number,
   valueToCompare: number
-) => value - valueToCompare > -PRECISION && value - valueToCompare < PRECISION;
+) => value - valueToCompare >= -PRECISION && value - valueToCompare <= PRECISION;
 
 export const isMore = (
   value: number,

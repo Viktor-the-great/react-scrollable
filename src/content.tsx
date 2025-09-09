@@ -2,16 +2,16 @@ import {
   type ReactElement,
   type ReactNode,
   type Ref,
+  type UIEvent,
   type PointerEvent,
   forwardRef,
   useImperativeHandle,
   useRef,
-  useEffect,
 } from 'react';
 import useResizeObserver from './hooks/useResizeObserver';
 import useEvent from './hooks/useEvent';
-import makePx from './utils/makePx';
 import { floor, isEqual, isMore } from './utils/math';
+import { NoScrollableApiError } from './errors';
 import type {
   ScrollbarsSizeType,
   ContentApiType,
@@ -35,8 +35,8 @@ type ContentPropsType = {
    * @param {number | null} event.scrollLeft - number of pixels by which an element's content is scrolled from its left edge, applies to horizontal scrolling
    * @param {boolean | null} event.isTopEdgeReached - flag indicating that the top edge of the element's content has been reached, applies to vertical scrolling
    * @param {boolean | null} event.isBottomEdgeReached - flag indicating that the bottom edge of the element's content has been reached, applies to vertical scrolling
-   * @param {boolean | null} event.is_left_edge_reached - flag indicating that the left edge of the element's content has been reached, applies to horizontal scrolling
-   * @param {boolean | null} event.is_right_edge_reached - flag indicating that the right edge of the element's content has been reached, applies to horizontal scrolling
+   * @param {boolean | null} event.isLeftEdgeReached - flag indicating that the left edge of the element's content has been reached, applies to horizontal scrolling
+   * @param {boolean | null} event.isRightEdgeReached - flag indicating that the right edge of the element's content has been reached, applies to horizontal scrolling
    */
   onScroll?: (event: ScrollEvent) => void;
   /**
@@ -55,8 +55,6 @@ function Content({
   contentId,
   onScroll = undefined,
 }: ContentPropsType, ref: Ref<ContentApiType>): ReactElement {
-  const offsetLeftRef = useRef(0);
-  const offsetTopRef = useRef(0);
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
 
@@ -73,25 +71,17 @@ function Content({
         const vThumbSize = isMore(size.height, scrollableRect.height)
           ? scrollableRect.height / (size.height / scrollableRect.height)
           : 0;
-        let scrollTop = Math.max(0, offsetTopRef.current);
-        if (isMore(size.height, scrollableRect.height)) {
-          scrollTop = Math.min(scrollTop, size.height - scrollableRect.height)
-        }
-        let scrollLeft = Math.max(0, offsetLeftRef.current);
-        if (isMore(size.width, scrollableRect.width)) {
-          scrollLeft = Math.min(scrollLeft, size.width - scrollableRect.width)
-        }
 
         onResizeEvent({
-          hThumbSize: floor(hThumbSize, 2),
-          vThumbSize: floor(vThumbSize, 2),
-          scrollLeft,
-          scrollTop,
+          hThumbSize: floor(hThumbSize, 1),
+          vThumbSize: floor(vThumbSize, 1),
+          scrollLeft: scrollableRef.current?.scrollLeft ?? 0,
+          scrollTop: scrollableRef.current?.scrollTop ?? 0,
         });
       }
     },
   });
-  useResizeObserver<HTMLDivElement>({
+  const scrollableSize = useResizeObserver<HTMLDivElement>({
     elementRef: scrollableRef,
     onChange: (scrollableSize) => {
       if (contentRef.current) {
@@ -102,47 +92,38 @@ function Content({
         const vThumbSize = isMore(contentRect.height, scrollableSize.height)
           ? scrollableSize.height / (contentRect.height / scrollableSize.height)
           : 0;
-        let scrollTop = Math.max(0, offsetTopRef.current);
-        if (isMore(contentRect.height, scrollableSize.height)) {
-          scrollTop = Math.min(scrollTop, contentRect.height - scrollableSize.height)
-        }
-        let scrollLeft = Math.max(0, offsetLeftRef.current);
-        if (isMore(contentRect.width, scrollableSize.width)) {
-          scrollLeft = Math.min(scrollLeft, contentRect.width - scrollableSize.width)
-        }
 
         onResizeEvent({
-          hThumbSize: floor(hThumbSize, 2),
-          vThumbSize: floor(vThumbSize, 2),
-          scrollLeft,
-          scrollTop,
+          hThumbSize: floor(hThumbSize, 1),
+          vThumbSize: floor(vThumbSize, 1),
+          scrollLeft: scrollableRef.current?.scrollLeft ?? 0,
+          scrollTop: scrollableRef.current?.scrollTop ?? 0,
         });
       }
     },
   });
 
+  const ignoresScrollEvents = useRef(false);
   useImperativeHandle(ref, () => ({
     get scrollTop() {
-      return offsetTopRef.current;
+      return scrollableRef.current?.scrollTop ?? 0;
     },
     set scrollTop(value) {
-      if (!contentRef.current) {
-        throw new Error('content element not defined');
+      if (!scrollableRef.current) {
+        throw new NoScrollableApiError();
       }
-      contentRef.current.style.transform = `translate(${makePx(-offsetLeftRef.current)}, ${makePx(-value)})`;
-      contentRef.current.setAttribute('data-scroll-top', `-${value}`)
-      offsetTopRef.current = value;
+      ignoresScrollEvents.current = true;
+      scrollableRef.current.scrollTop = value;
     },
     get scrollLeft() {
-      return offsetLeftRef.current;
+      return scrollableRef.current?.scrollLeft ?? 0;
     },
     set scrollLeft(value) {
-      if (!contentRef.current) {
-        throw new Error('content element not defined');
+      if (!scrollableRef.current) {
+        throw new NoScrollableApiError();
       }
-      contentRef.current.style.transform = `translate(${makePx(-value)}, ${makePx(-offsetTopRef.current)})`;
-      contentRef.current.setAttribute('data-scroll-left', `-${value}`)
-      offsetLeftRef.current = value;
+      ignoresScrollEvents.current = true;
+      scrollableRef.current.scrollLeft = value;
     },
     getContentRect(): DOMRect {
       if (!contentRef.current) {
@@ -156,78 +137,39 @@ function Content({
       }
       return scrollableRef.current.getBoundingClientRect();
     },
-    setAttributes(attributes: Record<string, string>) {
-      Object.entries(attributes).forEach(([key, value]) => {
-        contentRef.current?.setAttribute(key, value);
-      })
-    }
   }));
 
-  const onWheel = useEvent((event: WheelEvent) => {
-    if (!contentSize) {
+  const lastScrollTopRef = useRef(0);
+  const lastScrollLeftRef = useRef(0);
+  const onScrollEvent = useEvent(({
+    currentTarget,
+  }: UIEvent) => {
+    if (ignoresScrollEvents.current) {
+      ignoresScrollEvents.current = false;
       return;
     }
-
-    const scrollableElement = scrollableRef.current;
-    if (!scrollableElement) {
-      return;
-    }
-
-    const scrollableRect = scrollableElement.getBoundingClientRect();
-
-    if (event.shiftKey && isMore(contentSize.width, scrollableRect.width)) {
-      const offsetByX = Math.min(
-        Math.max(offsetLeftRef.current + event.deltaY, 0),
-        contentSize.width - scrollableRect.width,
-      );
-
-      if (offsetByX !== offsetLeftRef.current) {
-        event.preventDefault();
-        event.stopPropagation();
-        offsetLeftRef.current = offsetByX;
-        onScroll?.({
-          isVertical: false,
-          scrollLeft: offsetByX,
-          is_left_edge_reached: isEqual(offsetByX, 0),
-          is_right_edge_reached: isEqual(offsetByX, contentSize.width - scrollableRect.width),
-        });
-      }
-    }
-
-    if (!event.shiftKey && isMore(contentSize.height, scrollableRect.height)) {
-      const offsetByY = Math.min(
-        Math.max(offsetTopRef.current + event.deltaY, 0),
-        contentSize.height - scrollableRect.height,
-      );
-
-      if (offsetByY !== offsetTopRef.current) {
-        event.preventDefault();
-        event.stopPropagation();
-        offsetTopRef.current = offsetByY;
-        onScroll?.({
-          isVertical: true,
-          scrollTop: offsetByY,
-          isTopEdgeReached: isEqual(offsetByY, 0),
-          isBottomEdgeReached: isEqual(offsetByY, contentSize.height - scrollableRect.height),
-        });
-      }
+    if (lastScrollTopRef.current !== currentTarget.scrollTop) {
+      const contentHeight = contentSize?.height ?? 0;
+      const scrollableHeight = scrollableSize?.height ?? 0;
+      onScroll?.({
+        isVertical: true,
+        scrollTop: currentTarget.scrollTop,
+        isTopEdgeReached: isEqual(currentTarget.scrollTop, 0),
+        isBottomEdgeReached: isEqual(currentTarget.scrollTop, contentHeight - scrollableHeight),
+      });
+      lastScrollTopRef.current = currentTarget.scrollTop;
+    } else if (lastScrollLeftRef.current !== currentTarget.scrollLeft) {
+      const contentWidth = contentSize?.width ?? 0;
+      const scrollableWidth = scrollableSize?.width ?? 0;
+      onScroll?.({
+        isVertical: false,
+        scrollLeft: currentTarget.scrollLeft,
+        isLeftEdgeReached: isEqual(currentTarget.scrollLeft, 0),
+        isRightEdgeReached: isEqual(currentTarget.scrollLeft, contentWidth - scrollableWidth),
+      });
+      lastScrollLeftRef.current = currentTarget.scrollLeft;
     }
   });
-
-  useEffect(() => {
-    const scrollableElement = scrollableRef.current;
-    if (scrollableElement) {
-      scrollableElement.addEventListener('wheel', onWheel, { passive: false });
-    }
-    return () => {
-      if (scrollableElement) {
-        scrollableElement.removeEventListener('wheel', onWheel);
-      }
-    }
-  }, [
-    scrollableRef,
-    onWheel
-  ])
 
   const clientXRef = useRef(0);
   const clientYRef = useRef(0);
@@ -246,10 +188,10 @@ function Content({
 
       if (isMore(targetRect.height, scrollableRect.height)) {
         const offsetByY = Math.min(
-          Math.max(offsetTopRef.current - (event.clientY - clientYRef.current), 0),
+          Math.max(scrollableElement.scrollTop - (event.clientY - clientYRef.current), 0),
           targetRect.height - scrollableRect.height,
         );
-        if (offsetTopRef.current !== offsetByY) {
+        if (scrollableElement.scrollTop !== offsetByY) {
           clientYRef.current = event.clientY;
           onScroll?.({
             isVertical: true,
@@ -262,39 +204,38 @@ function Content({
 
       if (isMore(targetRect.width, scrollableRect.width)) {
         const offsetByX = Math.min(
-          Math.max(offsetLeftRef.current - (event.clientX - clientXRef.current), 0),
+          Math.max(scrollableElement.scrollLeft - (event.clientX - clientXRef.current), 0),
           targetRect.width - scrollableRect.width,
         );
-        if (offsetLeftRef.current !== offsetByX) {
+        if (scrollableElement.scrollLeft !== offsetByX) {
           clientXRef.current = event.clientX;
           onScroll?.({
             isVertical: false,
             scrollLeft: offsetByX,
-            is_left_edge_reached: offsetByX === 0,
-            is_right_edge_reached: offsetByX === targetRect.width - scrollableRect.width,
+            isLeftEdgeReached: offsetByX === 0,
+            isRightEdgeReached: offsetByX === targetRect.width - scrollableRect.width,
           });
         }
       }
     }
-  });
+  })
 
   return (
     <div
+      id={contentId}
       className="scrollable__scrollable"
       ref={scrollableRef}
-      data-testid="scrollable-wrapper"
+      data-testid="scrollable"
+      onScroll={onScrollEvent}
     >
-      <div className="scrollable__content">
-        <div
-          id={contentId}
-          ref={contentRef}
-          className="scrollable__content"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          data-testid="scrollable-content"
-        >
-          {children}
-        </div>
+      <div
+        ref={contentRef}
+        className="scrollable__content"
+        data-testid="scrollable-content"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+      >
+        {children}
       </div>
     </div>
   );

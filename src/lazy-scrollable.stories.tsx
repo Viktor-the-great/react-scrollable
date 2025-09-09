@@ -61,7 +61,7 @@ export const LazyScrollableByX: Story = {
           if (items.length >= 50) {
             return;
           }
-          if (!event.isVertical && event.is_right_edge_reached) {
+          if (!event.isVertical && event.isRightEdgeReached) {
             setIsLoading(true);
             await new Promise((resolve) => {
               setTimeout(resolve, 3000);
@@ -112,7 +112,7 @@ export const LazyScrollableByX: Story = {
       canvas,
       args,
     }) => {
-      const scrollable = canvas.getByTestId('scrollable-wrapper');
+      const scrollable = canvas.getByTestId('scrollable');
       const content = canvas.getByTestId('scrollable-content');
 
       await expect(content).toBeInTheDocument();
@@ -120,35 +120,35 @@ export const LazyScrollableByX: Story = {
 
       const contentRect = content.getBoundingClientRect();
       const scrollableRect = scrollable.getBoundingClientRect();
-      const contentScrollLeft = contentRect.width - scrollableRect.width;
+      const scrollLeft = contentRect.width - scrollableRect.width;
 
-      await fireEvent.wheel(content, {
-        deltaX: 0,
-        deltaY: contentScrollLeft,
-        shiftKey: true,
+      await fireEvent.scroll(scrollable, {
+        target: {
+          scrollLeft,
+        },
       });
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
           isVertical: false,
-          scrollLeft: contentScrollLeft,
-          is_left_edge_reached: false,
-          is_right_edge_reached: true,
+          scrollLeft,
+          isLeftEdgeReached: false,
+          isRightEdgeReached: true,
         });
       });
 
-      await fireEvent.wheel(content, {
-        deltaX: 0,
-        deltaY: -contentScrollLeft,
-        shiftKey: true,
+      await fireEvent.scroll(scrollable, {
+        target: {
+          scrollLeft: 0,
+        },
       });
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
           isVertical: false,
           scrollLeft: 0,
-          is_left_edge_reached: true,
-          is_right_edge_reached: false,
+          isLeftEdgeReached: true,
+          isRightEdgeReached: false,
         });
       });
     });
@@ -238,7 +238,7 @@ export const LazyScrollableByY: Story = {
       canvas,
       args,
     }) => {
-      const scrollable = canvas.getByTestId('scrollable-wrapper');
+      const scrollable = canvas.getByTestId('scrollable');
       const content = canvas.getByTestId('scrollable-content');
       const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
 
@@ -248,25 +248,27 @@ export const LazyScrollableByY: Story = {
 
       const contentRect = content.getBoundingClientRect();
       const scrollableRect = scrollable.getBoundingClientRect();
-      const contentScrollTop = contentRect.height - scrollableRect.height;
+      const scrollTop = contentRect.height - scrollableRect.height;
 
-      await fireEvent.wheel(content, {
-        deltaX: 0,
-        deltaY: contentScrollTop,
+      await fireEvent.scroll(scrollable, {
+        target: {
+          scrollTop,
+        },
       });
 
       await waitFor(async () => {
         await expect(args.onScroll).toHaveBeenLastCalledWith({
           isVertical: true,
-          scrollTop: contentScrollTop,
+          scrollTop,
           isTopEdgeReached: false,
           isBottomEdgeReached: true,
         });
       });
 
-      await fireEvent.wheel(content, {
-        deltaX: 0,
-        deltaY: -contentScrollTop,
+      await fireEvent.scroll(scrollable, {
+        target: {
+          scrollTop: 0,
+        },
       });
 
       await waitFor(async () => {

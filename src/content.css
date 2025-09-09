@@ -1,6 +1,11 @@
 .scrollable {
   &__scrollable {
-    overflow: hidden;
+    overflow: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
   }
 
   &__content {

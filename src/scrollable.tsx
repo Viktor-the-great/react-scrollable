@@ -62,8 +62,8 @@ type ScrollablePropsType = {
    * @param {number | null} event.scrollLeft - number of pixels by which an element's content is scrolled from its left edge, applies to horizontal scrolling
    * @param {boolean | null} event.isTopEdgeReached - flag indicating that the top edge of the element's content has been reached, applies to vertical scrolling
    * @param {boolean | null} event.isBottomEdgeReached - flag indicating that the bottom edge of the element's content has been reached, applies to vertical scrolling
-   * @param {boolean | null} event.is_left_edge_reached - flag indicating that the left edge of the element's content has been reached, applies to horizontal scrolling
-   * @param {boolean | null} event.is_right_edge_reached - flag indicating that the right edge of the element's content has been reached, applies to horizontal scrolling
+   * @param {boolean | null} event.isLeftEdgeReached - flag indicating that the left edge of the element's content has been reached, applies to horizontal scrolling
+   * @param {boolean | null} event.isRightEdgeReached - flag indicating that the right edge of the element's content has been reached, applies to horizontal scrolling
    */
   onScroll?: (event: ScrollEvent) => void | Promise<void>;
 }
@@ -145,8 +145,8 @@ function Scrollable({
     onDebounceScroll({
       isVertical: false,
       scrollLeft: scrollLeft,
-      is_left_edge_reached: isEqual(scrollLeft, 0),
-      is_right_edge_reached: isEqual(scrollLeft, contentRect.width - scrollableRect.width),
+      isLeftEdgeReached: isEqual(scrollLeft, 0),
+      isRightEdgeReached: isEqual(scrollLeft, contentRect.width - scrollableRect.width),
     });
   });
   const onByYScroll = useEvent((offset: number) => {
@@ -182,9 +182,6 @@ function Scrollable({
         throw new NoContentApiError();
       }
       contentApiRef.current.scrollLeft = value;
-      contentApiRef.current.setAttributes({
-        'data-scroll-left': `-${value}`,
-      });
       const contentRect = contentApiRef.current.getContentRect();
       const scrollableRect = contentApiRef.current.getScrollableRect();
       if (hScrollbarRef.current) {
@@ -210,9 +207,6 @@ function Scrollable({
         throw new NoContentApiError();
       }
       contentApiRef.current.scrollTop = value;
-      contentApiRef.current.setAttributes({
-        'data-scroll-top': `-${value}`,
-      });
       const contentRect = contentApiRef.current.getContentRect();
       const scrollableRect = contentApiRef.current.getScrollableRect();
       if (vScrollbarRef.current) {

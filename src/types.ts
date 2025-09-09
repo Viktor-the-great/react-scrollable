@@ -12,7 +12,6 @@ export type ContentApiType = {
   set scrollLeft(value: number);
   getContentRect(): DOMRect;
   getScrollableRect(): DOMRect;
-  setAttributes(attributes: Record<string, string>): void;
 }
 
 export type BaseScrollbarApiType = {
@@ -45,6 +44,6 @@ export type ScrollEvent = {
 } | {
   isVertical: false;
   scrollLeft: number;
-  is_left_edge_reached: boolean;
-  is_right_edge_reached: boolean;
+  isLeftEdgeReached: boolean;
+  isRightEdgeReached: boolean;
 };
