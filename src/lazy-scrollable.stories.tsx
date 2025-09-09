@@ -113,7 +113,7 @@ export const LazyScrollableByX: Story = {
       args,
     }) => {
       const scrollable = canvas.getByTestId('scrollable');
-      const content = canvas.getByTestId('scrollable-content');
+      const content = canvas.getByTestId('content');
 
       await expect(content).toBeInTheDocument();
       await expect(scrollable).toBeInTheDocument();
@@ -239,7 +239,7 @@ export const LazyScrollableByY: Story = {
       args,
     }) => {
       const scrollable = canvas.getByTestId('scrollable');
-      const content = canvas.getByTestId('scrollable-content');
+      const content = canvas.getByTestId('content');
       const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
 
       await expect(scrollable).toBeInTheDocument();

@@ -132,7 +132,7 @@ export const ScrollableByXY: Story = {
     await step('scroll content vertically using thumb', async () => {
       const calcContentScrollTop = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('scrollable-content')!
+        const contentElement = canvas.getByTestId('content')!
         const scrollableSize = scrollableElement.getBoundingClientRect();
         const contentSize = contentElement.getBoundingClientRect();
         return toContentSize(value, contentSize.height, scrollableSize.height);
@@ -200,7 +200,7 @@ export const ScrollableByXY: Story = {
     await step('scroll content horizontally using thumb', async () => {
       const calcContentScrollLeft = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('scrollable-content')!
+        const contentElement = canvas.getByTestId('content')!
         const scrollableSize = scrollableElement.getBoundingClientRect();
         const contentSize = contentElement.getBoundingClientRect();
         return toContentSize(value, contentSize.width, scrollableSize.width);
@@ -268,14 +268,14 @@ export const ScrollableByXY: Story = {
     await step('scroll content using mouse wheel', async () => {
       const calcScrollbarScrollLeft = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('scrollable-content')!
+        const contentElement = canvas.getByTestId('content')!
         const scrollableSize = scrollableElement.getBoundingClientRect();
         const contentSize = contentElement.getBoundingClientRect();
         return toScrollbarSize(value, contentSize.width, scrollableSize.width);
       };
       const calcScrollbarScrollTop = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('scrollable-content')!
+        const contentElement = canvas.getByTestId('content')!
         const scrollableSize = scrollableElement.getBoundingClientRect();
         const contentSize = contentElement.getBoundingClientRect();
         return toScrollbarSize(value, contentSize.height, scrollableSize.height);

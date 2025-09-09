@@ -222,7 +222,7 @@ function Content({
   return (
     <div
       {...props}
-      className={cx('scrollable__scrollable', className)}
+      className={cx('scrollable', className)}
       ref={scrollableRef}
       data-testid="scrollable"
       onScroll={onScrollEvent}
@@ -230,7 +230,7 @@ function Content({
       <div
         ref={contentRef}
         className="scrollable__content"
-        data-testid="scrollable-content"
+        data-testid="content"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
       >

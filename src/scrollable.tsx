@@ -230,7 +230,7 @@ function Scrollable({
 
   return (
     <div
-      className={cx('scrollable', {
+      className={cx('scrollable__wrapper', {
         'scrollable_by-x': isScrollbarByX,
         'scrollable_by-y': isScrollbarByY,
         'scrollable_show-mouse-on-hover': showThumbOnHover,
