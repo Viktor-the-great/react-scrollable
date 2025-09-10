@@ -1,10 +1,13 @@
 import { type RefObject, useLayoutEffect, useMemo } from 'react';
 import useEvent from './useEvent';
 import { floor, isMore } from '../utils/math';
-import type { ScrollbarsSizeType } from '../types';
 import makePx from '../utils/makePx.ts';
 import setAttributes from '../utils/setAttributes.ts';
 
+type ScrollbarsSizeType = {
+  hThumbSize: number;
+  vThumbSize: number;
+}
 type UseScrollableObserverPropsType = {
   /**
    * reference to scrollable element

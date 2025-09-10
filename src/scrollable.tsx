@@ -15,7 +15,6 @@ import cx from './utils/classnames';
 import generateUniqId from './utils/generateUniqId';
 import composeRef from './utils/composeRef';
 import type {
-  ScrollEvent,
   ScrollableApiType,
 } from './types';
 import useHorizontalScrollbarHandlers from './hooks/useHorizontalScrollbarHandlers';
@@ -165,6 +164,5 @@ export default MemoScrollable;
 
 export type {
   ScrollablePropsType,
-  ScrollEvent,
   ScrollableApiType,
 }
