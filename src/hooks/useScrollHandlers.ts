@@ -1,51 +1,81 @@
 import { type RefObject, type UIEvent, useRef } from 'react';
 import useEvent from './useEvent';
-import type { ElementSize } from './useResizeObserver';
-import { isEqual } from '../utils/math';
-import type { ScrollEvent } from '../types';
+import setScrollbarOffset from '../utils/setScrollbarOffset';
 
 type useScrollHandlersPropsType = {
-  onScroll?: (event: ScrollEvent) => void;
-  contentSize: ElementSize | null;
-  scrollableSize: ElementSize | null;
+  hScrollbarRef: RefObject<HTMLElement | null>;
+  vScrollbarRef: RefObject<HTMLElement | null>;
+  onScroll?: (event: UIEvent<HTMLElement>) => void;
+  onLeftEdgeReached?: (event: UIEvent<HTMLElement>) => void;
+  onRightEdgeReached?: (event: UIEvent<HTMLElement>) => void;
+  onTopEdgeReached?: (event: UIEvent<HTMLElement>) => void;
+  onBottomEdgeReached?: (event: UIEvent<HTMLElement>) => void;
   ignoresScrollEvents: RefObject<boolean>;
 }
 const useScrollHandlers = ({
+  hScrollbarRef,
+  vScrollbarRef,
   onScroll,
-  contentSize,
-  scrollableSize,
+  onLeftEdgeReached,
+  onRightEdgeReached,
+  onTopEdgeReached,
+  onBottomEdgeReached,
   ignoresScrollEvents,
 }: useScrollHandlersPropsType) => {
-  const lastScrollTopRef = useRef(0);
-  const lastScrollLeftRef = useRef(0);
-  const onScrollEvent = useEvent(({
-    currentTarget,
-  }: UIEvent) => {
-    if (ignoresScrollEvents.current) {
-      ignoresScrollEvents.current = false;
-      return;
+  const prevScrollTop = useRef(0);
+  const prevScrollLeft = useRef(0);
+  const onScrollEvent = useEvent((event: UIEvent<HTMLElement>) => {
+    const { currentTarget } = event;
+
+    if (!ignoresScrollEvents.current) {
+      const verticalScrollbarElement = vScrollbarRef.current;
+      const horizontalScrollbarElement = hScrollbarRef.current;
+      if (prevScrollTop.current !== currentTarget.scrollTop && verticalScrollbarElement) {
+        setScrollbarOffset(verticalScrollbarElement, {
+          scrollableElement: currentTarget,
+          value: currentTarget.scrollTop,
+          isVertical: true,
+        });
+      }
+
+      if (prevScrollLeft.current !== currentTarget.scrollLeft && horizontalScrollbarElement) {
+        setScrollbarOffset(horizontalScrollbarElement, {
+          scrollableElement: currentTarget,
+          value: currentTarget.scrollLeft,
+          isVertical: false,
+        });
+      }
     }
-    if (lastScrollTopRef.current !== currentTarget.scrollTop) {
-      const contentHeight = contentSize?.height ?? 0;
-      const scrollableHeight = scrollableSize?.height ?? 0;
-      onScroll?.({
-        isVertical: true,
-        scrollTop: currentTarget.scrollTop,
-        isTopEdgeReached: isEqual(currentTarget.scrollTop, 0),
-        isBottomEdgeReached: isEqual(currentTarget.scrollTop, contentHeight - scrollableHeight),
-      });
-      lastScrollTopRef.current = currentTarget.scrollTop;
-    } else if (lastScrollLeftRef.current !== currentTarget.scrollLeft) {
-      const contentWidth = contentSize?.width ?? 0;
-      const scrollableWidth = scrollableSize?.width ?? 0;
-      onScroll?.({
-        isVertical: false,
-        scrollLeft: currentTarget.scrollLeft,
-        isLeftEdgeReached: isEqual(currentTarget.scrollLeft, 0),
-        isRightEdgeReached: isEqual(currentTarget.scrollLeft, contentWidth - scrollableWidth),
-      });
-      lastScrollLeftRef.current = currentTarget.scrollLeft;
+
+    ignoresScrollEvents.current = false;
+
+    const contentElement = currentTarget.querySelector('.scrollable__content');
+    const scrollableRect = currentTarget.getBoundingClientRect();
+    const contentRect = contentElement?.getBoundingClientRect();
+
+    if (contentRect) {
+      if (prevScrollTop.current !== currentTarget.scrollTop) {
+        if (currentTarget.scrollTop === 0) {
+          onTopEdgeReached?.(event);
+        }
+        if (currentTarget.scrollTop === contentRect.height - scrollableRect.height) {
+          onBottomEdgeReached?.(event);
+        }
+      }
+      if (prevScrollLeft.current !== currentTarget.scrollLeft) {
+        if (currentTarget.scrollLeft === 0) {
+          onLeftEdgeReached?.(event);
+        }
+        if (currentTarget.scrollLeft === contentRect.width - scrollableRect.width) {
+          onRightEdgeReached?.(event);
+        }
+      }
     }
+
+    prevScrollTop.current = currentTarget.scrollTop;
+    prevScrollLeft.current = currentTarget.scrollLeft;
+
+    onScroll?.(event);
   });
 
   return {

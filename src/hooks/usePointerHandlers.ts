@@ -1,16 +1,18 @@
 import { type PointerEvent, type RefObject, useRef } from 'react';
 import useEvent from './useEvent';
 import { isMore } from '../utils/math';
-import type { ScrollEvent } from '../types';
+import type { ScrollableApiType } from '../types.ts';
 
 type UseContentPointerHandlersPropsType = {
+  scrollableApiRef: RefObject<ScrollableApiType | null>;
   scrollableRef: RefObject<HTMLElement | null>;
-  onScroll?: (event: ScrollEvent) => void;
+  ignoresScrollEvents: RefObject<boolean>;
 }
 
 const usePointerHandlers = ({
+  scrollableApiRef,
   scrollableRef,
-  onScroll,
+  ignoresScrollEvents,
 }: UseContentPointerHandlersPropsType) => {
   const clientXRef = useRef(0);
   const clientYRef = useRef(0);
@@ -22,40 +24,32 @@ const usePointerHandlers = ({
     }
   });
   const onPointerMove = useEvent((event: PointerEvent) => {
-    if (event.pointerType === 'touch' && event.isPrimary) {
+    if (event.pointerType === 'touch' && event.isPrimary && scrollableApiRef.current) {
       const scrollableElement = scrollableRef.current!;
       const targetRect = event.currentTarget.getBoundingClientRect();
       const scrollableRect = scrollableElement.getBoundingClientRect();
 
       if (isMore(targetRect.height, scrollableRect.height)) {
-        const offsetByY = Math.min(
+        const scrollTop = Math.min(
           Math.max(scrollableElement.scrollTop - (event.clientY - clientYRef.current), 0),
           targetRect.height - scrollableRect.height,
         );
-        if (scrollableElement.scrollTop !== offsetByY) {
+        if (scrollableElement.scrollTop !== scrollTop) {
           clientYRef.current = event.clientY;
-          onScroll?.({
-            isVertical: true,
-            scrollTop: offsetByY,
-            isTopEdgeReached: offsetByY === 0,
-            isBottomEdgeReached: offsetByY === targetRect.height - scrollableRect.height,
-          });
+          ignoresScrollEvents.current = true;
+          scrollableApiRef.current.scrollTop = scrollTop;
         }
       }
 
       if (isMore(targetRect.width, scrollableRect.width)) {
-        const offsetByX = Math.min(
+        const scrollLeft = Math.min(
           Math.max(scrollableElement.scrollLeft - (event.clientX - clientXRef.current), 0),
           targetRect.width - scrollableRect.width,
         );
-        if (scrollableElement.scrollLeft !== offsetByX) {
+        if (scrollableElement.scrollLeft !== scrollLeft) {
           clientXRef.current = event.clientX;
-          onScroll?.({
-            isVertical: false,
-            scrollLeft: offsetByX,
-            isLeftEdgeReached: offsetByX === 0,
-            isRightEdgeReached: offsetByX === targetRect.width - scrollableRect.width,
-          });
+          ignoresScrollEvents.current = true;
+          scrollableApiRef.current.scrollLeft = scrollLeft;
         }
       }
     }

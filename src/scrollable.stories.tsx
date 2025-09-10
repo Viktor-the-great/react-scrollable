@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect, waitFor, fireEvent } from 'storybook/test';
+import { expect, waitFor, fireEvent, fn } from 'storybook/test';
 import { css } from '@emotion/css';
 import { isEqual, toContentSize, toScrollbarSize } from './utils/math';
 import Scrollable from './scrollable';
@@ -7,6 +7,14 @@ import Scrollable from './scrollable';
 const meta = {
   title: 'Scrollable',
   component: Scrollable,
+  args: {
+    showThumbOnHover: false,
+    // onScroll: fn(),
+    onLeftEdgeReached: fn(),
+    onRightEdgeReached: fn(),
+    onTopEdgeReached: fn(),
+    onBottomEdgeReached: fn(),
+  },
   argTypes: {
     showThumbOnHover: {
       options: [false, true],
@@ -115,7 +123,6 @@ export const ScrollableByXY: Story = {
       width: 300,
       height: 300,
     },
-    showThumbOnHover: false,
   },
   async play({
     canvas,
