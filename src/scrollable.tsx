@@ -3,7 +3,7 @@ import {
   type ReactNode,
   type Ref,
   type UIEvent,
-  type HTMLAttributes,
+  type CSSProperties,
   forwardRef,
   memo,
   useMemo,
@@ -25,7 +25,7 @@ import usePointerHandlers from './hooks/usePointerHandlers';
 import useScrollableRef from './hooks/useScrollableRef';
 import './scrollable.css';
 
-type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
+type ScrollablePropsType = {
   /**
    * scrollable content
    */
@@ -34,10 +34,34 @@ type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
    * show thumbs on mouse hover, effects only for pointing devices like a mouse
    */
   showThumbOnHover?: boolean;
+  /**
+   * function called when the scroll left edge is reached during scrolling
+   */
   onLeftEdgeReached?: (event: UIEvent) => void;
+  /**
+   * function called when the scroll right edge is reached during scrolling
+   */
   onRightEdgeReached?: (event: UIEvent) => void;
+  /**
+   * function called when the scroll top edge is reached during scrolling
+   */
   onTopEdgeReached?: (event: UIEvent) => void;
+  /**
+   * function called when the scroll bottom edge is reached during scrolling
+   */
   onBottomEdgeReached?: (event: UIEvent) => void;
+  /**
+   * function called when scroll event fires
+   */
+  onScroll?: (event: UIEvent) => void;
+  /**
+   * adds class to scrollable
+   */
+  className?: string;
+  /**
+   * adds style to scrollable
+   */
+  style?: CSSProperties;
 }
 
 /**

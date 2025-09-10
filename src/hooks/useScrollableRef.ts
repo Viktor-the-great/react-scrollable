@@ -3,8 +3,17 @@ import setScrollbarOffset from '../utils/setScrollbarOffset';
 import type { ScrollableApiType } from '../types';
 
 type UseScrollableRefOptionsType = {
+  /**
+   * reference to scrollable element
+   */
   scrollableRef: RefObject<HTMLElement | null>;
+  /**
+   * reference to horizontal scrollbar element
+   */
   hScrollbarRef: RefObject<HTMLElement | null>;
+  /**
+   * reference to vertical scrollbar element
+   */
   vScrollbarRef: RefObject<HTMLElement | null>;
 }
 

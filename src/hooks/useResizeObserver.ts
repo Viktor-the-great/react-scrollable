@@ -13,7 +13,13 @@ type UseScrollableObserverPropsType = {
    * reference to scrollable element
    */
   scrollableRef: RefObject<HTMLElement | null>;
+  /**
+   * reference to horizontal scrollbar element
+   */
   hScrollbarRef: RefObject<HTMLElement | null>;
+  /**
+   * reference to vertical scrollbar element
+   */
   vScrollbarRef: RefObject<HTMLElement | null>;
   /**
    * onChange function called on scrollable area resized
