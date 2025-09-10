@@ -79,7 +79,6 @@ function Scrollable({
 
   useScrollableRef(composeRef(ref, scrollableApiRef), {
     scrollableRef,
-    contentRef,
     vScrollbarRef,
     hScrollbarRef,
   });

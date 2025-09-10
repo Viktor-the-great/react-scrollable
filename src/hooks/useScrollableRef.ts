@@ -1,18 +1,15 @@
 import { type Ref, type RefObject, useImperativeHandle } from 'react';
-import { isMore, toScrollbarSize } from '../utils/math';
-import makePx from '../utils/makePx';
-import setAttributes from '../utils/setAttributes';
+import setScrollbarOffset from '../utils/setScrollbarOffset';
 import type { ScrollableApiType } from '../types';
 
 type UseScrollableRefOptionsType = {
   scrollableRef: RefObject<HTMLElement | null>;
-  contentRef: RefObject<HTMLElement | null>;
   hScrollbarRef: RefObject<HTMLElement | null>;
   vScrollbarRef: RefObject<HTMLElement | null>;
 }
+
 const useScrollableRef = (ref: Ref<ScrollableApiType>, {
   scrollableRef,
-  contentRef,
   hScrollbarRef,
   vScrollbarRef,
 }: UseScrollableRefOptionsType) => {
@@ -21,22 +18,14 @@ const useScrollableRef = (ref: Ref<ScrollableApiType>, {
       return scrollableRef.current?.scrollLeft ?? 0;
     },
     set scrollLeft(value: number) {
-      if (scrollableRef.current && contentRef.current && hScrollbarRef.current) {
-        scrollableRef.current.scrollLeft = value;
-        const contentRect = contentRef.current.getBoundingClientRect();
-        const scrollableRect = scrollableRef.current.getBoundingClientRect();
-        const scrollLeft = toScrollbarSize(
+      const scrollableElement = scrollableRef.current;
+      const scrollbarElement = hScrollbarRef.current;
+      if (scrollableElement && scrollbarElement) {
+        scrollableElement.scrollLeft = value;
+        setScrollbarOffset(scrollbarElement, {
+          scrollableElement,
           value,
-          contentRect.width,
-          scrollableRect.width,
-        );
-        hScrollbarRef.current.style.transform = `translateX(${makePx(scrollLeft)})`;
-        hScrollbarRef.current.setAttribute('data-scroll-left', scrollLeft.toString());
-        const isHidden = !isMore(contentRect.width, scrollableRect.width);
-        setAttributes(hScrollbarRef.current, {
-          'aria-valuenow': value.toString(),
-          'aria-hidden': isHidden.toString(),
-          'data-scroll-left': scrollLeft.toString(),
+          isVertical: false,
         });
       }
     },
@@ -44,28 +33,19 @@ const useScrollableRef = (ref: Ref<ScrollableApiType>, {
       return scrollableRef.current?.scrollTop ?? 0;
     },
     set scrollTop(value: number) {
-      if (scrollableRef.current && contentRef.current && vScrollbarRef.current) {
-        scrollableRef.current.scrollTop = value;
-        const contentRect = contentRef.current.getBoundingClientRect();
-        const scrollableRect = scrollableRef.current.getBoundingClientRect();
-        const scrollTop = toScrollbarSize(
+      const scrollableElement = scrollableRef.current;
+      const scrollbarElement = vScrollbarRef.current;
+      if (scrollableElement && scrollbarElement) {
+        scrollableElement.scrollTop = value;
+        setScrollbarOffset(scrollbarElement, {
+          scrollableElement,
           value,
-          contentRect.height,
-          scrollableRect.height,
-        );
-        vScrollbarRef.current.style.transform = `translateY(${makePx(scrollTop)})`;
-        vScrollbarRef.current.setAttribute('data-scroll-top', scrollTop.toString());
-        const isHidden = !isMore(contentRect.height, scrollableRect.height);
-        setAttributes(vScrollbarRef.current, {
-          'aria-valuenow': value.toString(),
-          'aria-hidden': isHidden.toString(),
-          'data-scroll-top': scrollTop.toString(),
+          isVertical: true,
         });
       }
     },
   }), [
     scrollableRef,
-    contentRef,
     hScrollbarRef,
     vScrollbarRef,
   ]);
