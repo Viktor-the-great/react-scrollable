@@ -58,6 +58,10 @@ export type ScrollablePropsType = {
    * adds style to scrollable
    */
   style?: CSSProperties;
+  /**
+   * id of scrollable element, if not passed, a unique identifier is generated to configure accessibility
+   */
+  id?: string;
 }
 
 /**
@@ -73,6 +77,7 @@ function Scrollable({
   onRightEdgeReached = undefined,
   onTopEdgeReached = undefined,
   onBottomEdgeReached = undefined,
+  id = undefined,
 }: ScrollablePropsType, ref: Ref<HTMLDivElement>): ReactElement {
   const [visibility, setVisibility] = useState([false, false]);
   const [hasHorizontalScrollbar, hasVerticalScrollbar] = visibility;
@@ -81,7 +86,7 @@ function Scrollable({
   const hScrollbarRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
 
-  const id = useMemo(() => generateUniqId(), []);
+  const scrollableId = useMemo(() => id ?? generateUniqId(), [id]);
 
   useResizeObserver({
     scrollableRef,
@@ -137,7 +142,7 @@ function Scrollable({
       style={style}
     >
       <div
-        id={id}
+        id={scrollableId}
         className="scrollable__area"
         ref={composeRef(ref, scrollableRef)}
         data-testid="scrollable"
@@ -154,12 +159,12 @@ function Scrollable({
       <Scrollbar
         ref={vScrollbarRef}
         isVertical
-        aria-controls={id}
+        aria-controls={scrollableId}
         {...verticalScrollbarHandlers}
       />
       <Scrollbar
         ref={hScrollbarRef}
-        aria-controls={id}
+        aria-controls={scrollableId}
         {...horizontalScrollbarHandlers}
       />
       <div data-testid="extreme-point" />
