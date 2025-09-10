@@ -1,17 +1,17 @@
 import { type PointerEvent, type RefObject, useRef } from 'react';
 import useEvent from './useEvent';
 import { isMore, toContentSize } from '../utils/math';
-import type { ScrollableApiType } from '../types';
+import setScrollbarOffset from '../utils/setScrollbarOffset.ts';
 
 type UseVerticalScrollbarHandlersPropsType = {
-  scrollableApiRef: RefObject<ScrollableApiType | null>;
   scrollableRef: RefObject<HTMLElement | null>;
+  scrollbarRef: RefObject<HTMLElement | null>;
   ignoresScrollEvents: RefObject<boolean>;
 }
 
 const useVerticalScrollbarHandlers = ({
   scrollableRef,
-  scrollableApiRef,
+  scrollbarRef,
   ignoresScrollEvents,
 }: UseVerticalScrollbarHandlersPropsType) => {
   const isPointerDown = useRef<boolean>(false);
@@ -42,7 +42,8 @@ const useVerticalScrollbarHandlers = ({
             clientYRef.current = event.clientY;
 
             const contentElement = scrollableElement.querySelector('.scrollable__content');
-            if (scrollableApiRef.current && contentElement) {
+            const scrollbarElement = scrollbarRef.current;
+            if (contentElement && scrollbarElement) {
               const contentRect = contentElement.getBoundingClientRect();
               const scrollableRect = scrollableElement.getBoundingClientRect();
 
@@ -53,7 +54,12 @@ const useVerticalScrollbarHandlers = ({
               );
 
               ignoresScrollEvents.current = true;
-              scrollableApiRef.current.scrollTop = scrollTop;
+              scrollableElement.scrollTop = scrollTop;
+              setScrollbarOffset(scrollbarElement, {
+                scrollableElement,
+                value: scrollTop,
+                isVertical: true,
+              });
             }
           }
         }

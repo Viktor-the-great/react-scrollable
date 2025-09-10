@@ -1,17 +1,19 @@
 import { type PointerEvent, type RefObject, useRef } from 'react';
 import useEvent from './useEvent';
 import { isMore } from '../utils/math';
-import type { ScrollableApiType } from '../types.ts';
+import setScrollbarOffset from '../utils/setScrollbarOffset.ts';
 
 type UseContentPointerHandlersPropsType = {
-  scrollableApiRef: RefObject<ScrollableApiType | null>;
   scrollableRef: RefObject<HTMLElement | null>;
+  hScrollbarRef: RefObject<HTMLElement | null>;
+  vScrollbarRef: RefObject<HTMLElement | null>;
   ignoresScrollEvents: RefObject<boolean>;
 }
 
 const usePointerHandlers = ({
-  scrollableApiRef,
   scrollableRef,
+  vScrollbarRef,
+  hScrollbarRef,
   ignoresScrollEvents,
 }: UseContentPointerHandlersPropsType) => {
   const clientXRef = useRef(0);
@@ -24,7 +26,7 @@ const usePointerHandlers = ({
     }
   });
   const onPointerMove = useEvent((event: PointerEvent) => {
-    if (event.pointerType === 'touch' && event.isPrimary && scrollableApiRef.current) {
+    if (event.pointerType === 'touch' && event.isPrimary) {
       const scrollableElement = scrollableRef.current!;
       const targetRect = event.currentTarget.getBoundingClientRect();
       const scrollableRect = scrollableElement.getBoundingClientRect();
@@ -34,10 +36,16 @@ const usePointerHandlers = ({
           Math.max(scrollableElement.scrollTop - (event.clientY - clientYRef.current), 0),
           targetRect.height - scrollableRect.height,
         );
-        if (scrollableElement.scrollTop !== scrollTop) {
+        const scrollbarElement = vScrollbarRef.current;
+        if (scrollbarElement && scrollableElement.scrollTop !== scrollTop) {
           clientYRef.current = event.clientY;
           ignoresScrollEvents.current = true;
-          scrollableApiRef.current.scrollTop = scrollTop;
+          scrollableElement.scrollTop = scrollTop;
+          setScrollbarOffset(scrollbarElement, {
+            scrollableElement,
+            value: scrollTop,
+            isVertical: true,
+          });
         }
       }
 
@@ -46,10 +54,16 @@ const usePointerHandlers = ({
           Math.max(scrollableElement.scrollLeft - (event.clientX - clientXRef.current), 0),
           targetRect.width - scrollableRect.width,
         );
-        if (scrollableElement.scrollLeft !== scrollLeft) {
+        const scrollbarElement = hScrollbarRef.current;
+        if (scrollbarElement && scrollableElement.scrollLeft !== scrollLeft) {
           clientXRef.current = event.clientX;
           ignoresScrollEvents.current = true;
-          scrollableApiRef.current.scrollLeft = scrollLeft;
+          scrollableElement.scrollLeft = scrollLeft;
+          setScrollbarOffset(scrollbarElement, {
+            scrollableElement,
+            value: scrollLeft,
+            isVertical: false,
+          });
         }
       }
     }

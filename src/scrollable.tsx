@@ -14,18 +14,14 @@ import Scrollbar from './scrollbar';
 import cx from './utils/classnames';
 import generateUniqId from './utils/generateUniqId';
 import composeRef from './utils/composeRef';
-import type {
-  ScrollableApiType,
-} from './types';
 import useHorizontalScrollbarHandlers from './hooks/useHorizontalScrollbarHandlers';
 import useVerticalScrollbarHandlers from './hooks/useVerticalScrollbarHandlers';
 import useResizeObserver from './hooks/useResizeObserver';
 import useScrollHandlers from './hooks/useScrollHandlers';
 import usePointerHandlers from './hooks/usePointerHandlers';
-import useScrollableRef from './hooks/useScrollableRef';
 import './scrollable.css';
 
-type ScrollablePropsType = {
+export type ScrollablePropsType = {
   /**
    * scrollable content
    */
@@ -77,20 +73,13 @@ function Scrollable({
   onRightEdgeReached = undefined,
   onTopEdgeReached = undefined,
   onBottomEdgeReached = undefined,
-}: ScrollablePropsType, ref: Ref<ScrollableApiType>): ReactElement {
+}: ScrollablePropsType, ref: Ref<HTMLDivElement>): ReactElement {
   const [visibility, setVisibility] = useState([false, false]);
   const [hasHorizontalScrollbar, hasVerticalScrollbar] = visibility;
 
-  const scrollableApiRef = useRef<ScrollableApiType>(null);
   const vScrollbarRef = useRef<HTMLDivElement>(null);
   const hScrollbarRef = useRef<HTMLDivElement>(null);
   const scrollableRef = useRef<HTMLDivElement>(null);
-
-  useScrollableRef(composeRef(ref, scrollableApiRef), {
-    scrollableRef,
-    vScrollbarRef,
-    hScrollbarRef,
-  });
 
   const id = useMemo(() => generateUniqId(), []);
 
@@ -120,19 +109,20 @@ function Scrollable({
   });
 
   const pointerHandlers = usePointerHandlers({
-    scrollableApiRef,
     scrollableRef,
+    hScrollbarRef,
+    vScrollbarRef,
     ignoresScrollEvents,
   });
 
   const horizontalScrollbarHandlers = useHorizontalScrollbarHandlers({
-    scrollableApiRef,
+    scrollbarRef: hScrollbarRef,
     scrollableRef,
     ignoresScrollEvents,
   });
 
   const verticalScrollbarHandlers = useVerticalScrollbarHandlers({
-    scrollableApiRef,
+    scrollbarRef: vScrollbarRef,
     scrollableRef,
     ignoresScrollEvents,
   });
@@ -149,7 +139,7 @@ function Scrollable({
       <div
         id={id}
         className="scrollable__area"
-        ref={scrollableRef}
+        ref={composeRef(ref, scrollableRef)}
         data-testid="scrollable"
         {...scrollHandlers}
       >
@@ -178,15 +168,10 @@ function Scrollable({
 }
 
 const MemoScrollable = memo(forwardRef<
-  ScrollableApiType,
+  HTMLDivElement,
   ScrollablePropsType
 >(Scrollable));
 
 MemoScrollable.displayName = 'Scrollable';
 
 export default MemoScrollable;
-
-export type {
-  ScrollablePropsType,
-  ScrollableApiType,
-}
