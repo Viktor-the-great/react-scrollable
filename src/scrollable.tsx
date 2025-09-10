@@ -116,16 +116,16 @@ function Scrollable({
 
   return (
     <div
-      className={cx('scrollable__wrapper', {
-        'scrollable_by-x': hasHorizontalScrollbar,
-        'scrollable_by-y': hasVerticalScrollbar,
+      className={cx('scrollable', {
+        'scrollable_has-horizontal-scrollbar': hasHorizontalScrollbar,
+        'scrollable_has-vertical-scrollbar': hasVerticalScrollbar,
         'scrollable_show-mouse-on-hover': showThumbOnHover,
       }, className)}
       style={style}
     >
       <div
         id={id}
-        className="scrollable"
+        className="scrollable__area"
         ref={scrollableRef}
         data-testid="scrollable"
         {...scrollHandlers}
