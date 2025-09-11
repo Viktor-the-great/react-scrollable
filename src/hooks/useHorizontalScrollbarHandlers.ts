@@ -42,12 +42,12 @@ const useHorizontalScrollbarHandlers = ({
     const trackRect = trackElement.getBoundingClientRect();
     const thumbRect = thumbElement.getBoundingClientRect();
     // the cursor is outside the track element
-    if (event.clientX < trackRect.left + thumbOffsetRef.current) {
-      clientXRef.current = trackRect.left + thumbOffsetRef.current;
+    if (event.clientX < trackRect.left + Math.floor(thumbOffsetRef.current)) {
+      clientXRef.current = trackRect.left + Math.floor(thumbOffsetRef.current);
       return;
     }
-    if (event.clientX > trackRect.left + trackRect.width - (thumbRect.width - thumbOffsetRef.current)) {
-      clientXRef.current = trackRect.left + trackRect.width - (thumbRect.width - thumbOffsetRef.current);
+    if (event.clientX > trackRect.left + trackRect.width - Math.ceil(thumbRect.width - thumbOffsetRef.current)) {
+      clientXRef.current = trackRect.left + trackRect.width - Math.ceil(thumbRect.width - thumbOffsetRef.current);
       return;
     }
 

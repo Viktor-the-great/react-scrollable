@@ -42,12 +42,12 @@ const useVerticalScrollbarHandlers = ({
     const trackRect = trackElement.getBoundingClientRect();
     const thumbRect = thumbElement.getBoundingClientRect();
     // the cursor is outside the track element + thumb offset
-    if (event.clientY < trackRect.top + thumbOffsetRef.current) {
-      clientYRef.current = trackRect.top + thumbOffsetRef.current;
+    if (event.clientY < trackRect.top + Math.floor(thumbOffsetRef.current)) {
+      clientYRef.current = trackRect.top + Math.floor(thumbOffsetRef.current);
       return;
     }
-    if (event.clientY > trackRect.top + trackRect.height - (thumbRect.height - thumbOffsetRef.current)) {
-      clientYRef.current = trackRect.top + trackRect.height - (thumbRect.height - thumbOffsetRef.current);
+    if (event.clientY > trackRect.top + trackRect.height - Math.ceil(thumbRect.height - thumbOffsetRef.current)) {
+      clientYRef.current = trackRect.top + trackRect.height - Math.ceil(thumbRect.height - thumbOffsetRef.current);
       return;
     }
 
