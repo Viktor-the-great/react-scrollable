@@ -13,7 +13,7 @@ const setScrollbarOffset = (scrollbarElement: HTMLElement, {
   scrollableElement,
   isVertical,
 }: OptionsType) => {
-  const contentElement = scrollableElement.querySelector('.scrollable__content');
+  const contentElement = scrollableElement.firstElementChild;
   if (contentElement) {
     const scrollableRect = scrollableElement.getBoundingClientRect();
     const contentRect = contentElement.getBoundingClientRect();

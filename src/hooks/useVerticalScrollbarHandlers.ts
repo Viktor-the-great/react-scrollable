@@ -61,7 +61,7 @@ const useVerticalScrollbarHandlers = ({
         if (offset !== currentOffset) {
           clientYRef.current = event.clientY;
 
-          const contentElement = scrollableElement.querySelector('.scrollable__content');
+          const contentElement = scrollableElement.firstElementChild;
           const scrollbarElement = scrollbarRef.current;
           if (contentElement && scrollbarElement) {
             const contentRect = contentElement.getBoundingClientRect();

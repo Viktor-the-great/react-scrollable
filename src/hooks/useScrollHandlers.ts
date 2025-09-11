@@ -29,7 +29,7 @@ const useScrollHandlers = ({
     const { currentTarget } = event;
     const verticalScrollbarElement = vScrollbarRef.current;
     const horizontalScrollbarElement = hScrollbarRef.current;
-    const contentElement = currentTarget.querySelector('.scrollable__content');
+    const contentElement = currentTarget.firstElementChild;
 
     if (!verticalScrollbarElement) {
       return;
