@@ -1,15 +1,4 @@
 .scrollable {
-  /* thumb variables */
-  --thumb-border: none;
-  --thumb-border-radius: 3px;
-  --thumb-background: #C7CED480;
-  --thumb-size: 6px;
-
-  /* track variables */
-  --scrollbar-background: none;
-  --scrollbar-border: none;
-  --scrollbar-border-radius: 0;
-
   display: grid;
   grid-template-columns: 1fr 0;
   grid-template-rows: 1fr 0;

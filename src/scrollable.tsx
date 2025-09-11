@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import CssVariables from './css-variables';
 import Scrollbar from './scrollbar';
 import cx from './utils/classnames';
 import generateUniqId from './utils/generateUniqId';
@@ -133,42 +134,44 @@ function Scrollable({
   });
 
   return (
-    <div
-      className={cx('scrollable', {
-        'scrollable_has-horizontal-scrollbar': hasHorizontalScrollbar,
-        'scrollable_has-vertical-scrollbar': hasVerticalScrollbar,
-        'scrollable_show-mouse-on-hover': showThumbOnHover,
-      }, className)}
-      style={style}
-    >
+    <CssVariables>
       <div
-        id={scrollableId}
-        className="scrollable__area"
-        ref={composeRef(ref, scrollableRef)}
-        data-testid="scrollable"
-        {...scrollHandlers}
+        className={cx('scrollable', {
+          'scrollable_has-horizontal-scrollbar': hasHorizontalScrollbar,
+          'scrollable_has-vertical-scrollbar': hasVerticalScrollbar,
+          'scrollable_show-mouse-on-hover': showThumbOnHover,
+        }, className)}
+        style={style}
       >
         <div
-          className="scrollable__content"
-          data-testid="content"
-          {...pointerHandlers}
+          id={scrollableId}
+          className="scrollable__area"
+          ref={composeRef(ref, scrollableRef)}
+          data-testid="scrollable"
+          {...scrollHandlers}
         >
-          {children}
+          <div
+            className="scrollable__content"
+            data-testid="content"
+            {...pointerHandlers}
+          >
+            {children}
+          </div>
         </div>
+        <Scrollbar
+          ref={vScrollbarRef}
+          isVertical
+          aria-controls={scrollableId}
+          {...verticalScrollbarHandlers}
+        />
+        <Scrollbar
+          ref={hScrollbarRef}
+          aria-controls={scrollableId}
+          {...horizontalScrollbarHandlers}
+        />
+        <div data-testid="extreme-point" />
       </div>
-      <Scrollbar
-        ref={vScrollbarRef}
-        isVertical
-        aria-controls={scrollableId}
-        {...verticalScrollbarHandlers}
-      />
-      <Scrollbar
-        ref={hScrollbarRef}
-        aria-controls={scrollableId}
-        {...horizontalScrollbarHandlers}
-      />
-      <div data-testid="extreme-point" />
-    </div>
+    </CssVariables>
   );
 }
 
