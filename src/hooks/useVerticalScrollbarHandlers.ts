@@ -16,11 +16,14 @@ const useVerticalScrollbarHandlers = ({
 }: UseVerticalScrollbarHandlersPropsType) => {
   const isPointerDown = useRef<boolean>(false);
   const clientYRef = useRef(0);
+  const thumbOffsetRef = useRef(0);
   const onPointerDown = useEvent((event: PointerEvent<HTMLDivElement>) => {
     if ((event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
       isPointerDown.current = true;
       event.currentTarget.setPointerCapture(event.pointerId);
       clientYRef.current = event.clientY;
+      const thumbRect = event.currentTarget.getBoundingClientRect();
+      thumbOffsetRef.current = event.clientY - thumbRect.top;
     }
   });
   const onPointerMove = useEvent((event: PointerEvent<HTMLDivElement>) => {
@@ -37,18 +40,18 @@ const useVerticalScrollbarHandlers = ({
     }
 
     const trackRect = trackElement.getBoundingClientRect();
-    // the cursor is outside the track element
-    if (event.clientY < trackRect.top) {
-      clientYRef.current = trackRect.top;
+    const thumbRect = thumbElement.getBoundingClientRect();
+    // the cursor is outside the track element + thumb offset
+    if (event.clientY < trackRect.top + thumbOffsetRef.current) {
+      clientYRef.current = trackRect.top + thumbOffsetRef.current;
       return;
     }
-    if (event.clientY > trackRect.top + trackRect.height) {
-      clientYRef.current = trackRect.top + trackRect.height;
+    if (event.clientY > trackRect.top + trackRect.height - (thumbRect.height - thumbOffsetRef.current)) {
+      clientYRef.current = trackRect.top + trackRect.height - (thumbRect.height - thumbOffsetRef.current);
       return;
     }
 
     if (isPointerDown.current && (event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
-      const thumbRect = thumbElement.getBoundingClientRect();
       if (isMore(trackRect.height, thumbRect.height)) {
         const currentOffset = thumbRect.top - trackRect.top;
         const offset = Math.min(
@@ -85,6 +88,7 @@ const useVerticalScrollbarHandlers = ({
   const onPointerUp = useEvent(() => {
     isPointerDown.current = false;
     clientYRef.current = 0;
+    thumbOffsetRef.current = 0;
   });
 
   return {

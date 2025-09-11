@@ -16,11 +16,14 @@ const useHorizontalScrollbarHandlers = ({
 }: UseHorizontalScrollbarHandlersPropsType) => {
   const isPointerDown = useRef<boolean>(false);
   const clientXRef = useRef(0);
+  const thumbOffsetRef = useRef(0);
   const onPointerDown = useEvent((event: PointerEvent<HTMLDivElement>) => {
     if ((event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
       isPointerDown.current = true;
       event.currentTarget.setPointerCapture(event.pointerId);
       clientXRef.current = event.clientX;
+      const thumbRect = event.currentTarget.getBoundingClientRect();
+      thumbOffsetRef.current = event.clientX - thumbRect.left;
     }
   });
   const onPointerMove = useEvent((event: PointerEvent<HTMLDivElement>) => {
@@ -37,18 +40,18 @@ const useHorizontalScrollbarHandlers = ({
     }
 
     const trackRect = trackElement.getBoundingClientRect();
+    const thumbRect = thumbElement.getBoundingClientRect();
     // the cursor is outside the track element
-    if (event.clientX < trackRect.left) {
-      clientXRef.current = trackRect.left;
+    if (event.clientX < trackRect.left + thumbOffsetRef.current) {
+      clientXRef.current = trackRect.left + thumbOffsetRef.current;
       return;
     }
-    if (event.clientX > trackRect.left + trackRect.width) {
-      clientXRef.current = trackRect.left + trackRect.width;
+    if (event.clientX > trackRect.left + trackRect.width - (thumbRect.width - thumbOffsetRef.current)) {
+      clientXRef.current = trackRect.left + trackRect.width - (thumbRect.width - thumbOffsetRef.current);
       return;
     }
 
     if (isPointerDown.current && (event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
-      const thumbRect = thumbElement.getBoundingClientRect();
       if (isMore(trackRect.width, thumbRect.width)) {
         const currentOffset = thumbRect.left - trackRect.left;
         const offset = Math.min(
@@ -85,6 +88,7 @@ const useHorizontalScrollbarHandlers = ({
   const onPointerUp = useEvent(() => {
     isPointerDown.current = false;
     clientXRef.current = 0;
+    thumbOffsetRef.current = 0;
   });
 
   return {
