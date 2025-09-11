@@ -24,7 +24,6 @@ const setScrollbarOffset = (scrollbarElement: HTMLElement, {
         scrollableRect.height,
       );
       scrollbarElement.style.transform = `translateY(${makePx(scrollTop)})`;
-      scrollbarElement.setAttribute('data-scroll-top', scrollTop.toString());
       const isHidden = !isMore(contentRect.height, scrollableRect.height);
       setAttributes(scrollbarElement, {
         'aria-valuenow': value.toString(),
@@ -38,7 +37,6 @@ const setScrollbarOffset = (scrollbarElement: HTMLElement, {
         scrollableRect.width,
       );
       scrollbarElement.style.transform = `translateX(${makePx(scrollLeft)})`;
-      scrollbarElement.setAttribute('data-scroll-left', scrollLeft.toString());
       const isHidden = !isMore(contentRect.width, scrollableRect.width);
       setAttributes(scrollbarElement, {
         'aria-valuenow': value.toString(),
