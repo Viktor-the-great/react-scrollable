@@ -43,10 +43,11 @@ export const LazyScrollableByX: Story = {
       width: 1000,
       margin: '0 auto',
     },
-    onScroll: fn(),
+    onLeftEdgeReached: fn(),
+    onRightEdgeReached: fn(),
   },
   render: function Render({
-    onScroll,
+    onRightEdgeReached,
     ...args
   }) {
     const [items, setItems] = useState(() => createRange(1, 10));
@@ -54,8 +55,8 @@ export const LazyScrollableByX: Story = {
     return (
       <Scrollable
         {...args}
-        onBottomEdgeReached={async (event) => {
-          onScroll?.(event);
+        onRightEdgeReached={async (event) => {
+          onRightEdgeReached?.(event);
           // is loading
           if (isLoading) {
             return;
@@ -130,12 +131,7 @@ export const LazyScrollableByX: Story = {
       });
 
       await waitFor(async () => {
-        await expect(args.onScroll).toHaveBeenLastCalledWith({
-          isVertical: false,
-          scrollLeft,
-          isLeftEdgeReached: false,
-          isRightEdgeReached: true,
-        });
+        await expect(args.onRightEdgeReached).toHaveBeenCalled();
       });
 
       await fireEvent.scroll(scrollable, {
@@ -145,12 +141,7 @@ export const LazyScrollableByX: Story = {
       });
 
       await waitFor(async () => {
-        await expect(args.onScroll).toHaveBeenLastCalledWith({
-          isVertical: false,
-          scrollLeft: 0,
-          isLeftEdgeReached: true,
-          isRightEdgeReached: false,
-        });
+        await expect(args.onLeftEdgeReached).toHaveBeenCalled();
       });
     });
   }
@@ -163,10 +154,11 @@ export const LazyScrollableByY: Story = {
       width: 300,
       height: 300,
     },
-    onScroll: fn()
+    onTopEdgeReached: fn(),
+    onBottomEdgeReached: fn(),
   },
   render: function Render({
-    onScroll,
+    onBottomEdgeReached,
     ...args
   }) {
     const [items, setItems] = useState(() => createRange(1, 10));
@@ -175,7 +167,7 @@ export const LazyScrollableByY: Story = {
       <Scrollable
         {...args}
         onBottomEdgeReached={async (event) => {
-          onScroll?.(event);
+          onBottomEdgeReached?.(event);
           // is loading
           if (isLoading) {
             return;
@@ -252,12 +244,7 @@ export const LazyScrollableByY: Story = {
       });
 
       await waitFor(async () => {
-        await expect(args.onScroll).toHaveBeenLastCalledWith({
-          isVertical: true,
-          scrollTop,
-          isTopEdgeReached: false,
-          isBottomEdgeReached: true,
-        });
+        await expect(args.onBottomEdgeReached).toHaveBeenCalled();
       });
 
       await fireEvent.scroll(scrollable, {
@@ -267,12 +254,7 @@ export const LazyScrollableByY: Story = {
       });
 
       await waitFor(async () => {
-        await expect(args.onScroll).toHaveBeenLastCalledWith({
-          isVertical: true,
-          scrollTop: 0,
-          isTopEdgeReached: true,
-          isBottomEdgeReached: false,
-        });
+        await expect(args.onTopEdgeReached).toHaveBeenCalled();
       });
     });
   }
