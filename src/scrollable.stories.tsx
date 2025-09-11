@@ -151,19 +151,21 @@ export const ScrollableByXY: Story = {
 
       await expect(scrollable).toBeInTheDocument();
 
+      const scrollableRect = scrollable.getBoundingClientRect();
+
       await userEvent.pointer([
         {
           keys: '[MouseLeft>]',
           target: scrollbarByY,
           coords: {
-            clientX: 0,
-            clientY: 0,
+            clientX: scrollableRect.left,
+            clientY: scrollableRect.top,
           },
         },
         {
           coords: {
-            clientX: 0,
-            clientY: 100,
+            clientX: scrollableRect.left,
+            clientY: scrollableRect.top + 100,
           },
         },
         {
@@ -184,14 +186,14 @@ export const ScrollableByXY: Story = {
           keys: '[MouseLeft>]',
           target: scrollbarByY,
           coords: {
-            clientX: 0,
-            clientY: 0,
+            clientX: scrollableRect.left,
+            clientY: scrollableRect.top + 100,
           },
         },
         {
           coords: {
-            clientX: 0,
-            clientY: -100,
+            clientX: scrollableRect.left,
+            clientY: scrollableRect.top,
           },
         },
         {
@@ -219,19 +221,21 @@ export const ScrollableByXY: Story = {
 
       await expect(scrollable).toBeInTheDocument();
 
+      const scrollableRect = scrollable.getBoundingClientRect();
+
       await userEvent.pointer([
         {
           keys: '[MouseLeft>]',
           target: scrollbarByX,
           coords: {
-            clientX: 0,
-            clientY: 0,
+            clientX: scrollableRect.left,
+            clientY: scrollableRect.top,
           },
         },
         {
           coords: {
-            clientX: 100,
-            clientY: 0,
+            clientX: scrollableRect.left + 100,
+            clientY: scrollableRect.top,
           },
         },
         {
@@ -252,14 +256,14 @@ export const ScrollableByXY: Story = {
           keys: '[MouseLeft>]',
           target: scrollbarByX,
           coords: {
-            clientX: 0,
-            clientY: 0,
+            clientX: scrollableRect.left + 100,
+            clientY: scrollableRect.top,
           },
         },
         {
           coords: {
-            clientX: -100,
-            clientY: 0,
+            clientX: scrollableRect.left,
+            clientY: scrollableRect.top,
           },
         },
         {

@@ -25,42 +25,58 @@ const useVerticalScrollbarHandlers = ({
   });
   const onPointerMove = useEvent((event: PointerEvent<HTMLDivElement>) => {
     const scrollableElement = scrollableRef.current;
+    const thumbElement = event.currentTarget;
+    const trackElement = thumbElement.parentElement;
+
+    if (!scrollableElement) {
+      return;
+    }
+
+    if (!trackElement) {
+      return;
+    }
+
+    const trackRect = trackElement.getBoundingClientRect();
+    // the cursor is outside the track element
+    if (event.clientY < trackRect.top) {
+      clientYRef.current = trackRect.top;
+      return;
+    }
+    if (event.clientY > trackRect.top + trackRect.height) {
+      clientYRef.current = trackRect.top + trackRect.height;
+      return;
+    }
+
     if (isPointerDown.current && (event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
-      const thumbElement = event.currentTarget;
-      const trackElement = thumbElement.parentElement;
+      const thumbRect = thumbElement.getBoundingClientRect();
+      if (isMore(trackRect.height, thumbRect.height)) {
+        const currentOffset = thumbRect.top - trackRect.top;
+        const offset = Math.min(
+          Math.max(currentOffset + event.clientY - clientYRef.current, 0),
+          trackRect.height - thumbRect.height,
+        );
+        if (offset !== currentOffset) {
+          clientYRef.current = event.clientY;
 
-      if (trackElement && scrollableElement) {
-        const thumbRect = thumbElement.getBoundingClientRect();
-        const trackRect = trackElement.getBoundingClientRect();
-        if (isMore(trackRect.height, thumbRect.height)) {
-          const currentOffset = thumbRect.top - trackRect.top;
-          const offset = Math.min(
-            Math.max(currentOffset + event.clientY - clientYRef.current, 0),
-            trackRect.height - thumbRect.height,
-          );
-          if (offset !== currentOffset) {
-            clientYRef.current = event.clientY;
+          const contentElement = scrollableElement.querySelector('.scrollable__content');
+          const scrollbarElement = scrollbarRef.current;
+          if (contentElement && scrollbarElement) {
+            const contentRect = contentElement.getBoundingClientRect();
+            const scrollableRect = scrollableElement.getBoundingClientRect();
 
-            const contentElement = scrollableElement.querySelector('.scrollable__content');
-            const scrollbarElement = scrollbarRef.current;
-            if (contentElement && scrollbarElement) {
-              const contentRect = contentElement.getBoundingClientRect();
-              const scrollableRect = scrollableElement.getBoundingClientRect();
+            const scrollTop = toContentSize(
+              offset,
+              contentRect.height,
+              scrollableRect.height
+            );
 
-              const scrollTop = toContentSize(
-                offset,
-                contentRect.height,
-                scrollableRect.height
-              );
-
-              ignoresScrollEvents.current = true;
-              scrollableElement.scrollTop = scrollTop;
-              setScrollbarOffset(scrollbarElement, {
-                scrollableElement,
-                value: scrollTop,
-                isVertical: true,
-              });
-            }
+            ignoresScrollEvents.current = true;
+            scrollableElement.scrollTop = scrollTop;
+            setScrollbarOffset(scrollbarElement, {
+              scrollableElement,
+              value: scrollTop,
+              isVertical: true,
+            });
           }
         }
       }
