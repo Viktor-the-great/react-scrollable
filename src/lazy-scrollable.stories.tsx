@@ -39,7 +39,7 @@ const createRange = (
 
 export const LazyScrollableByX: Story = {
   args: {
-    style: {
+    wrapperStyle: {
       width: 1000,
       margin: '0 auto',
     },
@@ -150,7 +150,7 @@ export const LazyScrollableByX: Story = {
 export const LazyScrollableByY: Story = {
   args: {
     ...LazyScrollableByX.args,
-    style: {
+    wrapperStyle: {
       width: 300,
       height: 300,
     },

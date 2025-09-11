@@ -9,7 +9,6 @@ const meta = {
   component: Scrollable,
   args: {
     showThumbOnHover: false,
-    // onScroll: fn(),
     onLeftEdgeReached: fn(),
     onRightEdgeReached: fn(),
     onTopEdgeReached: fn(),
@@ -27,6 +26,7 @@ const meta = {
         'children',
         'className',
         'style',
+        'onScroll'
       ],
     },
   },
@@ -119,7 +119,7 @@ export const ScrollableByXY: Story = {
         aliquid assumenda beatae earum eos error, eveniet illum laborum maxime nam neque optio placeat quasi quis
         ratione recusandae tempore veritatis.</div>
     ),
-    style: {
+    wrapperStyle: {
       width: 300,
       height: 300,
     },

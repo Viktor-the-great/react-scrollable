@@ -14,6 +14,7 @@ type ScrollbarPropsType = HTMLAttributes<HTMLElement> & {
 
 function Scrollbar({
   isVertical = false,
+  className,
   ...props
 }: ScrollbarPropsType, ref: Ref<HTMLDivElement>): ReactElement {
   const ariaLabel = isVertical
@@ -28,12 +29,17 @@ function Scrollbar({
     <div className={cx('scrollable__scrollbar', {
       'scrollable__scrollbar_horizontal': !isVertical,
       'scrollable__scrollbar_vertical': isVertical,
+      [`${className}__scrollbar`]: !!className,
     })}>
-      <div className="scrollable__scrollbar__track">
+      <div className={cx('scrollable__scrollbar__track', {
+        [`${className}__scrollbar__track`]: !!className,
+      })}>
         <div
           {...props}
           ref={ref}
-          className="scrollable__scrollbar__thumb"
+          className={cx('scrollable__scrollbar__thumb', {
+            [`${className}__scrollbar__thumb`]: !!className,
+          })}
           role="scrollbar"
           aria-orientation={ariaOrientation}
           aria-label={ariaLabel}
