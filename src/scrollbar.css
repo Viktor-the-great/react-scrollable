@@ -1,6 +1,9 @@
 .scrollable__scrollbar {
   overflow: hidden;
   user-select: none;
+  border-radius: var(--scrollbar-border-radius, 0);
+  background: var(--scrollbar-background, none);
+  border: var(--scrollbar-border, none);
 
   &_vertical &__thumb {
     height: 0;
@@ -16,10 +19,6 @@
     box-sizing: border-box;
     width: 100%;
     height: 100%;
-
-    background: var(--track-background, none);
-    border: var(--track-border, none);
-    border-radius: var(--track-border-radius, 0);
   }
 
   &__thumb {

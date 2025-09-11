@@ -6,9 +6,9 @@
   --thumb-size: 6px;
 
   /* track variables */
-  --track-background: none;
-  --track-border: none;
-  --track-border-radius: 0;
+  --scrollbar-background: none;
+  --scrollbar-border: none;
+  --scrollbar-border-radius: 0;
 
   display: grid;
   grid-template-columns: 1fr 0;

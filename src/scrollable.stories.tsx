@@ -481,8 +481,8 @@ export const CustomScrollbars: Story = {
             '--thumb-size': '10px',
             '--thumb-background': 'cyan',
             '--thumb-border-radius': '5px',
-            '--track-border': '1px solid cyan',
-            '--track-border-radius': '5px',
+            '--scrollbar-border': '1px solid cyan',
+            '--scrollbar-border-radius': '5px',
           })}
         >
           {children}
@@ -493,8 +493,8 @@ export const CustomScrollbars: Story = {
             '--thumb-size': '10px',
             '--thumb-background': 'cyan',
             '--thumb-border-radius': '5px',
-            '--track-background': '#C7CED480',
-            '--track-border-radius': '5px',
+            '--scrollbar-background': '#C7CED480',
+            '--scrollbar-border-radius': '5px',
           })}
         >
           {children}
