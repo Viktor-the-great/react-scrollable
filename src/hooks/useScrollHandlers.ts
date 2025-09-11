@@ -22,58 +22,69 @@ const useScrollHandlers = ({
   onBottomEdgeReached,
   ignoresScrollEvents,
 }: useScrollHandlersPropsType) => {
-  const prevScrollTop = useRef(0);
-  const prevScrollLeft = useRef(0);
+  const prevScrollTopRef = useRef(0);
+  const prevScrollLeftRef = useRef(0);
+  const isScrollingRef = useRef(false);
   const onScrollEvent = useEvent((event: UIEvent<HTMLElement>) => {
     const { currentTarget } = event;
+    const verticalScrollbarElement = vScrollbarRef.current;
+    const horizontalScrollbarElement = hScrollbarRef.current;
+    const contentElement = currentTarget.querySelector('.scrollable__content');
 
-    if (!ignoresScrollEvents.current) {
-      const verticalScrollbarElement = vScrollbarRef.current;
-      const horizontalScrollbarElement = hScrollbarRef.current;
-      if (prevScrollTop.current !== currentTarget.scrollTop && verticalScrollbarElement) {
+    if (!verticalScrollbarElement) {
+      return;
+    }
+
+    if (!horizontalScrollbarElement) {
+      return;
+    }
+
+    if (!contentElement) {
+      return;
+    }
+
+    if (!ignoresScrollEvents.current && !isScrollingRef.current) {
+      isScrollingRef.current = true;
+      requestAnimationFrame(() => {
         setScrollbarOffset(verticalScrollbarElement, {
           scrollableElement: currentTarget,
           value: currentTarget.scrollTop,
           isVertical: true,
         });
-      }
 
-      if (prevScrollLeft.current !== currentTarget.scrollLeft && horizontalScrollbarElement) {
         setScrollbarOffset(horizontalScrollbarElement, {
           scrollableElement: currentTarget,
           value: currentTarget.scrollLeft,
           isVertical: false,
         });
-      }
+        isScrollingRef.current = false;
+      })
     }
 
     ignoresScrollEvents.current = false;
 
-    const contentElement = currentTarget.querySelector('.scrollable__content');
     const scrollableRect = currentTarget.getBoundingClientRect();
     const contentRect = contentElement?.getBoundingClientRect();
 
-    if (contentRect) {
-      if (prevScrollTop.current !== currentTarget.scrollTop) {
-        if (currentTarget.scrollTop === 0) {
-          onTopEdgeReached?.(event);
-        }
-        if (currentTarget.scrollTop === contentRect.height - scrollableRect.height) {
-          onBottomEdgeReached?.(event);
-        }
+    if (prevScrollTopRef.current !== currentTarget.scrollTop) {
+      if (currentTarget.scrollTop === 0) {
+        onTopEdgeReached?.(event);
       }
-      if (prevScrollLeft.current !== currentTarget.scrollLeft) {
-        if (currentTarget.scrollLeft === 0) {
-          onLeftEdgeReached?.(event);
-        }
-        if (currentTarget.scrollLeft === contentRect.width - scrollableRect.width) {
-          onRightEdgeReached?.(event);
-        }
+      if (currentTarget.scrollTop === contentRect.height - scrollableRect.height) {
+        onBottomEdgeReached?.(event);
+      }
+    }
+    if (prevScrollLeftRef.current !== currentTarget.scrollLeft) {
+      if (currentTarget.scrollLeft === 0) {
+        onLeftEdgeReached?.(event);
+      }
+      if (currentTarget.scrollLeft === contentRect.width - scrollableRect.width) {
+        onRightEdgeReached?.(event);
       }
     }
 
-    prevScrollTop.current = currentTarget.scrollTop;
-    prevScrollLeft.current = currentTarget.scrollLeft;
+    prevScrollTopRef.current = currentTarget.scrollTop;
+    prevScrollLeftRef.current = currentTarget.scrollLeft;
 
     onScroll?.(event);
   });
