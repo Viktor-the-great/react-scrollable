@@ -41,23 +41,23 @@ const useVerticalScrollbarHandlers = ({
 
     const trackRect = trackElement.getBoundingClientRect();
     const thumbRect = thumbElement.getBoundingClientRect();
-    // the cursor is outside the track element + thumb offset
-    if (event.clientY < trackRect.top + Math.floor(thumbOffsetRef.current)) {
-      clientYRef.current = trackRect.top + Math.floor(thumbOffsetRef.current);
-      return;
-    }
-    if (event.clientY > trackRect.top + trackRect.height - Math.ceil(thumbRect.height - thumbOffsetRef.current)) {
-      clientYRef.current = trackRect.top + trackRect.height - Math.ceil(thumbRect.height - thumbOffsetRef.current);
-      return;
-    }
 
     if (isPointerDown.current && (event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
       if (isMore(trackRect.height, thumbRect.height)) {
         const currentOffset = thumbRect.top - trackRect.top;
-        const offset = Math.min(
-          Math.max(currentOffset + event.clientY - clientYRef.current, 0),
-          trackRect.height - thumbRect.height,
-        );
+        let offset: number;
+        if (event.clientY < trackRect.top + Math.floor(thumbOffsetRef.current)) {
+          // the cursor position is above the track element position
+          offset = 0;
+        } else if (event.clientY > trackRect.top + trackRect.height - Math.ceil(thumbRect.height - thumbOffsetRef.current)) {
+          // the cursor position is under the track element position
+          offset = trackRect.height - thumbRect.height;
+        } else {
+          offset = Math.min(
+            Math.max(currentOffset + event.clientY - clientYRef.current, 0),
+            trackRect.height - thumbRect.height,
+          );
+        }
         if (offset !== currentOffset) {
           clientYRef.current = event.clientY;
 

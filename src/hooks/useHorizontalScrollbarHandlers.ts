@@ -41,23 +41,23 @@ const useHorizontalScrollbarHandlers = ({
 
     const trackRect = trackElement.getBoundingClientRect();
     const thumbRect = thumbElement.getBoundingClientRect();
-    // the cursor is outside the track element
-    if (event.clientX < trackRect.left + Math.floor(thumbOffsetRef.current)) {
-      clientXRef.current = trackRect.left + Math.floor(thumbOffsetRef.current);
-      return;
-    }
-    if (event.clientX > trackRect.left + trackRect.width - Math.ceil(thumbRect.width - thumbOffsetRef.current)) {
-      clientXRef.current = trackRect.left + trackRect.width - Math.ceil(thumbRect.width - thumbOffsetRef.current);
-      return;
-    }
 
     if (isPointerDown.current && (event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
       if (isMore(trackRect.width, thumbRect.width)) {
         const currentOffset = thumbRect.left - trackRect.left;
-        const offset = Math.min(
-          Math.max(currentOffset + event.clientX - clientXRef.current, 0),
-          trackRect.width - thumbRect.width,
-        );
+        let offset: number;
+        if (event.clientX < trackRect.left + Math.floor(thumbOffsetRef.current)) {
+          // the cursor position is to the left of the track element position
+          offset = 0;
+        } else if (event.clientX > trackRect.left + trackRect.width - Math.ceil(thumbRect.width - thumbOffsetRef.current)) {
+          // the cursor position is to the right of the track element position
+          offset = trackRect.width - thumbRect.width;
+        } else {
+          offset = Math.min(
+            Math.max(currentOffset + event.clientX - clientXRef.current, 0),
+            trackRect.width - thumbRect.width,
+          );
+        }
         if (offset !== currentOffset) {
           clientXRef.current = event.clientX;
 
