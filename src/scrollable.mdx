@@ -1,7 +1,6 @@
 import {
   Meta,
   Title,
-  Subtitle,
   Description,
   Primary,
   ArgTypes,
@@ -15,28 +14,15 @@ import * as ScrollableStories from './scrollable.stories';
 <Title />
 
 <Description />
+
 <Primary />
 
-<Subtitle>Configuration</Subtitle>
+## Supported props:
 
-Supported props:
+Компонент принимает все свойства `html` элемента, пробрасываемые в прокручиваемую область с CSS правилом `overflow`, и дополнительные, описанные ниже в таблице:
 
 <ArgTypes />
 
-Use css variables to customize track or/and thumb:
+## Examples
 
-```css
-.scrollable {
-  /* thumb variables */
-  --thumb-border: none;
-  --thumb-border-radius: 3px;
-  --thumb-background: #C7CED480;
-  --thumb-size: 6px;
-
-  /* scrollbar variables */
-  --scrollbar-background: none;
-  --scrollbar-border: none;
-  --scrollbar-border-radius: 0;
-}
-```
-<Stories title="Examples"/>
+<Stories title=""/>

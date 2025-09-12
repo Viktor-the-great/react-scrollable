@@ -30,6 +30,7 @@ export type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
    */
   showThumbOnHover?: boolean;
   /**
+   * <a name="on-left-edge-reached-props-anchor"></a>
    * function called when the scroll left edge is reached during scrolling
    *
    * Функция вызывается при достижении левого края прокручиваемой области
@@ -54,12 +55,13 @@ export type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
    */
   onBottomEdgeReached?: (event: UIEvent) => void;
   /**
-   * Название класса используется как префикс для генерации новых классов для внутренних элементов, новые классы добавляются к уже существующим.
+   * <a name="classname-props-anchor"></a>
+   * Название свойства используется как префикс для генерации новых классов для внутренних элементов, новые классы добавляются к уже существующим.
    *
    * Генерируются следующие классы:
    *
    * * `[className]` - класс элемента обёртки, содержащего прокручиваемую область, полосы прокрутки; представляет собой динамически настраиваемый грид
-   * * `[className]__area` - класс для прокручиваемого элемента с CSS свойством overflow
+   * * `[className]__area` - класс для прокручиваемого элемента с CSS правилом overflow
    * * `[className]__content` - класс элемента с содержимым
    * * `[className]__scrollbar` - класс для полосы прокрутки
    * * `[className]__scrollbar_vertical` - класс-модификатор для вертикальной полосы прокрутки
@@ -68,9 +70,9 @@ export type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
    */
   className?: string;
   /**
-   * Задаёт стили для прокручиваемого элемента с CSS свойством overflow.
+   * Задаёт стили для прокручиваемого элемента с CSS правилом overflow.
    * Обратите внимание, что ширина и высота будут применяться ко внутреннему элементу с содержимым, не включающего полосы прокрутки.
-   * Для задания размеров области, включающей все элементы, используйте свойство wrapperStyle
+   * Для задания размеров области, включающей все элементы, используйте свойство `wrapperStyle`
    */
   style?: CSSProperties;
   /**
@@ -81,6 +83,36 @@ export type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
 
 /**
  * Scrollable is a custom component made to handle scrolling with a custom scrollbar.
+ *
+ * Компонент Scrollable это функциональный компонент, который реализует прокручиваемую область со стилизованными полосами прокрутки.
+ * Прокручиваемая область использует нативную реализацию браузера для области прокрутки, но со скрытыми полосами прокрутки (`scrollbar-width: none;`, `::-webkit-scrollbar { width: 0; }`).
+ * Полосы прокрутки реализуются как отдельные элементы, управляемые программно.
+
+ * Компонент поддерживает все свойства html элемента, которые передаются в элемент с CSS правилом overflow, так например, можно настроить правила для прокрутки
+
+ * Компонент реализует возможность перехватывать события при достижении верхнего, нижнего, левого и правого краёв прокручиваемой области с помощью [дополнительных свойств](#on-left-edge-reached-props-anchor).
+ *
+ * Компонент предоставляет несколько способов стилизации:
+ * 1. простая стилизация полос прокруток с помощью CSS переменных. Ниже указаны доступные переменные и их значения по умолчанию:
+ *  - переменные для ползунка:
+ *      - `--thumb-border: none;`
+ *      - `--thumb-border-radius: 3px;`
+ *      - `--thumb-background: #C7CED480;`
+ *      - `--thumb-size: 6px;`
+ *  - переменные для полосы прокрутки:
+ *      - `--scrollbar-background: none;`
+ *      - `--scrollbar-border: none;`
+ *      - `--scrollbar-border-radius: 0;;`
+ * 2. использование внутренних классов
+ *  - `scrollable` - класс элемента обёртки, содержащего прокручиваемую область, полосы прокрутки; представляет собой динамически настраиваемый грид
+ *  - `scrollable__area` - класс для прокручиваемого элемента с CSS свойством overflow
+ *  - `scrollable__content` - класс элемента с содержимым
+ *  - `scrollable__scrollbar` - класс для полосы прокрутки
+ *  - `scrollable__scrollbar_vertical` - класс-модификатор для вертикальной полосы прокрутки
+ *  - `scrollable__scrollbar_horizontal` - класс-модификатор для горизонтальной полосы прокрутки
+ *  - `scrollable__scrollbar__thumb` - класс для ползунка
+ * 3. генерация новых классов для внутренних элементов с помощью свойство [className](#classname-props-anchor).
+ *
  */
 function Scrollable({
   children,
@@ -88,7 +120,6 @@ function Scrollable({
   className = undefined,
   style = undefined,
   wrapperStyle = undefined,
-  onScroll = undefined,
   onLeftEdgeReached = undefined,
   onRightEdgeReached = undefined,
   onTopEdgeReached = undefined,
@@ -121,7 +152,7 @@ function Scrollable({
   const scrollHandlers = useScrollHandlers({
     hScrollbarRef,
     vScrollbarRef,
-    onScroll,
+    onScroll: props.onScroll,
     onLeftEdgeReached,
     onRightEdgeReached,
     onTopEdgeReached,
