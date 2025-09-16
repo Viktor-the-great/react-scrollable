@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { type UIEvent, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, waitFor, fireEvent, fn } from 'storybook/test';
+import { css } from '@emotion/css';
 import Scrollable from './scrollable';
-import './lazy-scrollable.stories.css';
+import useEvent from './hooks/useEvent';
 
 const meta = {
   title: 'LazyScrollable',
@@ -37,6 +38,32 @@ const createRange = (
   end: number
 ) => Array.from({ length: end - start + 1 }).map((_, i) => start + i);
 
+const verticalScrolling = css`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+const verticalScrollingItem = css`
+  height: 100px;
+  line-height: 100px;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid #cccccc;
+`;
+const horizontalScrolling = css`
+  display: flex;
+  gap: 10px;
+`;
+const horizontalScrollingItem = css`
+  height: 100px;
+  line-height: 100px;
+  width: 200px;
+  text-align: center;
+  box-sizing: border-box;
+  border: 1px solid #cccccc;
+`;
+
 export const LazyScrollableByX: Story = {
   args: {
     wrapperStyle: {
@@ -51,37 +78,39 @@ export const LazyScrollableByX: Story = {
     ...args
   }) {
     const [items, setItems] = useState(() => createRange(1, 10));
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+    const onRightEdgeReachedEvent = useEvent(async (event: UIEvent) => {
+      onRightEdgeReached?.(event);
+      // is loading
+      if (isLoading) {
+        return;
+      }
+      // max loaded items
+      if (items.length >= 50) {
+        return;
+      }
+      setIsLoading(true);
+      await new Promise((resolve) => {
+        setTimeout(resolve, 3000);
+      })
+      setItems([
+        ...items,
+        ...createRange(items.length + 1, items.length + 10)],
+      );
+      setIsLoading(false);
+    });
+
     return (
       <Scrollable
         {...args}
-        onRightEdgeReached={async (event) => {
-          onRightEdgeReached?.(event);
-          // is loading
-          if (isLoading) {
-            return;
-          }
-          // max loaded items
-          if (items.length >= 50) {
-            return;
-          }
-          setIsLoading(true);
-          await new Promise((resolve) => {
-            setTimeout(resolve, 3000);
-          })
-          setItems([
-            ...items,
-            ...createRange(items.length + 1, items.length + 10)],
-          );
-          setIsLoading(false);
-        }}
+        onRightEdgeReached={onRightEdgeReachedEvent}
       >
-        <div className="lazy-scrollable-by-x">
+        <div className={horizontalScrolling}>
           {
             items.map((item) => (
               <div
                 key={item}
-                className="lazy-scrollable-by-x__item"
+                className={horizontalScrollingItem}
               >
                 {item}
               </div>
@@ -89,7 +118,7 @@ export const LazyScrollableByX: Story = {
           }
           {
             isLoading && (
-              <div className="lazy-scrollable-by-x__item">
+              <div className={horizontalScrollingItem}>
                 loading...
               </div>
             )
@@ -158,37 +187,38 @@ export const LazyScrollableByY: Story = {
     ...args
   }) {
     const [items, setItems] = useState(() => createRange(1, 10));
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
+    const onBottomEdgeReachedEvent = useEvent(async (event: UIEvent) => {
+      onBottomEdgeReached?.(event);
+      // is loading
+      if (isLoading) {
+        return;
+      }
+      // max loaded items
+      if (items.length >= 50) {
+        return;
+      }
+      setIsLoading(true);
+      await new Promise((resolve) => {
+        setTimeout(resolve, 3000);
+      })
+      setItems([
+        ...items,
+        ...createRange(items.length + 1, items.length + 10)],
+      );
+      setIsLoading(false);
+    });
     return (
       <Scrollable
         {...args}
-        onBottomEdgeReached={async (event) => {
-          onBottomEdgeReached?.(event);
-          // is loading
-          if (isLoading) {
-            return;
-          }
-          // max loaded items
-          if (items.length >= 50) {
-            return;
-          }
-          setIsLoading(true);
-          await new Promise((resolve) => {
-            setTimeout(resolve, 3000);
-          })
-          setItems([
-            ...items,
-            ...createRange(items.length + 1, items.length + 10)],
-          );
-          setIsLoading(false);
-        }}
+        onBottomEdgeReached={onBottomEdgeReachedEvent}
       >
-        <div className="lazy-scrollable-by-y">
+        <div className={verticalScrolling}>
           {
             items.map((item) => (
               <div
                 key={item}
-                className="lazy-scrollable-by-y__item"
+                className={verticalScrollingItem}
               >
                 {item}
               </div>
@@ -196,7 +226,7 @@ export const LazyScrollableByY: Story = {
           }
           {
             isLoading && (
-              <div className="lazy-scrollable-by-y__item">
+              <div className={verticalScrollingItem}>
                 loading...
               </div>
             )
