@@ -115,14 +115,10 @@ export const LazyScrollableByX: Story = {
       args,
     }) => {
       const scrollable = canvas.getByTestId('scrollable');
-      const content = canvas.getByTestId('content');
 
-      await expect(content).toBeInTheDocument();
       await expect(scrollable).toBeInTheDocument();
 
-      const contentRect = content.getBoundingClientRect();
-      const scrollableRect = scrollable.getBoundingClientRect();
-      const scrollLeft = contentRect.width - scrollableRect.width;
+      const scrollLeft = scrollable.scrollWidth - scrollable.offsetWidth;
 
       await fireEvent.scroll(scrollable, {
         target: {
@@ -226,16 +222,12 @@ export const LazyScrollableByY: Story = {
       args,
     }) => {
       const scrollable = canvas.getByTestId('scrollable');
-      const content = canvas.getByTestId('content');
       const scrollbarByY = canvas.getByRole('scrollbar', { name: 'vertical scrollbar' })!;
 
       await expect(scrollable).toBeInTheDocument();
-      await expect(content).toBeInTheDocument();
       await expect(scrollbarByY).toBeInTheDocument();
 
-      const contentRect = content.getBoundingClientRect();
-      const scrollableRect = scrollable.getBoundingClientRect();
-      const scrollTop = contentRect.height - scrollableRect.height;
+      const scrollTop = scrollable.scrollHeight - scrollable.offsetHeight;
 
       await fireEvent.scroll(scrollable, {
         target: {

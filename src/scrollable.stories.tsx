@@ -139,10 +139,7 @@ export const ScrollableByXY: Story = {
     await step('scroll content vertically using thumb', async () => {
       const calcContentScrollTop = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('content')!
-        const scrollableSize = scrollableElement.getBoundingClientRect();
-        const contentSize = contentElement.getBoundingClientRect();
-        return toContentSize(value, contentSize.height, scrollableSize.height);
+        return toContentSize(value, scrollableElement.scrollHeight, scrollableElement.offsetHeight);
       };
 
       const scrollable = canvas.getByTestId('scrollable');
@@ -210,10 +207,7 @@ export const ScrollableByXY: Story = {
     await step('scroll content horizontally using thumb', async () => {
       const calcContentScrollLeft = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('content')!
-        const scrollableSize = scrollableElement.getBoundingClientRect();
-        const contentSize = contentElement.getBoundingClientRect();
-        return toContentSize(value, contentSize.width, scrollableSize.width);
+        return toContentSize(value, scrollableElement.scrollWidth, scrollableElement.offsetWidth);
       };
 
       const scrollable = canvas.getByTestId('scrollable');
@@ -281,17 +275,11 @@ export const ScrollableByXY: Story = {
     await step('scroll content using mouse wheel', async () => {
       const calcScrollbarScrollLeft = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('content')!
-        const scrollableSize = scrollableElement.getBoundingClientRect();
-        const contentSize = contentElement.getBoundingClientRect();
-        return toScrollbarSize(value, contentSize.width, scrollableSize.width);
+        return toScrollbarSize(value, scrollableElement.scrollWidth, scrollableElement.offsetWidth);
       };
       const calcScrollbarScrollTop = (value: number) => {
         const scrollableElement = canvas.getByTestId('scrollable')!
-        const contentElement = canvas.getByTestId('content')!
-        const scrollableSize = scrollableElement.getBoundingClientRect();
-        const contentSize = contentElement.getBoundingClientRect();
-        return toScrollbarSize(value, contentSize.height, scrollableSize.height);
+        return toScrollbarSize(value, scrollableElement.scrollHeight, scrollableElement.offsetWidth);
       };
       const scrollable = canvas.getByTestId('scrollable');
       const scrollbarByX = canvas.queryByRole('scrollbar', {
