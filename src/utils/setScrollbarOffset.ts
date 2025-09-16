@@ -13,37 +13,33 @@ const setScrollbarOffset = (scrollbarElement: HTMLElement, {
   scrollableElement,
   isVertical,
 }: OptionsType) => {
-  const contentElement = scrollableElement.firstElementChild;
-  if (contentElement) {
-    const scrollableRect = scrollableElement.getBoundingClientRect();
-    const contentRect = contentElement.getBoundingClientRect();
-    if (isVertical) {
-      const scrollTop = toScrollbarSize(
-        value,
-        contentRect.height,
-        scrollableRect.height,
-      );
-      scrollbarElement.style.transform = `translateY(${makePx(scrollTop)})`;
-      const isHidden = !isMore(contentRect.height, scrollableRect.height);
-      setAttributes(scrollbarElement, {
-        'aria-valuenow': value.toString(),
-        'aria-hidden': isHidden.toString(),
-        'data-scroll-top': scrollTop.toString(),
-      });
-    } else {
-      const scrollLeft = toScrollbarSize(
-        value,
-        contentRect.width,
-        scrollableRect.width,
-      );
-      scrollbarElement.style.transform = `translateX(${makePx(scrollLeft)})`;
-      const isHidden = !isMore(contentRect.width, scrollableRect.width);
-      setAttributes(scrollbarElement, {
-        'aria-valuenow': value.toString(),
-        'aria-hidden': isHidden.toString(),
-        'data-scroll-left': scrollLeft.toString(),
-      });
-    }
+  const scrollableRect = scrollableElement.getBoundingClientRect();
+  if (isVertical) {
+    const scrollTop = toScrollbarSize(
+      value,
+      scrollableElement.scrollHeight,
+      scrollableRect.height,
+    );
+    scrollbarElement.style.transform = `translateY(${makePx(scrollTop)})`;
+    const isHidden = !isMore(scrollableElement.scrollHeight, scrollableRect.height);
+    setAttributes(scrollbarElement, {
+      'aria-valuenow': value.toString(),
+      'aria-hidden': isHidden.toString(),
+      'data-scroll-top': scrollTop.toString(),
+    });
+  } else {
+    const scrollLeft = toScrollbarSize(
+      value,
+      scrollableElement.scrollWidth,
+      scrollableRect.width,
+    );
+    scrollbarElement.style.transform = `translateX(${makePx(scrollLeft)})`;
+    const isHidden = !isMore(scrollableElement.scrollWidth, scrollableRect.width);
+    setAttributes(scrollbarElement, {
+      'aria-valuenow': value.toString(),
+      'aria-hidden': isHidden.toString(),
+      'data-scroll-left': scrollLeft.toString(),
+    });
   }
 }
 

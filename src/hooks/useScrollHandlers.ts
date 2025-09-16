@@ -29,17 +29,12 @@ const useScrollHandlers = ({
     const { currentTarget } = event;
     const verticalScrollbarElement = vScrollbarRef.current;
     const horizontalScrollbarElement = hScrollbarRef.current;
-    const contentElement = currentTarget.firstElementChild;
 
     if (!verticalScrollbarElement) {
       return;
     }
 
     if (!horizontalScrollbarElement) {
-      return;
-    }
-
-    if (!contentElement) {
       return;
     }
 
@@ -64,13 +59,12 @@ const useScrollHandlers = ({
     ignoresScrollEvents.current = false;
 
     const scrollableRect = currentTarget.getBoundingClientRect();
-    const contentRect = contentElement?.getBoundingClientRect();
 
     if (prevScrollTopRef.current !== currentTarget.scrollTop) {
       if (currentTarget.scrollTop === 0) {
         onTopEdgeReached?.(event);
       }
-      if (currentTarget.scrollTop === contentRect.height - scrollableRect.height) {
+      if (currentTarget.scrollTop === currentTarget.scrollHeight - scrollableRect.height) {
         onBottomEdgeReached?.(event);
       }
     }
@@ -78,7 +72,7 @@ const useScrollHandlers = ({
       if (currentTarget.scrollLeft === 0) {
         onLeftEdgeReached?.(event);
       }
-      if (currentTarget.scrollLeft === contentRect.width - scrollableRect.width) {
+      if (currentTarget.scrollLeft === currentTarget.scrollWidth - scrollableRect.width) {
         onRightEdgeReached?.(event);
       }
     }

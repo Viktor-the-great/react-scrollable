@@ -61,15 +61,13 @@ const useVerticalScrollbarHandlers = ({
         if (offset !== currentOffset) {
           clientYRef.current = event.clientY;
 
-          const contentElement = scrollableElement.firstElementChild;
           const scrollbarElement = scrollbarRef.current;
-          if (contentElement && scrollbarElement) {
-            const contentRect = contentElement.getBoundingClientRect();
+          if (scrollbarElement) {
             const scrollableRect = scrollableElement.getBoundingClientRect();
 
             const scrollTop = toContentSize(
               offset,
-              contentRect.height,
+              scrollableElement.scrollHeight,
               scrollableRect.height
             );
 
