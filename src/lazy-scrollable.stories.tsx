@@ -48,8 +48,9 @@ const verticalScrollingItem = css`
   line-height: 100px;
   width: 100%;
   text-align: center;
-  box-sizing: border-box;
   border: 1px solid #cccccc;
+  box-sizing: border-box;
+  flex-shrink: 0;
 `;
 const horizontalScrolling = css`
   display: flex;
@@ -60,8 +61,8 @@ const horizontalScrollingItem = css`
   line-height: 100px;
   width: 200px;
   text-align: center;
-  box-sizing: border-box;
   border: 1px solid #cccccc;
+  flex-shrink: 0;
 `;
 
 export const LazyScrollableByX: Story = {

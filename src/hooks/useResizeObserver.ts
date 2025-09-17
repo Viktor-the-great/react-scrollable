@@ -1,8 +1,8 @@
 import { type RefObject, useLayoutEffect, useMemo } from 'react';
 import useEvent from './useEvent';
 import { floor, isMore } from '../utils/math';
-import makePx from '../utils/makePx.ts';
-import setAttributes from '../utils/setAttributes.ts';
+import makePx from '../utils/makePx';
+import setAttributes from '../utils/setAttributes';
 
 type ScrollbarsSizeType = {
   hThumbSize: number;
@@ -39,15 +39,12 @@ const useResizeObserver = ({
   const onResizeEvent = useEvent(onResize);
   const resizeObserver = useMemo(() => new ResizeObserver(() => {
     const scrollableElement = scrollableRef.current;
-    const contentElement = scrollableElement?.querySelector<HTMLElement>('.scrollable__content');
-    if (scrollableElement && contentElement) {
-      const scrollableRect = scrollableElement.getBoundingClientRect();
-      const contentRect = contentElement.getBoundingClientRect();
-      const hThumbSize = isMore(contentRect.width, scrollableRect.width)
-        ? floor(scrollableRect.width / (contentRect.width / scrollableRect.width), 1)
+    if (scrollableElement) {
+      const hThumbSize = isMore(scrollableElement.scrollWidth, scrollableElement.offsetWidth)
+        ? floor(scrollableElement.offsetWidth / (scrollableElement.scrollWidth / scrollableElement.offsetWidth), 1)
         : 0;
-      const vThumbSize = isMore(contentRect.height, scrollableRect.height)
-        ? floor(scrollableRect.height / (contentRect.height / scrollableRect.height), 1)
+      const vThumbSize = isMore(scrollableElement.scrollHeight, scrollableElement.offsetHeight)
+        ? floor(scrollableElement.offsetHeight / (scrollableElement.scrollHeight / scrollableElement.offsetHeight), 1)
         : 0;
 
       if (vScrollbarRef.current) {
@@ -79,7 +76,7 @@ const useResizeObserver = ({
 
   useLayoutEffect(() => {
     const scrollableElement = scrollableRef.current;
-    const contentElement = scrollableElement?.querySelector<HTMLElement>('.scrollable__content');
+    const contentElement = scrollableElement?.firstElementChild;
     if (scrollableElement) {
       resizeObserver.observe(scrollableElement);
     }

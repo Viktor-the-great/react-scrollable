@@ -204,7 +204,6 @@ function Scrollable({
             className={cx('scrollable__content', {
               [`${className}__content`]: !!className,
             })}
-            data-testid="content"
             {...pointerHandlers}
           >
             {children}
