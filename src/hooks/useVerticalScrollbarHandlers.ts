@@ -1,7 +1,7 @@
 import { type PointerEvent, type RefObject, useRef } from 'react';
 import useEvent from './useEvent';
 import { isMore, toContentSize } from '../utils/math';
-import setScrollbarOffset from '../utils/setScrollbarOffset.ts';
+import setScrollbarOffset from '../utils/setScrollbarOffset';
 
 type UseVerticalScrollbarHandlersPropsType = {
   scrollableRef: RefObject<HTMLElement | null>;

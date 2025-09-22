@@ -37,3 +37,5 @@ export const toScrollbarSize = (
 ) => {
   return floor(value * scrollableSize / contentSize, 2)
 }
+
+export const isNumber = (value: unknown) => typeof value === 'number';

@@ -1,5 +1,6 @@
 import { type RefObject, useLayoutEffect, useMemo } from 'react';
 import useEvent from './useEvent';
+import useRAF from './useRAF';
 import { floor, isMore } from '../utils/math';
 import makePx from '../utils/makePx';
 import setAttributes from '../utils/setAttributes';
@@ -36,6 +37,7 @@ const useResizeObserver = ({
   vScrollbarRef,
   onResize,
 }: UseScrollableObserverPropsType) => {
+  const rAF = useRAF();
   const onResizeEvent = useEvent(onResize);
   const resizeObserver = useMemo(() => new ResizeObserver(() => {
     const scrollableElement = scrollableRef.current;
@@ -47,20 +49,24 @@ const useResizeObserver = ({
         ? floor(scrollableElement.offsetHeight / (scrollableElement.scrollHeight / scrollableElement.offsetHeight), 1)
         : 0;
 
-      if (vScrollbarRef.current) {
-        const isHidden = vThumbSize === 0;
-        vScrollbarRef.current.style.height = makePx(vThumbSize);
-        setAttributes(vScrollbarRef.current, {
-          'aria-hidden': isHidden.toString(),
-        });
-      }
-      if (hScrollbarRef.current) {
-        const isHidden = hThumbSize === 0;
-        hScrollbarRef.current.style.width = makePx(hThumbSize);
-        setAttributes(hScrollbarRef.current, {
-          'aria-hidden': isHidden.toString(),
-        });
-      }
+      rAF(() => {
+        const vScrollbar = vScrollbarRef.current;
+        const hScrollbar = hScrollbarRef.current;
+        if (vScrollbar) {
+          const isHidden = vThumbSize === 0;
+          vScrollbar.style.height = makePx(vThumbSize);
+          setAttributes(vScrollbar, {
+            'aria-hidden': isHidden.toString(),
+          });
+        }
+        if (hScrollbar) {
+          const isHidden = hThumbSize === 0;
+          hScrollbar.style.width = makePx(hThumbSize);
+          setAttributes(hScrollbar, {
+            'aria-hidden': isHidden.toString(),
+          });
+        }
+      });
 
       onResizeEvent({
         hThumbSize,

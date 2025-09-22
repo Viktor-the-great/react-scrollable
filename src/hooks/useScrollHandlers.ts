@@ -1,5 +1,6 @@
 import { type RefObject, type UIEvent, useRef } from 'react';
 import useEvent from './useEvent';
+import useRAF from './useRAF';
 import setScrollbarOffset from '../utils/setScrollbarOffset';
 
 type useScrollHandlersPropsType = {
@@ -25,6 +26,7 @@ const useScrollHandlers = ({
   const prevScrollTopRef = useRef(0);
   const prevScrollLeftRef = useRef(0);
   const isScrollingRef = useRef(false);
+  const rAF = useRAF();
   const onScrollEvent = useEvent((event: UIEvent<HTMLElement>) => {
     const { currentTarget } = event;
     const verticalScrollbarElement = vScrollbarRef.current;
@@ -40,7 +42,7 @@ const useScrollHandlers = ({
 
     if (!ignoresScrollEvents.current && !isScrollingRef.current) {
       isScrollingRef.current = true;
-      requestAnimationFrame(() => {
+      rAF(() => {
         setScrollbarOffset(verticalScrollbarElement, {
           scrollableElement: currentTarget,
           value: currentTarget.scrollTop,
