@@ -1,5 +1,6 @@
 import { type PointerEvent, type RefObject, useRef } from 'react';
 import useEvent from './useEvent';
+import useRAF from './useRAF';
 import { isMore, toContentSize } from '../utils/math';
 import setScrollbarOffset from '../utils/setScrollbarOffset';
 
@@ -17,6 +18,7 @@ const useHorizontalScrollbarHandlers = ({
   const isPointerDown = useRef<boolean>(false);
   const clientXRef = useRef(0);
   const thumbOffsetRef = useRef(0);
+  const rAF = useRAF();
   const onPointerDown = useEvent((event: PointerEvent<HTMLDivElement>) => {
     if ((event.pointerType === 'mouse' || event.pointerType === 'touch') && event.isPrimary) {
       isPointerDown.current = true;
@@ -72,11 +74,14 @@ const useHorizontalScrollbarHandlers = ({
             );
 
             ignoresScrollEvents.current = true;
-            scrollableElement.scrollLeft = scrollLeft;
             setScrollbarOffset(scrollbarElement, {
               scrollableElement,
               value: scrollLeft,
               isVertical: false,
+            });
+
+            rAF(() => {
+              scrollableElement.scrollLeft = scrollLeft;
             });
           }
         }
