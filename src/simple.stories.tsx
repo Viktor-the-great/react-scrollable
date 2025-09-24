@@ -170,12 +170,14 @@ export const HorizontallyAndVerticallyScrollable: Story = {
       ]);
 
       await expect(isEqual(getAttribute(scrollbarByY, 'data-scroll-top'), 100)).toBeTruthy();
-      await expect(isEqual(
-        scrollable.scrollTop,
-        calcContentScrollTop(getAttribute(scrollbarByY, 'data-scroll-top')))
-      ).toBeTruthy();
       await expect(isEqual(getAttribute(scrollbarByX, 'data-scroll-left'), 0)).toBeTruthy();
-      await expect(isEqual(scrollable.scrollLeft, 0)).toBeTruthy();
+      await waitFor(async () => {
+        await expect(isEqual(
+          scrollable.scrollTop,
+          calcContentScrollTop(getAttribute(scrollbarByY, 'data-scroll-top')))
+        ).toBeTruthy();
+        await expect(isEqual(scrollable.scrollLeft, 0)).toBeTruthy();
+      });
 
       await userEvent.pointer([
         {
@@ -197,9 +199,11 @@ export const HorizontallyAndVerticallyScrollable: Story = {
         },
       ]);
       await expect(isEqual(getAttribute(scrollbarByY, 'data-scroll-top'), 0)).toBeTruthy();
-      await expect(isEqual(scrollable.scrollTop, 0)).toBeTruthy();
       await expect(isEqual(getAttribute(scrollbarByX, 'data-scroll-left'), 0)).toBeTruthy();
-      await expect(isEqual(scrollable.scrollLeft, 0)).toBeTruthy();
+      await waitFor(async () => {
+        await expect(isEqual(scrollable.scrollTop, 0)).toBeTruthy();
+        await expect(isEqual(scrollable.scrollLeft, 0)).toBeTruthy();
+      });
     });
 
     await step('scroll content horizontally using thumb', async () => {
@@ -238,12 +242,14 @@ export const HorizontallyAndVerticallyScrollable: Story = {
       ]);
 
       await expect(isEqual(getAttribute(scrollbarByY, 'data-scroll-top'), 0)).toBeTruthy();
-      await expect(isEqual(scrollable.scrollTop, 0)).toBeTruthy();
       await expect(isEqual(getAttribute(scrollbarByX, 'data-scroll-left'), 100)).toBeTruthy();
-      await expect(isEqual(
-        scrollable.scrollLeft,
-        calcContentScrollLeft(getAttribute(scrollbarByX, 'data-scroll-left')))
-      ).toBeTruthy();
+      await waitFor(async () => {
+        await expect(isEqual(scrollable.scrollTop, 0)).toBeTruthy();
+        await expect(isEqual(
+          scrollable.scrollLeft,
+          calcContentScrollLeft(getAttribute(scrollbarByX, 'data-scroll-left')))
+        ).toBeTruthy();
+      });
 
       await userEvent.pointer([
         {
@@ -265,9 +271,11 @@ export const HorizontallyAndVerticallyScrollable: Story = {
         },
       ]);
       await expect(isEqual(getAttribute(scrollbarByY, 'data-scroll-top'), 0)).toBeTruthy();
-      await expect(isEqual(scrollable.scrollTop, 0)).toBeTruthy();
       await expect(isEqual(getAttribute(scrollbarByX, 'data-scroll-left'), 0)).toBeTruthy();
-      await expect(isEqual(scrollable.scrollLeft, 0)).toBeTruthy();
+      await waitFor(async () => {
+        await expect(isEqual(scrollable.scrollTop, 0)).toBeTruthy();
+        await expect(isEqual(scrollable.scrollLeft, 0)).toBeTruthy();
+      });
     });
 
     await step('scroll content using mouse wheel', async () => {
