@@ -4,31 +4,34 @@ import {
   Description,
   Primary,
   ArgTypes,
-  Stories,
-  Story,
   Canvas,
 } from '@storybook/addon-docs/blocks';
 
-import * as ScrollableStories from './scrollable.stories';
-import * as StyledScrollableStories from './styled-scrollable.stories';
+import * as SimpleStories from './simple.stories';
+import * as StyledStories from './styled-scrollable.stories';
+import * as LazyLoadingStories from './lazy-loading-scrollable.stories';
 
 <Meta title="Docs" />
 
-<Title of={ScrollableStories} />
+<Title of={SimpleStories} />
 
-<Description of={ScrollableStories} />
+<Description of={SimpleStories} />
 
-<Primary of={ScrollableStories} />
+<Primary of={SimpleStories} />
 
 ## Supported properties:
 
 Accepts all `HTML` element properties for the inner `overflow` element, plus additional properties listed in the table below:
 
-<ArgTypes of={ScrollableStories} />
+<ArgTypes of={SimpleStories} />
 
 ## Examples
 
-<Canvas of={ScrollableStories.HorizontallyAndVerticallyScrollable} />
-<Canvas of={ScrollableStories.HorizontallyScrollable} />
-<Canvas of={ScrollableStories.VerticallyScrollable} />
-<Canvas of={ScrollableStories.NotScrollable} />
+<Canvas of={SimpleStories.HorizontallyAndVerticallyScrollable} />
+<Canvas of={SimpleStories.HorizontallyScrollable} />
+<Canvas of={SimpleStories.VerticallyScrollable} />
+<Canvas of={SimpleStories.NotScrollable} />
+<Canvas of={StyledStories.CustomScrollbarsVariant1} />
+<Canvas of={StyledStories.CustomScrollbarsVariant2} />
+<Canvas of={LazyLoadingStories.LazyHorizontalScrollable} />
+<Canvas of={LazyLoadingStories.LazyVerticalScrollable} />
