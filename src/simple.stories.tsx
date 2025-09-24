@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, waitFor, fireEvent, fn } from 'storybook/test';
-import { css } from '@emotion/css';
 import { isEqual, toContentSize, toScrollbarSize } from './utils/math';
 import Scrollable from './scrollable';
 
 const meta = {
-  title: 'Scrollable',
+  title: 'Examples/Simple',
   component: Scrollable,
   args: {
     showThumbOnHover: false,
@@ -26,7 +25,6 @@ const meta = {
         'children',
         'className',
         'style',
-        'onScroll'
       ],
     },
   },
@@ -44,7 +42,7 @@ const getAttribute = (
 
 type Story = StoryObj<typeof meta>;
 
-export const ScrollableByXY: Story = {
+export const HorizontallyAndVerticallyScrollable: Story = {
   args: {
     children: (
       <div style={{ width: 800 }}>
@@ -361,10 +359,10 @@ export const ScrollableByXY: Story = {
   },
 };
 
-export const ScrollableByX: Story = {
-  ...ScrollableByXY,
+export const HorizontallyScrollable: Story = {
+  ...HorizontallyAndVerticallyScrollable,
   args: {
-    ...ScrollableByXY.args,
+    ...HorizontallyAndVerticallyScrollable.args,
     children: (
       <div style={{ width: 800 }}>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. A at commodi distinctio dolorum earum eius fugiat id
@@ -395,10 +393,10 @@ export const ScrollableByX: Story = {
   },
 };
 
-export const ScrollableByY: Story = {
-  ...ScrollableByXY,
+export const VerticallyScrollable: Story = {
+  ...HorizontallyAndVerticallyScrollable,
   args: {
-    ...ScrollableByXY.args,
+    ...HorizontallyAndVerticallyScrollable.args,
     children: (
       <div>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium asperiores consectetur, consequatur
@@ -430,7 +428,7 @@ export const ScrollableByY: Story = {
 
 export const NotScrollable: Story = {
   args: {
-    ...ScrollableByXY.args,
+    ...HorizontallyAndVerticallyScrollable.args,
     children: (
       <div>
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus, corporis dolore ea esse, eveniet expedita
@@ -448,52 +446,3 @@ export const NotScrollable: Story = {
     });
   },
 };
-
-export const CustomScrollbars: Story = {
-  args: {
-    ...ScrollableByXY.args,
-  },
-  render({
-    showThumbOnHover,
-    children,
-  }) {
-    return (
-      <div className={css({
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gridTemplateRows: 'repeat(2, 300px)',
-        gap: '10px',
-      })}>
-        <Scrollable
-          showThumbOnHover={showThumbOnHover}
-        >
-          {children}
-        </Scrollable>
-        <Scrollable
-          showThumbOnHover={showThumbOnHover}
-          className={css({
-            '--thumb-size': '10px',
-            '--thumb-background': 'cyan',
-            '--thumb-border-radius': '5px',
-            '--scrollbar-border': '1px solid cyan',
-            '--scrollbar-border-radius': '5px',
-          })}
-        >
-          {children}
-        </Scrollable>
-        <Scrollable
-          showThumbOnHover={showThumbOnHover}
-          className={css({
-            '--thumb-size': '10px',
-            '--thumb-background': 'cyan',
-            '--thumb-border-radius': '5px',
-            '--scrollbar-background': '#C7CED480',
-            '--scrollbar-border-radius': '5px',
-          })}
-        >
-          {children}
-        </Scrollable>
-      </div>
-    )
-  }
-}

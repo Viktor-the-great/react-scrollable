@@ -6,7 +6,7 @@ import Scrollable from './scrollable';
 import useEvent from './hooks/useEvent';
 
 const meta = {
-  title: 'LazyScrollable',
+  title: 'Examples/LazyLoading',
   component: Scrollable,
   args: {
     showThumbOnHover: false,
@@ -65,7 +65,7 @@ const horizontalScrollingItem = css`
   flex-shrink: 0;
 `;
 
-export const LazyScrollableByX: Story = {
+export const LazyHorizontalScrollable: Story = {
   args: {
     wrapperStyle: {
       width: 1000,
@@ -173,9 +173,9 @@ export const LazyScrollableByX: Story = {
   }
 }
 
-export const LazyScrollableByY: Story = {
+export const LazyVerticalScrollable: Story = {
   args: {
-    ...LazyScrollableByX.args,
+    ...LazyHorizontalScrollable.args,
     wrapperStyle: {
       width: 300,
       height: 300,

@@ -10,7 +10,7 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ['Scrollable']
+        order: ['Examples', ['Simple', 'Styled', 'LazyLoading']]
       }
     }
   },

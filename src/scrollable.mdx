@@ -5,24 +5,30 @@ import {
   Primary,
   ArgTypes,
   Stories,
+  Story,
+  Canvas,
 } from '@storybook/addon-docs/blocks';
 
 import * as ScrollableStories from './scrollable.stories';
+import * as StyledScrollableStories from './styled-scrollable.stories';
 
-<Meta of={ScrollableStories} />
+<Meta title="Docs" />
 
-<Title />
+<Title of={ScrollableStories} />
 
-<Description />
+<Description of={ScrollableStories} />
 
-<Primary />
+<Primary of={ScrollableStories} />
 
 ## Supported properties:
 
 Accepts all `HTML` element properties for the inner `overflow` element, plus additional properties listed in the table below:
 
-<ArgTypes />
+<ArgTypes of={ScrollableStories} />
 
 ## Examples
 
-<Stories title=""/>
+<Canvas of={ScrollableStories.HorizontallyAndVerticallyScrollable} />
+<Canvas of={ScrollableStories.HorizontallyScrollable} />
+<Canvas of={ScrollableStories.VerticallyScrollable} />
+<Canvas of={ScrollableStories.NotScrollable} />
