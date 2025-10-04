@@ -1,0 +1,34 @@
+name: Use a template to create the README.md
+
+on: push
+
+jobs:
+  update_chromatic_permalink_in_readme:
+    name: "Update chromatic permalink in README.md"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Exposes metadata as environment variable
+        uses: varunsridharan/action-repository-meta@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update chromatic permalink
+        uses: varunsridharan/action-dynamic-readme@main
+        with:
+          commit_message: "docs: update chromatic permalink in README.md"
+          committer_name: "v.voloshin"
+          committer_email: "viktor_the_great@mail.ru"
+          global_template_repository: "${{ github.repository_owner }}/${{ github.repository_name }}"
+          files: |
+            .github/readme-templates/README.md=README.md
+        env:
+          CHROMATIC_PERMALINK: "https://${{ github.sha }}--${{ vars.CHROMATIC_PROJECT_ID }}.chromatic.com"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write
