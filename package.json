@@ -24,7 +24,7 @@
     "test-unit": "vitest run",
     "test-unit:watch": "vitest",
     "test": "npm run test-storybook && npm run test-unit",
-    "chromatic": "dotenv -- bash -c 'npx chromatic --project-token=$PROJECT_TOKEN'"
+    "chromatic": ".bin/deploy-storybook-docs.sh"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
