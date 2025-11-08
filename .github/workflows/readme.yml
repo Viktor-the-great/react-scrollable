@@ -1,6 +1,9 @@
-name: Use a template to create the README.md
+name: Update README.md
 
-on: push
+on:
+  push:
+    paths:
+      - "src/**"
 
 jobs:
   update_chromatic_permalink_in_readme:
