@@ -10,7 +10,7 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ['Examples', ['Simple', 'Styled', 'LazyLoading']]
+        order: ['Docs', 'Examples', ['Simple', 'Styled', 'LazyLoading']]
       }
     }
   },
