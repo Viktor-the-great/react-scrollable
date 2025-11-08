@@ -11,4 +11,4 @@ Scrollable is a custom component made to handle scrolling with a custom scrollba
 
 ## Docs
 
-You can check out docs [here](https://9b2d6b58d4d5ab9f27b947460fb5ad473808613e--68b616bf6a61d2d117d8f068.chromatic.com "more info")
+You can check out docs [here](https://064939e--68b616bf6a61d2d117d8f068.chromatic.com "more info")
