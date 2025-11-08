@@ -17,6 +17,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get Short SHA
+        run: echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
       - name: Update chromatic permalink
         uses: varunsridharan/action-dynamic-readme@main
         with:
@@ -27,7 +30,7 @@ jobs:
           files: |
             .github/readme-templates/README.md=README.md
         env:
-          CHROMATIC_PERMALINK: "https://${{ github.sha }}--${{ vars.CHROMATIC_PROJECT_ID }}.chromatic.com"
+          CHROMATIC_PERMALINK: "https://${{ env.SHORT_SHA }}--${{ vars.CHROMATIC_PROJECT_ID }}.chromatic.com"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 permissions:
