@@ -5,16 +5,6 @@
   background: var(--scrollbar-background, none);
   border: var(--scrollbar-border, none);
 
-  &_vertical &__thumb {
-    height: 0;
-    width: var(--thumb-size, 6px);
-  }
-
-  &_horizontal &__thumb {
-    height: var(--thumb-size, 6px);
-    width: 0;
-  }
-
   &__track {
     box-sizing: border-box;
     width: 100%;
@@ -28,5 +18,15 @@
     background: var(--thumb-background, #C7CED480);
     cursor: pointer;
     touch-action: none;
+  }
+
+  &__thumb_vertical {
+    height: 0;
+    width: var(--thumb-size, 6px);
+  }
+
+  &__thumb_horizontal {
+    height: var(--thumb-size, 6px);
+    width: 0;
   }
 }

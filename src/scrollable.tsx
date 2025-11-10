@@ -15,12 +15,20 @@ import Scrollbar from './scrollbar';
 import cx from './utils/classnames';
 import generateUniqId from './utils/generateUniqId';
 import composeRef from './utils/composeRef';
+import makeClassName from './utils/makeClassName';
 import useHorizontalScrollbarHandlers from './hooks/useHorizontalScrollbarHandlers';
 import useVerticalScrollbarHandlers from './hooks/useVerticalScrollbarHandlers';
 import useResizeObserver from './hooks/useResizeObserver';
 import useScrollHandlers from './hooks/useScrollHandlers';
 import usePointerHandlers from './hooks/usePointerHandlers';
+import type { ClassNamesType } from './types';
 import './scrollable.css';
+
+export type {
+  ClassNamesType,
+  ClassNameStringOrFnType,
+  ClassNameStringOrFnReturnType,
+} from './types';
 
 export type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
   /**
@@ -59,6 +67,19 @@ export type ScrollablePropsType = HTMLAttributes<HTMLElement> & {
    * * `[className]__scrollbar__thumb` - thumb element class
    */
   className?: string;
+  /**
+   * <a name="classnames-props-anchor"></a>
+   * A set of classes for styling the scrollbar area. The values for the classes can be a string or a function that takes the appropriate argument and returns a string.
+   *
+   * Supported classes:
+   *
+   * * `scrollable` - the wrapper element class containing the scrollable area and scrollbars, implemented as a dynamic grid.
+   * * `area` - scrollable element class - uses CSS overflow property
+   * * `content` - content element class
+   * * `scrollbar` - scrollbar element class
+   * * `thumb` - thumb element class
+   */
+  classNames?: Partial<ClassNamesType>;
   /**
    * Applies styles to the overflow-enabled scrollable element.
    * The width and height properties are applied exclusively to the inner content element, excluding scrollbars.
@@ -105,6 +126,7 @@ function Scrollable({
   children,
   showThumbOnHover = false,
   className = undefined,
+  classNames = undefined,
   style = undefined,
   wrapperStyle = undefined,
   onLeftEdgeReached = undefined,
@@ -166,20 +188,30 @@ function Scrollable({
     ignoresScrollEvents,
   });
 
+
   return (
     <CssVariables>
       <div
-        className={cx('scrollable', {
-          'scrollable_has-horizontal-scrollbar': hasHorizontalScrollbar,
-          'scrollable_has-vertical-scrollbar': hasVerticalScrollbar,
-          'scrollable_show-mouse-on-hover': showThumbOnHover,
-        }, className)}
+        className={cx(
+          'scrollable',
+          {
+            'scrollable_has-horizontal-scrollbar': hasHorizontalScrollbar,
+            'scrollable_has-vertical-scrollbar': hasVerticalScrollbar,
+            'scrollable_show-mouse-on-hover': showThumbOnHover,
+          },
+          makeClassName(classNames?.scrollable, {
+            hasHorizontalScrollbar,
+            hasVerticalScrollbar,
+            showThumbOnHover,
+          }),
+          className
+        )}
         style={wrapperStyle}
       >
         <div
           {...props}
           id={scrollableId}
-          className={cx('scrollable__area', {
+          className={cx('scrollable__area', makeClassName(classNames?.area), {
             [`${className}__area`]: !!className,
           })}
           style={style}
@@ -188,7 +220,7 @@ function Scrollable({
           {...scrollHandlers}
         >
           <div
-            className={cx('scrollable__content', {
+            className={cx('scrollable__content', makeClassName(classNames?.content), {
               [`${className}__content`]: !!className,
             })}
             {...pointerHandlers}
@@ -201,12 +233,14 @@ function Scrollable({
           isVertical
           aria-controls={scrollableId}
           className={className}
+          classNames={classNames}
           {...verticalScrollbarHandlers}
         />
         <Scrollbar
           ref={hScrollbarRef}
           aria-controls={scrollableId}
           className={className}
+          classNames={classNames}
           {...horizontalScrollbarHandlers}
         />
         <div data-testid="extreme-point" />
