@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/react-scrollable.js",
   "types": "dist/react-scrollable.d.ts",
-  "repository": "https://github.com/Viktor-the-great/react-scrollable",
+  "repository": "https://github.com/Viktor-the-great/react-scrollable.git",
   "files": [
     "dist"
   ],
